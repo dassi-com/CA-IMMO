@@ -1,37 +1,66 @@
+// web/components/layout/Navbar.tsx
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, User } from 'lucide-react';
-
 import Logo from '@/components/ui/logo';
+
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userRole, setUserRole] = useState<'tenant' | 'agent' | 'admin'>('tenant');
   const pathname = usePathname();
+
+  // Récupérer le rôle (pour test, on peut le mettre en dur d'abord)
+  useEffect(() => {
+    // Pour tester, on met un rôle par défaut
+    // Plus tard vous remplacerez par le vrai rôle depuis l'auth
+    const role = localStorage.getItem('userRole') as 'tenant' | 'agent' | 'admin';
+    if (role) {
+      setUserRole(role);
+    } else {
+      // Rôle par défaut pour tester
+      setUserRole('tenant');
+    }
+  }, []);
+
+  // Fonction pour obtenir le bon lien du dashboard
+  const getDashboardLink = () => {
+    switch (userRole) {
+      case 'admin':
+        return '/dashboard/admin';
+      case 'agent':
+        return '/dashboard/agent';
+      case 'tenant':
+        return '/dashboard/tenant';
+      default:
+        return '/dashboard/tenant';
+    }
+  };
 
   const navLinks = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Search', icon: Search },
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: getDashboardLink(), label: 'Dashboard', icon: LayoutDashboard }, // ← Lien dynamique
     { href: '/favorites', label: 'Favorites', icon: Heart },
   ];
 
-  // Vérifier si un lien est actif (supporte les routes dynamiques comme /properties/123)
   const isActiveLink = (href: string) => {
     if (href === '/') return pathname === href;
-    return pathname.startsWith(href);
+    // Pour le dashboard, vérifier si on est sur n'importe quel dashboard
+    if (href.includes('/dashboard')) return pathname.includes('/dashboard');
+    return pathname === href;
   };
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Logo />
 
-          {/* Navigation Desktop */}
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-5">
             {navLinks.map((link) => {
               const isActive = isActiveLink(link.href);
@@ -40,9 +69,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={`flex items-center space-x-1 text-sm transition ${
-                    isActive 
-                      ? 'text-red-600 font-medium' 
-                      : 'text-gray-600 hover:text-red-600'
+                    isActive ? 'text-red-600 font-medium' : 'text-gray-600 hover:text-red-600'
                   }`}
                 >
                   <link.icon size={16} />
@@ -69,9 +96,8 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Navigation Mobile - Icônes visibles */}
+          {/* Mobile Navigation */}
           <div className="flex items-center space-x-4 md:hidden">
-            {/* Favorites Icon */}
             <Link 
               href="/favorites" 
               className={`p-1.5 rounded-full transition ${
@@ -81,7 +107,6 @@ export default function Navbar() {
               <Heart size={20} />
             </Link>
             
-            {/* Profile Icon */}
             <Link 
               href="/profile" 
               className={`p-1.5 rounded-full transition ${
@@ -91,7 +116,6 @@ export default function Navbar() {
               <User size={20} />
             </Link>
 
-            {/* Menu Burger */}
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)} 
               className="p-1.5 rounded-full text-gray-600 hover:text-red-600 hover:bg-red-50 transition"
@@ -101,7 +125,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu (Home, Search, Dashboard, Post Property) */}
+        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-100">
             <div className="flex flex-col space-y-2">
@@ -113,7 +137,7 @@ export default function Navbar() {
                 }`}
               >
                 <Home size={18} />
-                <span className="text-sm font-medium">Home</span>
+                <span>Home</span>
               </Link>
               
               <Link 
@@ -124,18 +148,18 @@ export default function Navbar() {
                 }`}
               >
                 <Search size={18} />
-                <span className="text-sm font-medium">Search</span>
+                <span>Search</span>
               </Link>
               
               <Link 
-                href="/dashboard" 
+                href={getDashboardLink()} 
                 onClick={() => setIsMenuOpen(false)} 
                 className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                  pathname.startsWith('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                  pathname.includes('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
                 }`}
               >
                 <LayoutDashboard size={18} />
-                <span className="text-sm font-medium">Dashboard</span>
+                <span>Dashboard</span>
               </Link>
               
               <div className="pt-2 mt-1 border-t border-gray-100">

@@ -15,9 +15,6 @@ import {
   ArrowUpDown,
   X,
   CheckCircle2,
-  TrendingUp,
-  Home,
-  BellRing
 } from 'lucide-react';
 
 // Types
@@ -212,10 +209,12 @@ export default function FavoritesPage() {
                 <div key={property.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
                   <Link href={`/properties/${property.id}`}>
                     <div className="relative h-48 overflow-hidden">
+                      {/* Image avec fill ET sizes (correction) */}
                       <Image
                         src={property.image}
                         alt={property.title}
                         fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                         className="object-cover hover:scale-105 transition duration-300"
                       />
                       {/* Badges */}
