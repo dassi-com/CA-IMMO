@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import PropertyCard from './PropertyCard';
-import { getFeaturedProperties } from '@/services/propertyService';
+import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 
 export default function FeaturedProperties() {
@@ -14,7 +14,7 @@ export default function FeaturedProperties() {
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const data = await getFeaturedProperties();
+        const data = await propertyService.getFeatured();
         setProperties(data);
       } catch (error) {
         console.error('Error loading properties:', error);
@@ -53,7 +53,7 @@ export default function FeaturedProperties() {
           </div>
           <Link
             href="/search"
-            className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition"
+            className="flex items-center gap-2 text-red-600 hover:text-red-700 font-medium transition"
           >
             View All
             <ArrowRight size={18} />

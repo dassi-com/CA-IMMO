@@ -1,24 +1,43 @@
+// web/components/layout/BottomNav.tsx
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Home, Search, LayoutDashboard, Heart, User } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const [userRole, setUserRole] = useState<'tenant' | 'agent' | 'admin'>('tenant');
+
+  useEffect(() => {
+    const role = localStorage.getItem('userRole') as 'tenant' | 'agent' | 'admin';
+    if (role) {
+      setUserRole(role);
+    } else {
+      setUserRole('tenant'); // Rôle par défaut
+    }
+  }, []);
+
+  const getDashboardLink = () => {
+    switch (userRole) {
+      case 'admin': return '/dashboard/admin';
+      case 'agent': return '/dashboard/agent';
+      default: return '/dashboard/tenant';
+    }
+  };
 
   const items = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Search', icon: Search },
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: getDashboardLink(), label: 'Dashboard', icon: LayoutDashboard },
     { href: '/favorites', label: 'Favorites', icon: Heart },
     { href: '/profile', label: 'Profile', icon: User },
   ];
 
-  // Vérifier si un lien est actif
   const isActive = (href: string) => {
     if (href === '/') return pathname === href;
-    if (href === '/dashboard') return pathname.startsWith('/dashboard');
+    if (href.includes('/dashboard')) return pathname.includes('/dashboard');
     return pathname === href;
   };
 
