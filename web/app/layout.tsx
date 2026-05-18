@@ -1,13 +1,7 @@
-import type { Metadata } from 'next';
-import './globals.css';
+import { AuthProvider } from '@/contexts/AuthContext';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import BottomNav from '@/components/layout/BottomNav';
-
-export const metadata: Metadata = {
-  title: 'CentralAfricaHomes - Find Your Dream Property',
-  description: 'Discover houses, apartments, land plots, and commercial properties across Gabon, Cameroon, Congo, and beyond',
-};
+import './globals.css';
 
 export default function RootLayout({
   children,
@@ -15,12 +9,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr">
       <body>
-        <Navbar />
-        <main className="pb-16 md:pb-0">{children}</main>
-        <Footer />
-        <BottomNav />
+        <AuthProvider>
+          <Navbar />
+          <main className="pt-16 md:pt-16 pb-16 md:pb-0">
+            {children}
+          </main>
+          <BottomNav />
+        </AuthProvider>
       </body>
     </html>
   );

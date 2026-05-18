@@ -1,129 +1,96 @@
-// services/propertyService.ts
-import propertiesData from '@/lib/data/properties.json';
-import { Property } from '@/types/property';
-import axios from 'axios';
+import { api } from './api';
 
-// Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== 'false';
+export type PropertyType = 'MAISON' | 'BUREAU' | 'ENTREPOT' | 'LOCAL_COMMERCIAL' | 'TERRAIN';
+export type PropertyStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
-// Instance axios pour les futurs appels API
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
+export interface Property {
+  id: string;
+  owner_id: string;
+  title: string;
+  description: string;
+  country: string;
+  city: string;
+  neighborhood: string;
+  address: string;
+  property_type: PropertyType;
+  price: number;
+  currency: string;
+  size_m2: number;
+  is_featured: boolean;
+  is_deleted: boolean;
+  status: PropertyStatus;
+  images?: { image_url: string; order: number }[];
+  created_at: string;
+}
 
-// Simulation de délai réseau (pour le mode mock)
-const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
+export interface PropertyFilters {
+  city?: string;
+  property_type?: PropertyType;
+  minPrice?: number;
+  maxPrice?: number;
+  status?: PropertyStatus;
+  is_featured?: boolean;
+}
 
-// ============ PROPRIÉTÉS ============
+export const propertyService = {
+  // Récupérer toutes les propriétés (avec filtres)
+  getAll: async (filters?: PropertyFilters): Promise<Property[]> => {
+    const response = await api.get('/properties', { params: filters });
+    return response.data;
+  },
 
-export const getProperties = async (filters?: any): Promise<Property[]> => {
-  if (USE_MOCK) {
-    await delay(500);
-    let properties = propertiesData.properties as Property[];
-    
-    // Appliquer les filtres si présents
-    if (filters) {
-      if (filters.listingType) {
-        properties = properties.filter(p => p.listingType === filters.listingType);
-      }
-      if (filters.type) {
-        properties = properties.filter(p => p.type === filters.type);
-      }
-      if (filters.city) {
-        properties = properties.filter(p => p.city === filters.city);
-      }
-      if (filters.minPrice) {
-        properties = properties.filter(p => p.price >= filters.minPrice);
-      }
-      if (filters.maxPrice) {
-        properties = properties.filter(p => p.price <= filters.maxPrice);
-      }
-    }
-    
-    return properties;
-  }
-  
-  // TODO: Décommenter quand l'API est prête
-  // const response = await api.get('/properties', { params: filters });
-  // return response.data;
-  return [];
-};
+  // Récupérer les propriétés en vedette
+  getFeatured: async (): Promise<Property[]> => {
+    const response = await api.get('/properties/featured');
+    return response.data;
+  },
 
-export const getFeaturedProperties = async (): Promise<Property[]> => {
-  if (USE_MOCK) {
-    await delay(300);
-    const properties = propertiesData.properties as Property[];
-    return properties.filter(p => p.isFeatured);
-  }
-  
-  // TODO: Décommenter quand l'API est prête
-  // const response = await api.get('/properties/featured');
-  // return response.data;
-  return [];
-};
+  // Récupérer les propriétés en attente (ADMIN only)
+  getPending: async (): Promise<Property[]> => {
+    const response = await api.get('/properties/pending');
+    return response.data;
+  },
 
-export const getPropertyById = async (id: string): Promise<Property | null> => {
-  if (USE_MOCK) {
-    await delay(300);
-    const properties = propertiesData.properties as Property[];
-    return properties.find(p => p.id === id) || null;
-  }
-  
-  // TODO: Décommenter quand l'API est prête
-  // const response = await api.get(`/properties/${id}`);
-  // return response.data;
-  return null;
-};
+  // Récupérer une propriété par ID
+  getById: async (id: string): Promise<Property> => {
+    const response = await api.get(`/properties/${id}`);
+    return response.data;
+  },
 
-export const getPropertiesByListingType = async (listingType: string): Promise<Property[]> => {
-  if (USE_MOCK) {
-    await delay(300);
-    const properties = propertiesData.properties as Property[];
-    return properties.filter(p => p.listingType === listingType);
-  }
-  
-  // TODO: Décommenter quand l'API est prête
-  // const response = await api.get(`/properties?listingType=${listingType}`);
-  // return response.data;
-  return [];
-};
+  // Créer une propriété (OWNER only)
+  create: async (data: FormData): Promise<Property> => {
+    const response = await api.post('/properties', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 
-// ============ NOUVELLES FONCTIONS POUR LES FAVORIS ============
+  // Modifier une propriété (OWNER or ADMIN)
+  update: async (id: string, data: Partial<Property>): Promise<Property> => {
+    const response = await api.put(`/properties/${id}`, data);
+    return response.data;
+  },
 
-export const getFavorites = async (): Promise<Property[]> => {
-  if (USE_MOCK) {
-    await delay(300);
-    const properties = propertiesData.properties as Property[];
-    // Retourne les 3 premières pour l'exemple
-    return properties.slice(0, 3);
-  }
-  
-  // TODO: Décommenter quand l'API est prête
-  // const response = await api.get('/favorites');
-  // return response.data;
-  return [];
-};
+  // Supprimer une propriété (soft delete)
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/properties/${id}`);
+  },
 
-export const addToFavorites = async (propertyId: string): Promise<void> => {
-  if (USE_MOCK) {
-    await delay(200);
-    console.log(`Added property ${propertyId} to favorites (mock)`);
-    return;
-  }
-  
-  // TODO: Décommenter quand l'API est prête
-  // await api.post(`/favorites/${propertyId}`);
-};
+  // Changer le statut (ADMIN only)
+  updateStatus: async (id: string, status: PropertyStatus): Promise<Property> => {
+    const response = await api.patch(`/properties/${id}/status`, { status });
+    return response.data;
+  },
 
-export const removeFromFavorites = async (propertyId: string): Promise<void> => {
-  if (USE_MOCK) {
-    await delay(200);
-    console.log(`Removed property ${propertyId} from favorites (mock)`);
-    return;
-  }
-  
-  // TODO: Décommenter quand l'API est prête
-  // await api.delete(`/favorites/${propertyId}`);
+  // Mettre en avant (OWNER after payment or ADMIN)
+  setFeatured: async (id: string, is_featured: boolean): Promise<Property> => {
+    const response = await api.patch(`/properties/${id}/featured`, { is_featured });
+    return response.data;
+  },
+
+  // Récupérer les propriétés d'un propriétaire (OWNER only)
+  getOwnerProperties: async (ownerId: string): Promise<Property[]> => {
+    const response = await api.get(`/users/${ownerId}/properties`);
+    return response.data;
+  },
 };
