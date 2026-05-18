@@ -1,6 +1,5 @@
 import { api } from './api';
-import { Property } from './propertyService';
-
+import { Property } from '@/types/property';
 export const favoriteService = {
   // Récupérer les favoris de l'utilisateur
   getFavorites: async (): Promise<Property[]> => {
