@@ -169,10 +169,10 @@ export default function PropertyDetailPage() {
 
                 {/* Caractéristiques principales */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg mb-6">
-                  {(property.bedrooms || property.rooms) && (
+                  {property.bedrooms && (
                     <div className="text-center">
                       <Bed className="mx-auto text-gray-500 mb-1" size={20} />
-                      <div className="font-semibold">{property.bedrooms || property.rooms}</div>
+                      <div className="font-semibold">{property.bedrooms}</div>
                       <div className="text-xs text-gray-500">Bedrooms</div>
                     </div>
                   )}
@@ -183,20 +183,14 @@ export default function PropertyDetailPage() {
                       <div className="text-xs text-gray-500">Bathrooms</div>
                     </div>
                   )}
-                  {(property.surface || property.size_m2) && (
+                  {property.size_m2 && (
                     <div className="text-center">
                       <Square className="mx-auto text-gray-500 mb-1" size={20} />
-                      <div className="font-semibold">{property.surface || property.size_m2} m²</div>
+                      <div className="font-semibold">{property.size_m2} m²</div>
                       <div className="text-xs text-gray-500">Living Area</div>
                     </div>
                   )}
-                  {property.landSize && (
-                    <div className="text-center">
-                      <Square className="mx-auto text-gray-500 mb-1" size={20} />
-                      <div className="font-semibold">{property.landSize} m²</div>
-                      <div className="text-xs text-gray-500">Land Size</div>
-                    </div>
-                  )}
+
                 </div>
 
                 {/* Tabs */}
@@ -237,7 +231,7 @@ export default function PropertyDetailPage() {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Property Type</span>
-                      <span className="text-gray-900 capitalize">{property.property_type?.toLowerCase() || property.type}</span>
+                      <span className="text-gray-900 capitalize">{property.property_type?.toLowerCase()}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Listing Type</span>
@@ -261,16 +255,16 @@ export default function PropertyDetailPage() {
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
                     <span className="text-red-600 font-bold text-xl">
-                      {property.agent?.full_name?.charAt(0) || property.agent?.name?.charAt(0) || 'A'}
+                      {property.agent?.full_name?.charAt(0) || 'A'}
                     </span>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{property.agent?.full_name || property.agent?.name || 'Agent'}</p>
-                    <p className="text-sm text-gray-500">{property.agent?.agency || 'Agency'}</p>
+                    <p className="font-semibold text-gray-900">{property.agent?.full_name || 'Agent'}</p>
+                    <p className="text-sm text-gray-500">Real Estate Agent</p>
                     <div className="flex items-center gap-1 mt-1">
                       <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                      <span className="text-sm font-medium">{property.agent?.rating || 4.5}</span>
-                      <span className="text-xs text-gray-400">({property.agent?.listings || 0} listings)</span>
+                      <span className="text-sm font-medium">4.5</span>
+                      <span className="text-xs text-gray-400">(12 listings)</span>
                     </div>
                   </div>
                 </div>

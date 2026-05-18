@@ -79,7 +79,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             {/* Rating agent */}
             <div className="flex items-center gap-1">
               <Star size={14} className="text-yellow-400 fill-yellow-400" />
-              <span className="text-sm text-gray-600">{property.agent.rating}</span>
+              <span className="text-sm text-gray-600">4.5</span>
             </div>
           </div>
 
@@ -91,15 +91,15 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           {/* Localisation */}
           <div className="flex items-center gap-1 text-gray-500 text-sm mb-3">
             <MapPin size={14} />
-            <span className="line-clamp-1">{property.location}</span>
+            <span className="line-clamp-1">{property.city}, {property.country}</span>
           </div>
 
           {/* Caractéristiques */}
           <div className="flex items-center gap-4 text-gray-500 text-sm">
-            {(property.bedrooms || property.rooms) && (
+            {property.bedrooms && (
               <div className="flex items-center gap-1">
                 <Bed size={14} />
-                <span>{property.bedrooms || property.rooms}</span>
+                <span>{property.bedrooms}</span>
               </div>
             )}
             {property.bathrooms && (
@@ -108,16 +108,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 <span>{property.bathrooms}</span>
               </div>
             )}
-            {property.surface && (
+            {property.size_m2 && (
               <div className="flex items-center gap-1">
                 <Square size={14} />
-                <span>{property.surface} m²</span>
-              </div>
-            )}
-            {property.landSize && !property.surface && (
-              <div className="flex items-center gap-1">
-                <Square size={14} />
-                <span>{property.landSize} m²</span>
+                <span>{property.size_m2} m²</span>
               </div>
             )}
           </div>
