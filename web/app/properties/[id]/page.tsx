@@ -9,6 +9,16 @@ import { getPropertyById } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import UnlockModal from '@/components/ui/UnlockModal';
 
+// Fonction utilitaire pour obtenir la localisation complète
+const getPropertyFullLocation = (property: Property): string => {
+  return `${property.neighborhood}, ${property.city}, ${property.country}`;
+};
+
+// Fonction utilitaire pour obtenir la localisation courte
+const getPropertyShortLocation = (property: Property): string => {
+  return `${property.neighborhood}, ${property.city}`;
+};
+
 export default function PropertyDetailPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -81,7 +91,7 @@ export default function PropertyDetailPage() {
           {/* Back button */}
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition mb-6"
+            className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-6"
           >
             <ArrowLeft size={20} />
             <span>Back to Search</span>
@@ -91,28 +101,31 @@ export default function PropertyDetailPage() {
           <div className="mb-8">
             <div className="relative h-[500px] rounded-xl overflow-hidden bg-gray-200 mb-4">
               <Image
-                src={property.images[selectedImage] || '/images/placeholder.jpg'}
+                src={property.images?.[selectedImage] || '/images/placeholder.jpg'}
                 alt={property.title}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               />
               {/* Image counter */}
-              <div className="absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1 rounded-full">
-                {selectedImage + 1} / {property.images.length}
-              </div>
+              {property.images && property.images.length > 0 && (
+                <div className="absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1 rounded-full">
+                  {selectedImage + 1} / {property.images.length}
+                </div>
+              )}
             </div>
             {/* Thumbnails */}
-            {property.images.length > 1 && (
+            {property.images && property.images.length > 1 && (
               <div className="flex gap-3 overflow-x-auto pb-2">
                 {property.images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
                     className={`relative w-24 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition ${
-                      selectedImage === idx ? 'border-primary-600' : 'border-transparent'
+                      selectedImage === idx ? 'border-red-600' : 'border-transparent'
                     }`}
                   >
-                    <Image src={img} alt={`Photo ${idx + 1}`} fill className="object-cover" />
+                    <Image src={img} alt={`Photo ${idx + 1}`} fill className="object-cover" sizes="96px" />
                   </button>
                 ))}
               </div>
@@ -128,17 +141,18 @@ export default function PropertyDetailPage() {
                 <div className="flex justify-between items-start mb-4">
                   <h1 className="text-2xl font-bold text-gray-900">{property.title}</h1>
                   <div className="text-right">
-                    <span className="text-2xl font-bold text-primary-600">
-                      {formatPrice(property.price, property.priceUnit)}
+                    <span className="text-2xl font-bold text-red-600">
+                      {formatPrice(property.price, property.priceUnit || 'FCFA')}
                     </span>
-                    {property.listingType === 'rent' && property.priceUnit.includes('/month') && (
+                    {property.listingType === 'rent' && (
                       <span className="text-gray-500 text-sm block">/month</span>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-gray-500 mb-4">
                   <MapPin size={18} />
-                  <span>{property.location}, {property.country}</span>
+                  {/* ✅ CORRECTION : Utilisation de la fonction utilitaire */}
+                  <span>{getPropertyFullLocation(property)}</span>
                 </div>
                 {/* Badges */}
                 <div className="flex gap-2 mb-6">
@@ -169,10 +183,10 @@ export default function PropertyDetailPage() {
                       <div className="text-xs text-gray-500">Bathrooms</div>
                     </div>
                   )}
-                  {property.surface && (
+                  {(property.surface || property.size_m2) && (
                     <div className="text-center">
                       <Square className="mx-auto text-gray-500 mb-1" size={20} />
-                      <div className="font-semibold">{property.surface} m²</div>
+                      <div className="font-semibold">{property.surface || property.size_m2} m²</div>
                       <div className="text-xs text-gray-500">Living Area</div>
                     </div>
                   )}
@@ -189,7 +203,7 @@ export default function PropertyDetailPage() {
                 <div className="border-b border-gray-200 mb-4">
                   <div className="flex gap-6">
                     {['Overview', 'Features', 'Neighborhood', 'Investment'].map((tab) => (
-                      <button key={tab} className="py-2 text-gray-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-600 transition">
+                      <button key={tab} className="py-2 text-gray-600 hover:text-red-600 border-b-2 border-transparent hover:border-red-600 transition">
                         {tab}
                       </button>
                     ))}
@@ -203,17 +217,19 @@ export default function PropertyDetailPage() {
                 </div>
 
                 {/* Features list */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Key Features</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {property.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-gray-600 text-sm">
-                        <div className="w-1.5 h-1.5 bg-primary-600 rounded-full"></div>
-                        <span>{feature}</span>
-                      </div>
-                    ))}
+                {property.features && property.features.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-3">Key Features</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {property.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-gray-600 text-sm">
+                          <div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div>
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Property details */}
                 <div className="bg-gray-50 rounded-lg p-4">
@@ -221,7 +237,7 @@ export default function PropertyDetailPage() {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Property Type</span>
-                      <span className="text-gray-900 capitalize">{property.type}</span>
+                      <span className="text-gray-900 capitalize">{property.property_type?.toLowerCase() || property.type}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Listing Type</span>
@@ -229,7 +245,7 @@ export default function PropertyDetailPage() {
                     </div>
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Added on</span>
-                      <span className="text-gray-900">{new Date(property.createdAt).toLocaleDateString()}</span>
+                      <span className="text-gray-900">{new Date(property.created_at || property.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -243,18 +259,18 @@ export default function PropertyDetailPage() {
                 
                 {/* Agent info */}
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
-                    <span className="text-primary-600 font-bold text-xl">
-                      {property.agent.name.charAt(0)}
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                    <span className="text-red-600 font-bold text-xl">
+                      {property.agent?.full_name?.charAt(0) || property.agent?.name?.charAt(0) || 'A'}
                     </span>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{property.agent.name}</p>
-                    <p className="text-sm text-gray-500">{property.agent.agency}</p>
+                    <p className="font-semibold text-gray-900">{property.agent?.full_name || property.agent?.name || 'Agent'}</p>
+                    <p className="text-sm text-gray-500">{property.agent?.agency || 'Agency'}</p>
                     <div className="flex items-center gap-1 mt-1">
                       <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                      <span className="text-sm font-medium">{property.agent.rating}</span>
-                      <span className="text-xs text-gray-400">({property.agent.listings} listings)</span>
+                      <span className="text-sm font-medium">{property.agent?.rating || 4.5}</span>
+                      <span className="text-xs text-gray-400">({property.agent?.listings || 0} listings)</span>
                     </div>
                   </div>
                 </div>
@@ -291,14 +307,14 @@ export default function PropertyDetailPage() {
                 <div className="space-y-2">
                   <button
                     onClick={handleUnlock}
-                    className="w-full bg-primary-600 text-white py-2.5 rounded-lg font-medium hover:bg-primary-700 transition flex items-center justify-center gap-2"
+                    className="w-full bg-red-600 text-white py-2.5 rounded-lg font-medium hover:bg-red-700 transition flex items-center justify-center gap-2"
                   >
                     <Unlock size={16} />
                     Unlock to Call
                   </button>
                   <button
                     onClick={handleUnlock}
-                    className="w-full border border-primary-600 text-primary-600 py-2.5 rounded-lg font-medium hover:bg-primary-50 transition flex items-center justify-center gap-2"
+                    className="w-full border border-red-600 text-red-600 py-2.5 rounded-lg font-medium hover:bg-red-50 transition flex items-center justify-center gap-2"
                   >
                     <MessageCircle size={16} />
                     Unlock for WhatsApp
