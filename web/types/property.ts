@@ -1,40 +1,66 @@
-export type ListingType = 'buy' | 'rent' | 'relocate';
-export type PropertyType = 'villa' | 'apartment' | 'house' | 'land' | 'commercial' | 'office';
+// types/property.ts
+
+export type ListingType = 'sale' | 'rent';
+export type PropertyTypeCategory = 'MAISON' | 'BUREAU' | 'ENTREPOT' | 'LOCAL_COMMERCIAL' | 'TERRAIN';
+export type PropertyStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export interface Agent {
   id: string;
-  name: string;
-  agency: string;
-  rating: number;
-  listings: number;
-  avatar?: string;
-  phone: string;
+  full_name: string;
   email: string;
+  phone: string;
+  avatar?: string;
+}
+
+export interface PropertyImage {
+  id: string;
+  property_id: string;
+  image_url: string;
+  order: number;
 }
 
 export interface Property {
   id: string;
+  owner_id: string;
   title: string;
   slug: string;
-  price: number;
-  priceUnit: string;
-  listingType: ListingType;
-  type: PropertyType;
-  location: string;
-  city: string;
-  country: string;
-  rooms?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  surface?: number;
-  landSize?: number;
   description: string;
-  features: string[];
-  images: string[];
+  country: string;
+  city: string;
+  neighborhood: string;
+  address: string;
+  property_type: PropertyTypeCategory;
+  listingType: ListingType;
+  price: number;
+  currency: string;
+  priceUnit: string;
+  size_m2: number;
+  area: number;
+  bedrooms: number;
+  bathrooms: number;
+  is_featured: boolean;
+  is_deleted: boolean;
+  status: PropertyStatus;
   verified: boolean;
   isNew: boolean;
   isUrgent: boolean;
-  isFeatured: boolean;
-  agent: Agent;
+  features: string[];
+  images: string[];
+  image_urls?: string[];
+  agent?: Agent;
+  owner?: Agent;
+  created_at: string;
   createdAt: string;
+  updated_at: string;
+}
+
+export interface PropertyFilters {
+  city?: string;
+  property_type?: PropertyTypeCategory;
+  listingType?: ListingType;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  is_featured?: boolean;
+  status?: PropertyStatus;
 }
