@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
+import { sanitizeText, sanitizeOptional } from "../../utils/sanitize";
 import {
   UpdateProfileDto,
   ChangePasswordDto,
@@ -69,7 +70,7 @@ export const updateProfileService = async (
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: {
-      full_name: dto.full_name ?? user.full_name,
+      full_name: sanitizeOptional(dto.full_name) ?? user.full_name,
       phone: dto.phone ?? user.phone,
     },
   });
@@ -87,6 +88,10 @@ export const changePasswordService = async (
 
   if (!user) {
     throw new AppError("User not found", 404);
+  }
+
+  if (!user.password) {
+    throw new AppError("This account uses Google authentication. Password changes are not available.", 400);
   }
 
   // Vérifier le mot de passe courant
@@ -110,10 +115,16 @@ export const changePasswordService = async (
   // Hasher et mettre à jour
   const hashedPassword = await bcrypt.hash(dto.new_password, SALT_ROUNDS);
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: { password: hashedPassword },
-  });
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    }),
+    // Invalider toutes les sessions existantes
+    prisma.refreshToken.deleteMany({
+      where: { user_id: userId },
+    }),
+  ]);
 };
 
 export const listUsersService = async (

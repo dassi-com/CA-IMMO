@@ -2,14 +2,17 @@ import { Response } from "express";
 import { AuthenticatedRequest } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { sendSuccess } from "../../utils/response";
+import { env } from "../../config/env";
 import {
   registerService,
   loginService,
   refreshTokenService,
   logoutService,
   getMeService,
+  generateAuthTokens,
 } from "./auth.service";
 import { RegisterDto, LoginDto } from "./auth.types";
+import { User } from "@prisma/client";
 
 export const register = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
@@ -52,5 +55,15 @@ export const getMe = asyncHandler(
     const user = await getMeService(req.user!.id);
 
     sendSuccess(res, user, "Profile fetched successfully");
+  }
+);
+
+export const googleCallback = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user = req.user as User;
+    const tokens = await generateAuthTokens(user);
+
+    const redirectUrl = `${env.clientUrl}/auth/google/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
+    res.redirect(redirectUrl);
   }
 );

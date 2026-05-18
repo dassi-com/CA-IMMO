@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
+import { sanitizeText } from "../../utils/sanitize";
 import {
   CreateInquiryDto,
   InquiriesListQuery,
@@ -57,9 +58,9 @@ export const createInquiryService = async (
     data: {
       property_id: propertyId,
       sender_id: senderId ?? null,
-      name: dto.name,
+      name: sanitizeText(dto.name),
       phone_number: dto.phone_number,
-      message: dto.message,
+      message: sanitizeText(dto.message),
     },
     include: inquiryInclude,
   });

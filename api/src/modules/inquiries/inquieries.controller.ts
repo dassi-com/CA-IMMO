@@ -14,7 +14,7 @@ import { CreateInquiryDto, InquiriesListQuery } from "./inquiries.types";
 export const createInquiry = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const dto = req.body as CreateInquiryDto;
-    const { propertyId } = req.params;
+    const propertyId = req.params.propertyId as string;
 
     // senderId est optionnel — null si visiteur non connecté
     const senderId = req.user?.id;
@@ -40,7 +40,7 @@ export const getMyInquiries = asyncHandler(
 export const getInquiry = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const inquiry = await getInquiryService(
-      req.params.id,
+      req.params.id as string,
       req.user!.id,
       req.user!.role
     );
@@ -63,7 +63,7 @@ export const listInquiries = asyncHandler(
 
 export const deleteInquiry = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    await deleteInquiryService(req.params.id);
+    await deleteInquiryService(req.params.id as string);
     sendSuccess(res, null, "Inquiry deleted successfully");
   }
 );

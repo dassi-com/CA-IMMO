@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { register, login, refresh, logout, getMe } from "./auth.controller";
+import { Router, Request, Response, NextFunction } from "express";
+import { register, login, refresh, logout, getMe, googleCallback } from "./auth.controller";
 import { validate } from "../../middlewares/validate.middleware";
 import { authenticate } from "../../middlewares/auth.midlleware";
 import {
@@ -7,6 +7,7 @@ import {
   loginValidator,
   refreshValidator,
 } from "./auth.validator";
+import passport from "../../config/passport";
 
 const router = Router();
 
@@ -140,5 +141,44 @@ router.post("/logout", validate(refreshValidator), logout);
  *         $ref: '#/components/responses/Unauthorized'
  */
 router.get("/me", authenticate, getMe);
+
+/**
+ * @swagger
+ * /auth/google:
+ *   get:
+ *     summary: Authentifier avec Google
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirection vers Google OAuth
+ */
+router.get("/google", passport.authenticate("google", { session: false, scope: ["profile", "email"] }));
+
+/**
+ * @swagger
+ * /auth/google/callback:
+ *   get:
+ *     summary: Callback Google OAuth
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirection vers le frontend avec les tokens
+ */
+router.get(
+  "/google/callback",
+  (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate("google", { session: false }, (err: unknown, user: unknown) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.redirect(`${process.env.CLIENT_URL ?? "http://localhost:3000"}/login?error=authentication_failed`);
+      }
+      (req as any).user = user;
+      next();
+    })(req, res, next);
+  },
+  googleCallback
+);
 
 export default router;

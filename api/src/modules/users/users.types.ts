@@ -13,7 +13,7 @@ export interface UserResponseDto {
   id: string;
   full_name: string;
   email: string;
-  phone: string;
+  phone: string | null;
   role: string;
   is_verified: boolean;
   is_suspended: boolean;

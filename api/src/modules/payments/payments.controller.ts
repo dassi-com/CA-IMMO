@@ -42,7 +42,7 @@ export const handleWebhook = async (
 
 export const confirmPaymentManually = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const payment = await confirmPaymentManuallyService(req.params.id);
+    const payment = await confirmPaymentManuallyService(req.params.id as string);
     sendSuccess(res, payment, "Payment confirmed successfully");
   }
 );
@@ -76,7 +76,7 @@ export const listPayments = asyncHandler(
 export const getPayment = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const payment = await getPaymentService(
-      req.params.id,
+      req.params.id as string,
       req.user!.id,
       req.user!.role
     );

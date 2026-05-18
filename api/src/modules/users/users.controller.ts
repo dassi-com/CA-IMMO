@@ -50,7 +50,7 @@ export const listUsers = asyncHandler(
 
 export const getUser = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const user = await getUserService(id);
     sendSuccess(res, user, "User fetched successfully");
   }
@@ -58,7 +58,7 @@ export const getUser = asyncHandler(
 
 export const suspendUser = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const user = await suspendUserService(id);
     sendSuccess(res, user, "User suspended successfully");
   }
@@ -66,7 +66,7 @@ export const suspendUser = asyncHandler(
 
 export const deleteUser = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     await deleteUserService(id);
     sendSuccess(res, null, "User deleted successfully");
   }

@@ -1,6 +1,7 @@
 import { Prisma, PropertyStatus, PropertyType } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
+import { sanitizeText } from "../../utils/sanitize";
 import {
   CreatePropertyDto,
   UpdatePropertyDto,
@@ -47,12 +48,12 @@ export const createPropertyService = async (
   const property = await prisma.property.create({
     data: {
       owner_id: ownerId,
-      title: dto.title,
-      description: dto.description,
-      country: dto.country,
-      city: dto.city,
-      neighborhood: dto.neighborhood,
-      address: dto.address,
+      title: sanitizeText(dto.title),
+      description: sanitizeText(dto.description),
+      country: sanitizeText(dto.country),
+      city: sanitizeText(dto.city),
+      neighborhood: sanitizeText(dto.neighborhood),
+      address: sanitizeText(dto.address),
       property_type: dto.property_type,
       price: dto.price,
       currency: dto.currency ?? "XOF",
@@ -169,12 +170,12 @@ export const updatePropertyService = async (
 
   // Construire dynamiquement les champs à modifier
   const dataToUpdate: Prisma.PropertyUpdateInput = {};
-  if (dto.title !== undefined) dataToUpdate.title = dto.title;
-  if (dto.description !== undefined) dataToUpdate.description = dto.description;
-  if (dto.country !== undefined) dataToUpdate.country = dto.country;
-  if (dto.city !== undefined) dataToUpdate.city = dto.city;
-  if (dto.neighborhood !== undefined) dataToUpdate.neighborhood = dto.neighborhood;
-  if (dto.address !== undefined) dataToUpdate.address = dto.address;
+  if (dto.title !== undefined) dataToUpdate.title = sanitizeText(dto.title);
+  if (dto.description !== undefined) dataToUpdate.description = sanitizeText(dto.description);
+  if (dto.country !== undefined) dataToUpdate.country = sanitizeText(dto.country);
+  if (dto.city !== undefined) dataToUpdate.city = sanitizeText(dto.city);
+  if (dto.neighborhood !== undefined) dataToUpdate.neighborhood = sanitizeText(dto.neighborhood);
+  if (dto.address !== undefined) dataToUpdate.address = sanitizeText(dto.address);
   if (dto.property_type !== undefined) dataToUpdate.property_type = dto.property_type;
   if (dto.price !== undefined) dataToUpdate.price = dto.price;
   if (dto.currency !== undefined) dataToUpdate.currency = dto.currency;

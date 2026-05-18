@@ -9,6 +9,7 @@ import swaggerUi from "swagger-ui-express";
 import { validateEnv } from "./config/env";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { swaggerSpec } from "./config/swagger";
+import "./config/passport";
 import authRouter from "./modules/auth/auth.routes";
 import usersRouter from "./modules/users/users.routes";
 import propertiesRouter from "./modules/properties/properties.routes";
@@ -22,9 +23,13 @@ const app: Application = express();
 
 // ─── Security ─────────────────────────────────
 app.use(helmet());
+const corsOrigin = process.env.CLIENT_URL;
+if (!corsOrigin && process.env.NODE_ENV === "production") {
+  console.warn("CLIENT_URL is not set. CORS will be restrictive.");
+}
 app.use(
   cors({
-    origin: process.env.CLIENT_URL ?? "*",
+    origin: corsOrigin || false,
     credentials: true,
   })
 );
@@ -39,15 +44,25 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
+// Auth endpoints : limite stricte contre le brute-force
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: "Too many authentication attempts, please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api/v1/auth/login", authLimiter);
+app.use("/api/v1/auth/register", authLimiter);
+app.use("/api/v1/auth/refresh", authLimiter);
+
 // ─── Parsing & Compression ────────────────────
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(compression());
 
 // ─── Logging ──────────────────────────────────
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 // ─── Swagger ──────────────────────────────────
 app.use(
