@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { authService } from '@/services/authService';
+import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 // Icône Google personnalisée
@@ -38,6 +38,7 @@ const FacebookIcon = () => (
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -59,9 +60,12 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await authService.login(formData.email, formData.password, formData.rememberMe);
+      const response = await authLogin(formData.email, formData.password, formData.rememberMe);
       toast.success('Connexion réussie');
-      router.push('/');
+      const role = response?.user?.role;
+      if (role === 'ADMIN') router.push('/dashboard/admin');
+      else if (role === 'OWNER') router.push('/dashboard/agent');
+      else router.push('/');
     } catch (error: any) {
       const message = error?.response?.data?.message || 'Erreur de connexion';
       toast.error(message);

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   Heart, 
   Trash2, 
@@ -15,9 +16,11 @@ import {
   ArrowUpDown,
   X,
   CheckCircle2,
+  LogIn,
 } from 'lucide-react';
 import { favoriteService } from '@/services/favoriteService';
 import { propertyService, Property } from '@/services/propertyService';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Type adapté pour l'affichage
 interface FavoriteDisplay {
@@ -39,6 +42,9 @@ interface FavoriteDisplay {
 type SortOption = "recent" | "price-asc" | "price-desc";
 
 export default function FavoritesPage() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+
   const [favorites, setFavorites] = useState<FavoriteDisplay[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("recent");
@@ -46,10 +52,15 @@ export default function FavoritesPage() {
   const [selectedProperty, setSelectedProperty] = useState<FavoriteDisplay | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Charger les favoris depuis l'API
   useEffect(() => {
-    loadFavorites();
-  }, []);
+    if (!isAuthLoading && !isAuthenticated) {
+      router.replace('/login');
+      return;
+    }
+    if (isAuthenticated) {
+      loadFavorites();
+    }
+  }, [isAuthenticated, isAuthLoading]);
 
   const loadFavorites = async () => {
     setIsLoading(true);
@@ -115,6 +126,14 @@ export default function FavoritesPage() {
   };
 
   const sortedFavorites = getSortedFavorites();
+
+  if (isAuthLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20 pb-24 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   // Affichage du chargement
   if (isLoading) {
