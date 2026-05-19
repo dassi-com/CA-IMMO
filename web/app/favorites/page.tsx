@@ -62,11 +62,11 @@ export default function FavoritesPage() {
         title: prop.title,
         location: `${prop.neighborhood}, ${prop.city}`,
         price: prop.price,
-        priceType: prop.property_type === 'MAISON' || prop.property_type === 'TERRAIN' ? 'sale' : 'rent',
+        priceType: prop.listingType === 'sale' ? 'sale' : 'rent',
         bedrooms: 0, // À adapter selon ton schéma
         bathrooms: 0, // À adapter selon ton schéma
         area: prop.size_m2,
-        image: prop.images?.[0]?.image_url || '/placeholder.jpg',
+        image: typeof prop.images?.[0] === 'string' ? prop.images[0] : (prop.images?.[0] as any)?.image_url || '/placeholder.jpg',
         isVerified: false,
         isNew: false,
         isUrgent: false,

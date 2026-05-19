@@ -6,25 +6,25 @@ export const propertyService = {
   // Récupérer toutes les propriétés
   getAll: async (filters?: PropertyFilters): Promise<Property[]> => {
     const response = await api.get('/properties', { params: filters });
-    return response.data;
+    return response.data.data;
   },
 
   // Récupérer les propriétés en vedette
   getFeatured: async (): Promise<Property[]> => {
-    const response = await api.get('/properties/featured');
-    return response.data;
+    const response = await api.get('/properties', { params: { is_featured: true } });
+    return response.data.data;
   },
 
   // Récupérer les propriétés en attente (ADMIN only)
   getPending: async (): Promise<Property[]> => {
     const response = await api.get('/properties/pending');
-    return response.data;
+    return response.data.data;
   },
 
   // Récupérer une propriété par ID
   getById: async (id: string): Promise<Property> => {
     const response = await api.get(`/properties/${id}`);
-    return response.data;
+    return response.data.data;
   },
 
   // Créer une propriété (OWNER only)
@@ -32,13 +32,13 @@ export const propertyService = {
     const response = await api.post('/properties', data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Modifier une propriété (OWNER of property or ADMIN)
   update: async (id: string, data: Partial<Property>): Promise<Property> => {
     const response = await api.put(`/properties/${id}`, data);
-    return response.data;
+    return response.data.data;
   },
 
   // Supprimer une propriété (soft delete)
@@ -49,19 +49,19 @@ export const propertyService = {
   // Changer le statut (ADMIN only)
   updateStatus: async (id: string, status: PropertyStatus): Promise<Property> => {
     const response = await api.patch(`/properties/${id}/status`, { status });
-    return response.data;
+    return response.data.data;
   },
 
-  // Mettre en avant une propriété (OWNER after payment or ADMIN)
-  setFeatured: async (id: string, is_featured: boolean): Promise<Property> => {
-    const response = await api.patch(`/properties/${id}/featured`, { is_featured });
-    return response.data;
+  // Mettre en avant une propriété (ADMIN only)
+  setFeatured: async (id: string): Promise<Property> => {
+    const response = await api.patch(`/properties/${id}/feature`);
+    return response.data.data;
   },
 
-  // Récupérer les propriétés d'un propriétaire spécifique
-  getOwnerProperties: async (ownerId: string): Promise<Property[]> => {
-    const response = await api.get(`/users/${ownerId}/properties`);
-    return response.data;
+  // Récupérer mes annonces (OWNER only)
+  getMyListings: async (): Promise<Property[]> => {
+    const response = await api.get('/properties/my/listings');
+    return response.data.data;
   },
 };
 

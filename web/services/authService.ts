@@ -21,12 +21,12 @@ export const authService = {
   login: async (email: string, password: string, rememberMe?: boolean): Promise<LoginResponse> => {
     const response = await api.post('/auth/login', { email, password, rememberMe });
     
-    if (response.data.accessToken) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
+    if (response.data.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
     }
     
-    return response.data;
+    return response.data.data;
   },
 
   // Inscription
@@ -39,18 +39,18 @@ export const authService = {
   }): Promise<LoginResponse> => {
     const response = await api.post('/auth/register', data);
     
-    if (response.data.accessToken) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
+    if (response.data.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
     }
     
-    return response.data;
+    return response.data.data;
   },
 
   // Déconnexion
   logout: async (): Promise<void> => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/auth/logout', { refreshToken: localStorage.getItem('refreshToken') });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -63,7 +63,7 @@ export const authService = {
   getCurrentUser: async (): Promise<User | null> => {
     try {
       const response = await api.get('/auth/me');
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return null;
     }
@@ -74,8 +74,8 @@ export const authService = {
     try {
       const refreshToken = localStorage.getItem('refreshToken');
       const response = await api.post('/auth/refresh', { refreshToken });
-      localStorage.setItem('accessToken', response.data.accessToken);
-      return response.data.accessToken;
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      return response.data.data.accessToken;
     } catch (error) {
       return null;
     }

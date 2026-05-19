@@ -17,19 +17,24 @@ export const inquiryService = {
     phone_number: string;
     message: string;
   }): Promise<Inquiry> => {
-    const response = await api.post(`/properties/${propertyId}/inquiries`, data);
-    return response.data;
+    const response = await api.post(`/inquiries/${propertyId}`, data);
+    return response.data.data;
   },
 
-  // Récupérer les messages d'une propriété (OWNER only)
-  getPropertyInquiries: async (propertyId: string): Promise<Inquiry[]> => {
-    const response = await api.get(`/properties/${propertyId}/inquiries`);
-    return response.data;
+  // Récupérer les messages reçus (OWNER only)
+  getMyReceivedInquiries: async (): Promise<Inquiry[]> => {
+    const response = await api.get('/inquiries/my/received');
+    return response.data.data;
   },
 
-  // Récupérer ses propres messages (TENANT only)
-  getMyInquiries: async (): Promise<Inquiry[]> => {
-    const response = await api.get('/inquiries/my');
-    return response.data;
+  // Récupérer un message spécifique (OWNER or ADMIN)
+  getById: async (id: string): Promise<Inquiry> => {
+    const response = await api.get(`/inquiries/${id}`);
+    return response.data.data;
+  },
+
+  // Supprimer un message (ADMIN only)
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/inquiries/${id}`);
   },
 };

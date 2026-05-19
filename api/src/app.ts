@@ -6,7 +6,7 @@ import morgan from "morgan";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import swaggerUi from "swagger-ui-express";
-import { validateEnv } from "./config/env";
+import { validateEnv, env } from "./config/env";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { swaggerSpec } from "./config/swagger";
 import "./config/passport";
@@ -16,6 +16,7 @@ import propertiesRouter from "./modules/properties/properties.routes";
 import inquiriesRouter from "./modules/inquiries/inquiries.routes";
 import paymentsRouter from "./modules/payments/payments.routes";
 import mediaRouter from "./modules/media/media.routes";
+import favoritesRouter from "./modules/favorites/favorites.routes";
 
 validateEnv();
 
@@ -23,7 +24,7 @@ const app: Application = express();
 
 // ─── Security ─────────────────────────────────
 app.use(helmet());
-const corsOrigin = process.env.CLIENT_URL;
+const corsOrigin = env.clientUrl;
 if (!corsOrigin && process.env.NODE_ENV === "production") {
   console.warn("CLIENT_URL is not set. CORS will be restrictive.");
 }
@@ -95,6 +96,7 @@ app.use("/api/v1/properties", propertiesRouter);
 app.use("/api/v1/inquiries", inquiriesRouter);
 app.use("/api/v1/payments", paymentsRouter);
 app.use("/api/v1/properties", mediaRouter);
+app.use("/api/v1/favorites", favoritesRouter);
 
 // ─── 404 Handler ──────────────────────────────
 app.use((_req: Request, res: Response) => {

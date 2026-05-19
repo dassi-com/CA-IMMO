@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Upload, X, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { propertyService } from '@/services/propertyService';
+import toast from 'react-hot-toast';
 
 export default function PostPropertyPage() {
   const router = useRouter();
@@ -83,22 +85,29 @@ export default function PostPropertyPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // TODO: Remplacer par l'appel API réel
-    // const formDataToSend = new FormData();
-    // formDataToSend.append('title', formData.title);
-    // formDataToSend.append('listingType', formData.listingType);
-    // etc...
-    // photos.forEach(photo => formDataToSend.append('photos', photo));
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('listingType', formData.listingType);
+      formDataToSend.append('property_type', formData.propertyType.toUpperCase());
+      formDataToSend.append('city', formData.city);
+      formDataToSend.append('neighborhood', formData.neighborhood);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('size_m2', formData.surface);
+      formDataToSend.append('bedrooms', formData.bedrooms);
+      formDataToSend.append('bathrooms', formData.bathrooms);
+      photos.forEach(photo => formDataToSend.append('images', photo));
 
-    console.log('Property data:', formData);
-    console.log('Photos:', photos);
-
-    // Simulation d'envoi
-    setTimeout(() => {
+      await propertyService.create(formDataToSend);
+      toast.success('Annonce publiée avec succès ! En attente de validation.');
+      router.push('/');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Erreur lors de la publication";
+      toast.error(message);
+    } finally {
       setIsSubmitting(false);
-      alert('Property submitted successfully! Awaiting admin approval.');
-      router.push('/dashboard/agent');
-    }, 2000);
+    }
   };
 
   return (

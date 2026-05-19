@@ -8,6 +8,7 @@ import {
   refreshValidator,
 } from "./auth.validator";
 import passport from "../../config/passport";
+import { env } from "../../config/env";
 
 const router = Router();
 
@@ -172,7 +173,7 @@ router.get(
         return next(err);
       }
       if (!user) {
-        return res.redirect(`${process.env.CLIENT_URL ?? "http://localhost:3000"}/login?error=authentication_failed`);
+        return res.redirect(`${env.clientUrl}/login?error=authentication_failed`);
       }
       (req as any).user = user;
       next();

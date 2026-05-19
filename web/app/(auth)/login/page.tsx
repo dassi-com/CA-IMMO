@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { authService } from '@/services/authService';
+import toast from 'react-hot-toast';
 
 // Icône Google personnalisée
 const GoogleIcon = () => (
@@ -55,11 +57,17 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // TODO: Appel API login
-    setTimeout(() => {
+
+    try {
+      await authService.login(formData.email, formData.password, formData.rememberMe);
+      toast.success('Connexion réussie');
+      router.push('/');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Erreur de connexion';
+      toast.error(message);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {

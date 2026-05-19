@@ -1,7 +1,6 @@
-// web/app/dashboard/agent/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Building2,
   CheckCircle,
@@ -17,6 +16,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
 import ChartCard, {
@@ -34,14 +34,43 @@ import ChartCard, {
   AreaChart,
   Area,
 } from '@/components/dashboard/ChartCard';
+import { propertyService, Property } from '@/services/propertyService';
+import { inquiryService, Inquiry } from '@/services/inquiryService';
+import toast from 'react-hot-toast';
 
-// Données fictives
-const agentStats = {
-  totalListings: 24,
-  activeListings: 18,
-  pendingListings: 3,
-  totalViews: 1247,
-};
+interface ListingRow {
+  id: string;
+  title: string;
+  status: string;
+  views: number;
+  contacts: number;
+  date: string;
+}
+
+interface PendingRow {
+  id: string;
+  title: string;
+  date: string;
+  type: string;
+  price: string;
+}
+
+interface VisitRow {
+  id: string;
+  tenantName: string;
+  propertyTitle: string;
+  date: string;
+  time: string;
+  status: string;
+  phone: string;
+}
+
+interface TopPerformer {
+  title: string;
+  views: number;
+  contacts: number;
+  conversion: string;
+}
 
 const monthlyPerformance = [
   { month: 'Sep', views: 180, contacts: 12 },
@@ -59,85 +88,65 @@ const propertyTypes = [
   { name: 'Commerces', value: 2, color: '#FCA5A5' },
 ];
 
-const recentListings = [
-  {
-    id: '1',
-    title: 'Villa Moderne avec Piscine',
-    status: 'APPROVED',
-    views: 234,
-    contacts: 12,
-    date: '2024-01-15',
-  },
-  {
-    id: '2',
-    title: 'Appartement de Luxe',
-    status: 'PENDING',
-    views: 45,
-    contacts: 3,
-    date: '2024-01-18',
-  },
-  {
-    id: '3',
-    title: 'Terrain Commercial',
-    status: 'FEATURED',
-    views: 567,
-    contacts: 28,
-    date: '2024-01-10',
-  },
-  {
-    id: '4',
-    title: 'Bureau Moderne',
-    status: 'APPROVED',
-    views: 89,
-    contacts: 7,
-    date: '2024-01-12',
-  },
-];
-
-const pendingListings = [
-  { id: 'p1', title: 'Studio Meublé', date: '2024-01-19', type: 'Appartement', price: '35,000,000 FCFA' },
-  { id: 'p2', title: 'Villa 5 Chambres', date: '2024-01-18', type: 'Villa', price: '180,000,000 FCFA' },
-  { id: 'p3', title: 'Terrain 1000m²', date: '2024-01-17', type: 'Terrain', price: '50,000,000 FCFA' },
-];
-
-const visitRequests = [
-  {
-    id: 'v1',
-    tenantName: 'Marie Ngono',
-    propertyTitle: 'Villa Moderne',
-    date: '2024-01-20',
-    time: '14:00',
-    status: 'pending',
-    phone: '+237 6XX XXX XXX',
-  },
-  {
-    id: 'v2',
-    tenantName: 'Paul Biya',
-    propertyTitle: 'Appartement Luxe',
-    date: '2024-01-21',
-    time: '10:30',
-    status: 'confirmed',
-    phone: '+237 6XX XXX XXX',
-  },
-  {
-    id: 'v3',
-    tenantName: 'Sarah Eto\'o',
-    propertyTitle: 'Terrain Commercial',
-    date: '2024-01-22',
-    time: '15:00',
-    status: 'pending',
-    phone: '+237 6XX XXX XXX',
-  },
-];
-
-const topPerformers = [
-  { title: 'Terrain Commercial', views: 567, contacts: 28, conversion: '4.9%' },
-  { title: 'Villa Moderne', views: 234, contacts: 12, conversion: '5.1%' },
-  { title: 'Appartement Luxe', views: 189, contacts: 9, conversion: '4.8%' },
-];
+const topPerformers: TopPerformer[] = [];
 
 export default function AgentDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [listings, setListings] = useState<ListingRow[]>([]);
+  const [pendingListings, setPendingListings] = useState<PendingRow[]>([]);
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+
+  const totalListings = listings.length;
+  const activeListings = listings.filter(l => l.status === 'APPROVED').length;
+  const pendingCount = pendingListings.length;
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [myListings, myInquiries] = await Promise.all([
+        propertyService.getMyListings().catch(() => []),
+        inquiryService.getMyReceivedInquiries().catch(() => []),
+      ]);
+
+      setListings(myListings.map((p: Property) => ({
+        id: p.id,
+        title: p.title,
+        status: p.status,
+        views: 0,
+        contacts: 0,
+        date: new Date(p.created_at).toLocaleDateString(),
+      })));
+
+      setPendingListings(myListings.filter((p: Property) => p.status === 'PENDING').map((p: Property) => ({
+        id: p.id,
+        title: p.title,
+        date: new Date(p.created_at).toLocaleDateString(),
+        type: p.property_type,
+        price: `${p.price.toLocaleString()} ${p.currency}`,
+      })));
+
+      setInquiries(myInquiries);
+    } catch (error) {
+      console.error('Error loading agent data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await propertyService.delete(id);
+      toast.success('Annonce supprimée');
+      loadData();
+    } catch {
+      toast.error('Erreur lors de la suppression');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -159,37 +168,37 @@ export default function AgentDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Total annonces"
-              value={agentStats.totalListings}
+              value={totalListings}
               icon={Building2}
               trend={8}
-              trendLabel="vs mois dernier"
+              trendLabel="total annonces"
               color="from-blue-500 to-cyan-500"
               delay={0.1}
             />
             <StatsCard
               title="Annonces actives"
-              value={agentStats.activeListings}
+              value={activeListings}
               icon={CheckCircle}
               trend={5}
-              trendLabel="vs mois dernier"
+              trendLabel="annonces actives"
               color="from-green-500 to-emerald-500"
               delay={0.2}
             />
             <StatsCard
               title="En attente"
-              value={agentStats.pendingListings}
+              value={pendingCount}
               icon={Clock}
               trend={-2}
-              trendLabel="vs mois dernier"
+              trendLabel="en attente"
               color="from-yellow-500 to-orange-500"
               delay={0.3}
             />
             <StatsCard
-              title="Vues totales"
-              value={agentStats.totalViews}
+              title="Messages reçus"
+              value={inquiries.length}
               icon={Eye}
               trend={15}
-              trendLabel="vs mois dernier"
+              trendLabel="total messages"
               color="from-purple-500 to-indigo-500"
               delay={0.4}
             />
@@ -279,7 +288,7 @@ export default function AgentDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {recentListings.map((listing) => (
+                  {listings.map((listing) => (
                     <tr key={listing.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900">{listing.title}</div>
@@ -292,6 +301,8 @@ export default function AgentDashboard() {
                               ? 'bg-green-100 text-green-600'
                               : listing.status === 'PENDING'
                               ? 'bg-yellow-100 text-yellow-600'
+                              : listing.status === 'REJECTED'
+                              ? 'bg-red-100 text-red-600'
                               : 'bg-purple-100 text-purple-600'
                           }`}
                         >
@@ -305,11 +316,8 @@ export default function AgentDashboard() {
                           <button className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
                             <Edit size={18} />
                           </button>
-                          <button className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
+                          <button onClick={() => handleDelete(listing.id)} className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
                             <Trash2 size={18} />
-                          </button>
-                          <button className="p-1 text-yellow-600 hover:bg-yellow-50 rounded transition-colors">
-                            <Star size={18} />
                           </button>
                         </div>
                       </td>
@@ -334,22 +342,23 @@ export default function AgentDashboard() {
                 <Clock className="w-5 h-5 text-yellow-600" />
               </div>
               <div className="space-y-3">
-                {pendingListings.map((listing) => (
-                  <div key={listing.id} className="p-3 bg-yellow-50 rounded-xl">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-gray-800">{listing.title}</h4>
-                      <span className="text-xs text-yellow-600">En validation</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">{listing.type}</span>
-                      <span className="text-red-600 font-medium">{listing.price}</span>
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-gray-400">{listing.date}</span>
-                      <button className="text-xs text-red-600 font-medium">Modifier</button>
-                    </div>
-                  </div>
-                ))}
+                    {pendingListings.length === 0 ? (
+                      <p className="text-gray-500 text-sm text-center py-4">Aucune annonce en attente</p>
+                    ) : (pendingListings.map((listing) => (
+                      <div key={listing.id} className="p-3 bg-yellow-50 rounded-xl">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium text-gray-800">{listing.title}</h4>
+                          <span className="text-xs text-yellow-600">En validation</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">{listing.type}</span>
+                          <span className="text-red-600 font-medium">{listing.price}</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-xs text-gray-400">{listing.date}</span>
+                        </div>
+                      </div>
+                    )))}
               </div>
             </motion.div>
 
@@ -365,45 +374,28 @@ export default function AgentDashboard() {
                 <Users className="w-5 h-5 text-blue-600" />
               </div>
               <div className="space-y-3">
-                {visitRequests.map((request) => (
-                  <div key={request.id} className="p-3 bg-blue-50 rounded-xl">
+                {inquiries.length === 0 ? (
+                  <p className="text-gray-500 text-sm text-center py-4">Aucune demande de contact</p>
+                ) : (inquiries.map((inq) => (
+                  <div key={inq.id} className="p-3 bg-blue-50 rounded-xl">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <h4 className="font-medium text-gray-800">{request.tenantName}</h4>
-                        <p className="text-sm text-gray-600">{request.propertyTitle}</p>
-                      </div>
-                      <div
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          request.status === 'confirmed'
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-yellow-100 text-yellow-600'
-                        }`}
-                      >
-                        {request.status === 'confirmed' ? 'Confirmé' : 'En attente'}
+                        <h4 className="font-medium text-gray-800">{inq.name}</h4>
+                        <p className="text-sm text-gray-600">{inq.message?.substring(0, 50)}...</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-gray-500">
                       <div className="flex items-center gap-1">
                         <Calendar size={12} />
-                        <span>
-                          {request.date} à {request.time}
-                        </span>
+                        <span>{new Date(inq.created_at).toLocaleDateString()}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <MessageSquare size={12} />
-                        <span>{request.phone}</span>
+                        <span>{inq.phone_number}</span>
                       </div>
                     </div>
-                    <div className="flex gap-2 mt-3">
-                      <button className="flex-1 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">
-                        Confirmer
-                      </button>
-                      <button className="flex-1 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors">
-                        Refuser
-                      </button>
-                    </div>
                   </div>
-                ))}
+                )))}
               </div>
             </motion.div>
           </div>
@@ -434,10 +426,10 @@ export default function AgentDashboard() {
                   <div className="text-xs">3 mois</div>
                 </div>
               </div>
-              <button className="w-full py-3 bg-white text-red-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+              <Link href="/post-property" className="w-full py-3 bg-white text-red-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
                 <DollarSign size={20} />
-                Passer une annonce en vedette
-              </button>
+                Publier une nouvelle annonce
+              </Link>
             </motion.div>
 
             {/* Top Performers */}

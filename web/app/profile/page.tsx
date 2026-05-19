@@ -13,6 +13,8 @@ import {
   Building2,
   Home
 } from 'lucide-react';
+import { authService } from '@/services/authService';
+import toast from 'react-hot-toast';
 
 type TabType = 'login' | 'register';
 type AccountType = 'tenant' | 'agent';
@@ -86,31 +88,45 @@ export default function ProfilePage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // TODO: Appel API login
-    console.log('Login:', loginData);
-    
-    setTimeout(() => {
+
+    try {
+      await authService.login(loginData.email, loginData.password, loginData.rememberMe);
+      toast.success('Connexion réussie');
+      router.push('/');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Erreur de connexion';
+      toast.error(message);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (registerData.password !== registerData.confirmPassword) {
-      console.error('Passwords do not match');
+      toast.error('Les mots de passe ne correspondent pas');
       return;
     }
 
     setIsLoading(true);
-    
-    // TODO: Appel API register
-    console.log('Register:', registerData);
-    
-    setTimeout(() => {
+
+    try {
+      await authService.register({
+        full_name: registerData.fullName,
+        email: registerData.email,
+        phone: registerData.phoneNumber,
+        password: registerData.password,
+        role: registerData.accountType === 'agent' ? 'OWNER' : 'TENANT',
+      });
+      toast.success('Compte créé avec succès');
+      router.push('/');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Erreur lors de l'inscription";
+      toast.error(message);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {

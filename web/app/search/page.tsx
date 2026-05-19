@@ -47,7 +47,7 @@ export default function SearchPage() {
       result = result.filter(p => p.city.toLowerCase().includes(filters.city.toLowerCase()));
     }
     if (filters.type) {
-      result = result.filter(p => p.type === filters.type);
+      result = result.filter(p => p.property_type === filters.type);
     }
     if (filters.listingType) {
       result = result.filter(p => p.listingType === filters.listingType);
@@ -61,7 +61,7 @@ export default function SearchPage() {
 
     switch (sortBy) {
       case 'newest':
-        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
       case 'price_asc':
         result.sort((a, b) => a.price - b.price);
@@ -70,7 +70,7 @@ export default function SearchPage() {
         result.sort((a, b) => b.price - a.price);
         break;
       case 'popular':
-        result.sort((a, b) => (b.agent.rating || 0) - (a.agent.rating || 0));
+        result.sort((a, b) => (b.agent?.rating || 0) - (a.agent?.rating || 0));
         break;
     }
 

@@ -11,6 +11,7 @@ import {
   getMyPropertiesService,
   updatePropertyStatusService,
   featurePropertyService,
+  listPendingPropertiesService,
 } from "./properties.service";
 import {
   CreatePropertyDto,
@@ -91,5 +92,18 @@ export const featureProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const property = await featurePropertyService(req.params.id as string);
     sendSuccess(res, property, "Property featured successfully");
+  }
+);
+
+export const listPendingProperties = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const query = req.query as PropertiesListQuery;
+    const result = await listPendingPropertiesService(query);
+    sendPaginated(
+      res,
+      result.properties,
+      result.meta,
+      "Pending properties fetched successfully"
+    );
   }
 );
