@@ -53,12 +53,14 @@ model User {
   password     String?
   google_id    String?   @unique
   role         Role      @default(TENANT)
-  is_verified  Boolean   @default(false)
-  is_suspended Boolean   @default(false)
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  is_verified        Boolean   @default(false)
+  is_suspended       Boolean   @default(false)
+  reset_token        String?   @unique
+  reset_token_expires DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
   
-properties   Property[]
+  properties   Property[]
   inquiries    Inquiry[]
   payments     Payment[]
   reviews      Review[]

@@ -1,3 +1,5 @@
+import { User } from "@prisma/client";
+
 export interface RegisterDto {
   full_name: string;
   email: string;
@@ -11,6 +13,16 @@ export interface LoginDto {
   password: string;
 }
 
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  password: string;
+  email: string;
+}
+
 export interface TokenPayload {
   id: string;
   email: string;
@@ -20,4 +32,8 @@ export interface TokenPayload {
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface AuthTokensWithUser extends AuthTokens {
+  user: Omit<User, "password">;
 }

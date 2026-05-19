@@ -52,13 +52,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string, rememberMe?: boolean) => {
     const response = await authService.login(email, password, rememberMe);
-    setUser(response.user);
+    if (response.user) setUser(response.user);
     return response;
   };
 
   const register = async (data: { full_name: string; email: string; phone: string; password: string; role: 'TENANT' | 'OWNER' }) => {
     const response = await authService.register(data);
-    setUser(response.user);
+    if (response.user) setUser(response.user);
   };
 
   const logout = async () => {
