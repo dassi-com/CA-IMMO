@@ -94,7 +94,6 @@ model Property {
   payments      Payment[]
   reviews       Review[]
   favorites     Favorite[]
-  favorites     Favorite[]
 
   @@index([status, is_deleted])
   @@index([city, neighborhood])
