@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { register, login, refresh, logout, getMe, googleCallback } from "./auth.controller";
 import { validate } from "../../middlewares/validate.middleware";
-import { authenticate } from "../../middlewares/auth.midlleware";
+import { authenticate } from "../../middlewares/auth.middleware";
 import {
   registerValidator,
   loginValidator,

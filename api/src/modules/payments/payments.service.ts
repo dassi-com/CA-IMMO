@@ -213,7 +213,7 @@ export const handleWebhookService = async (
 
 export const confirmPaymentManuallyService = async (
   paymentId: string
-): Promise<typeof paymentInclude & { id: string }> => {
+): Promise<Prisma.PaymentGetPayload<{ include: typeof paymentInclude }>> => {
   const payment = await prisma.payment.findUnique({
     where: { id: paymentId },
     include: paymentInclude,
@@ -244,7 +244,7 @@ export const confirmPaymentManuallyService = async (
     }),
   ]);
 
-  return updatedPayment as any;
+  return updatedPayment;
 };
 
 export const getMyPaymentsService = async (

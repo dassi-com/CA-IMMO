@@ -90,23 +90,25 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
   }
 
   if (query.price_min || query.price_max) {
-    where.price = {};
+    const priceFilter: Prisma.FloatFilter = {};
     if (query.price_min) {
-      where.price = { ...where.price as object, gte: parseFloat(query.price_min) };
+      priceFilter.gte = parseFloat(query.price_min);
     }
     if (query.price_max) {
-      where.price = { ...where.price as object, lte: parseFloat(query.price_max) };
+      priceFilter.lte = parseFloat(query.price_max);
     }
+    where.price = priceFilter;
   }
 
   if (query.size_min || query.size_max) {
-    where.size_m2 = {};
+    const sizeFilter: Prisma.FloatFilter = {};
     if (query.size_min) {
-      where.size_m2 = { ...where.size_m2 as object, gte: parseFloat(query.size_min) };
+      sizeFilter.gte = parseFloat(query.size_min);
     }
     if (query.size_max) {
-      where.size_m2 = { ...where.size_m2 as object, lte: parseFloat(query.size_max) };
+      sizeFilter.lte = parseFloat(query.size_max);
     }
+    where.size_m2 = sizeFilter;
   }
 
   // Featured en haut, puis tri demandé

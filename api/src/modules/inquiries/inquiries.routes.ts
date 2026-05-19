@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate } from "../../middlewares/auth.midlleware";
+import { authenticate } from "../../middlewares/auth.middleware";
 import { authorize } from "../../middlewares/role.middleware";
 import { validate } from "../../middlewares/validate.middleware";
 import {
@@ -8,13 +8,13 @@ import {
   getInquiry,
   listInquiries,
   deleteInquiry,
-} from "./inquieries.controller";
+} from "./inquiries.controller";
 import {
   createInquiryValidator,
   inquiryIdValidator,
   propertyIdParamValidator,
   inquiriesListValidator,
-} from "./inquieries.validator";
+} from "./inquiries.validator";
 
 const router = Router();
 
