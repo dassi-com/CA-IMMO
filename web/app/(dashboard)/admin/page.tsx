@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Users,
   Building2,
@@ -21,7 +21,6 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import ProtectedRoute from '@/components/ProtectedRoute';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
 import ChartCard, {
@@ -41,174 +40,173 @@ import ChartCard, {
   Legend,
   ResponsiveContainer,
 } from '@/components/dashboard/ChartCard';
+import { adminService } from '@/services/adminService';
+import { User } from '@/services/authService';
+import { propertyService } from '@/services/propertyService';
+import { Property } from '@/types/property';
+import toast from 'react-hot-toast';
 
-// Données fictives
-const adminStats = {
-  totalUsers: 145,
-  totalListings: 342,
-  pendingListings: 12,
-  totalRevenue: 1250000,
-};
+interface PendingListing {
+  id: string;
+  title: string;
+  agentName: string;
+  agentEmail: string;
+  date: string;
+  price: string;
+  type: string;
+}
 
-const userRegistrations = [
-  { month: 'Sep', tenants: 12, agents: 3, admins: 0 },
-  { month: 'Oct', tenants: 18, agents: 5, admins: 0 },
-  { month: 'Nov', tenants: 15, agents: 4, admins: 0 },
-  { month: 'Dec', tenants: 25, agents: 7, admins: 1 },
-  { month: 'Jan', tenants: 20, agents: 6, admins: 0 },
-  { month: 'Fév', tenants: 14, agents: 4, admins: 0 },
-];
+interface PaymentRequest {
+  id: string;
+  agentName: string;
+  amount: number;
+  package: string;
+  date: string;
+  status: string;
+  reference: string;
+}
 
-const listingsByStatus = [
-  { status: 'APPROVED', count: 280, color: '#10B981' },
-  { status: 'PENDING', count: 45, color: '#F59E0B' },
-  { status: 'REJECTED', count: 12, color: '#EF4444' },
-  { status: 'FEATURED', count: 5, color: '#8B5CF6' },
-];
-
-const topCities = [
-  { city: 'Yaoundé', count: 145, percentage: 42 },
-  { city: 'Douala', count: 128, percentage: 37 },
-  { city: 'Bafoussam', count: 32, percentage: 9 },
-  { city: 'Garoua', count: 21, percentage: 6 },
-  { city: 'Maroua', count: 16, percentage: 5 },
-];
-
-const pendingListings = [
-  {
-    id: 'p1',
-    title: 'Beachfront Villa',
-    agentName: 'Marie Claire',
-    agentEmail: 'marie@email.com',
-    date: '2024-01-18',
-    price: '250,000,000 FCFA',
-    type: 'Villa',
-  },
-  {
-    id: 'p2',
-    title: 'City Center Office',
-    agentName: 'Jean Paul',
-    agentEmail: 'jean@email.com',
-    date: '2024-01-17',
-    price: '1,200,000 FCFA/mois',
-    type: 'Commercial',
-  },
-  {
-    id: 'p3',
-    title: 'Luxury Apartment',
-    agentName: 'Sophie Laure',
-    agentEmail: 'sophie@email.com',
-    date: '2024-01-16',
-    price: '95,000,000 FCFA',
-    type: 'Appartement',
-  },
-  {
-    id: 'p4',
-    title: 'Modern Studio',
-    agentName: 'Paul Biya',
-    agentEmail: 'paul@email.com',
-    date: '2024-01-15',
-    price: '35,000,000 FCFA',
-    type: 'Studio',
-  },
-];
-
-const recentUsers = [
-  {
-    id: 'u1',
-    name: 'Jean Mbarga',
-    email: 'jean.mbarga@email.com',
-    role: 'tenant',
-    date: '2024-01-15',
-    status: 'active',
-  },
-  {
-    id: 'u2',
-    name: 'Claire Ngo',
-    email: 'claire.ngo@email.com',
-    role: 'agent',
-    date: '2024-01-14',
-    status: 'active',
-  },
-  {
-    id: 'u3',
-    name: 'Paul Eto\'o',
-    email: 'paul.eto@email.com',
-    role: 'tenant',
-    date: '2024-01-13',
-    status: 'suspended',
-  },
-  {
-    id: 'u4',
-    name: 'Sarah Moukoko',
-    email: 'sarah@email.com',
-    role: 'agent',
-    date: '2024-01-12',
-    status: 'active',
-  },
-];
-
-const paymentRequests = [
-  {
-    id: 'pay1',
-    agentName: 'Marie Claire',
-    amount: 50000,
-    package: '1 mois Featured',
-    date: '2024-01-19',
-    status: 'pending',
-    reference: 'FLW-123456',
-  },
-  {
-    id: 'pay2',
-    agentName: 'Jean Paul',
-    amount: 120000,
-    package: '3 mois Featured',
-    date: '2024-01-18',
-    status: 'confirmed',
-    reference: 'FLW-123457',
-  },
-];
-
-const systemAlerts = [
-  {
-    id: 'a1',
-    type: 'warning',
-    message: 'Plus de 10 annonces en attente depuis plus de 48h',
-    date: '2024-01-19',
-    priority: 'high',
-  },
-  {
-    id: 'a2',
-    type: 'info',
-    message: "L'agent Marie Claire a publié 5 annonces cette semaine",
-    date: '2024-01-18',
-    priority: 'medium',
-  },
-  {
-    id: 'a3',
-    type: 'success',
-    message: 'Nouveau record de visites ce mois-ci',
-    date: '2024-01-17',
-    priority: 'low',
-  },
-];
+interface SystemAlert {
+  id: string;
+  type: string;
+  message: string;
+  date: string;
+  priority: string;
+}
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const filteredUsers = recentUsers.filter(
+  const [stats, setStats] = useState({ totalUsers: 0, totalListings: 0, pendingListings: 0, totalRevenue: 0 });
+  const [users, setUsers] = useState<User[]>([]);
+  const [pendingListings, setPendingListings] = useState<PendingListing[]>([]);
+  const [paymentRequests, setPaymentRequests] = useState<PaymentRequest[]>([]);
+  const [systemAlerts] = useState<SystemAlert[]>([
+    { id: 'a1', type: 'warning', message: 'Plus de 10 annonces en attente depuis plus de 48h', date: new Date().toISOString().split('T')[0], priority: 'high' },
+    { id: 'a2', type: 'info', message: 'Bienvenue sur le tableau de bord administrateur', date: new Date().toISOString().split('T')[0], priority: 'medium' },
+  ]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [fetchedUsers, fetchedPending] = await Promise.all([
+        adminService.getAllUsers().catch(() => []),
+        propertyService.getPending().catch(() => []),
+      ]);
+      setUsers(fetchedUsers);
+      setPendingListings(fetchedPending.map((p: Property) => ({
+        id: p.id,
+        title: p.title,
+        agentName: p.owner?.full_name || 'Inconnu',
+        agentEmail: p.owner?.email || '',
+        date: new Date(p.created_at).toLocaleDateString(),
+        price: `${p.price.toLocaleString()} ${p.currency}`,
+        type: p.property_type,
+      })));
+      setStats({
+        totalUsers: fetchedUsers.length,
+        totalListings: fetchedPending.length + (stats.totalListings || 0),
+        pendingListings: fetchedPending.length,
+        totalRevenue: 0,
+      });
+    } catch (error) {
+      console.error('Error loading admin data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApprove = async (id: string) => {
+    try {
+      await propertyService.updateStatus(id, 'APPROVED');
+      toast.success('Annonce approuvée');
+      loadData();
+    } catch {
+      toast.error("Erreur lors de l'approbation");
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    try {
+      await propertyService.updateStatus(id, 'REJECTED');
+      toast.success('Annonce rejetée');
+      loadData();
+    } catch {
+      toast.error('Erreur lors du rejet');
+    }
+  };
+
+  const handleFeature = async (id: string) => {
+    try {
+      await propertyService.setFeatured(id);
+      toast.success('Annonce mise en avant');
+      loadData();
+    } catch {
+      toast.error('Erreur lors de la mise en avant');
+    }
+  };
+
+  const handleSuspend = async (userId: string) => {
+    try {
+      await adminService.suspendUser(userId);
+      toast.success('Utilisateur suspendu');
+      loadData();
+    } catch {
+      toast.error('Erreur lors de la suspension');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      await adminService.deleteUser(userId);
+      toast.success('Utilisateur supprimé');
+      loadData();
+    } catch {
+      toast.error('Erreur lors de la suppression');
+    }
+  };
+
+  const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
-    <ProtectedRoute requiredRole="ADMIN">
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <Sidebar role="admin" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+  const userRegistrations = [
+    { month: 'Sep', tenants: 12, agents: 3, admins: 0 },
+    { month: 'Oct', tenants: 18, agents: 5, admins: 0 },
+    { month: 'Nov', tenants: 15, agents: 4, admins: 0 },
+    { month: 'Dec', tenants: 25, agents: 7, admins: 1 },
+    { month: 'Jan', tenants: 20, agents: 6, admins: 0 },
+    { month: 'Fév', tenants: 14, agents: 4, admins: 0 },
+  ];
 
-        <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
+  const listingsByStatus = [
+    { status: 'APPROVED', count: 280, color: '#10B981' },
+    { status: 'PENDING', count: 45, color: '#F59E0B' },
+    { status: 'REJECTED', count: 12, color: '#EF4444' },
+    { status: 'FEATURED', count: 5, color: '#8B5CF6' },
+  ];
+
+  const topCities = [
+    { city: 'Yaoundé', count: 145, percentage: 42 },
+    { city: 'Douala', count: 128, percentage: 37 },
+    { city: 'Bafoussam', count: 32, percentage: 9 },
+    { city: 'Garoua', count: 21, percentage: 6 },
+    { city: 'Maroua', count: 16, percentage: 5 },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <Sidebar role="admin" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+
+      <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
         <div className="p-6 lg:p-8">
           {/* Header */}
           <motion.div
@@ -224,7 +222,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Utilisateurs"
-              value={adminStats.totalUsers}
+              value={stats.totalUsers}
               icon={Users}
               trend={12}
               trendLabel="vs mois dernier"
@@ -233,7 +231,7 @@ export default function AdminDashboard() {
             />
             <StatsCard
               title="Annonces totales"
-              value={adminStats.totalListings}
+              value={stats.totalListings}
               icon={Building2}
               trend={8}
               trendLabel="vs mois dernier"
@@ -242,7 +240,7 @@ export default function AdminDashboard() {
             />
             <StatsCard
               title="En attente"
-              value={adminStats.pendingListings}
+              value={stats.pendingListings}
               icon={Clock}
               trend={-3}
               trendLabel="vs mois dernier"
@@ -251,7 +249,7 @@ export default function AdminDashboard() {
             />
             <StatsCard
               title="Revenus"
-              value={`${(adminStats.totalRevenue / 1000000).toFixed(1)}M FCFA`}
+              value={stats.totalRevenue ? `${(stats.totalRevenue / 1000000).toFixed(1)}M FCFA` : '0 FCFA'}
               icon={DollarSign}
               trend={25}
               trendLabel="vs mois dernier"
@@ -381,13 +379,13 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap text-gray-500">{listing.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <button className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors">
+                          <button onClick={() => handleApprove(listing.id)} className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors">
                             <CheckCircle size={18} />
                           </button>
-                          <button className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
+                          <button onClick={() => handleReject(listing.id)} className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
                             <XCircle size={18} />
                           </button>
-                          <button className="p-1.5 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-colors">
+                          <button onClick={() => handleFeature(listing.id)} className="p-1.5 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-colors">
                             <Star size={18} />
                           </button>
                         </div>
@@ -448,16 +446,16 @@ export default function AdminDashboard() {
                     {filteredUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-gray-900">{user.name}</div>
-                          <div className="text-sm text-gray-500">{user.date}</div>
+                          <div className="font-medium text-gray-900">{user.full_name}</div>
+                          <div className="text-sm text-gray-500">{user.email}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-gray-600">{user.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 text-xs rounded-full ${
-                              user.role === 'admin'
+                              user.role === 'ADMIN'
                                 ? 'bg-purple-100 text-purple-600'
-                                : user.role === 'agent'
+                                : user.role === 'OWNER'
                                 ? 'bg-blue-100 text-blue-600'
                                 : 'bg-gray-100 text-gray-600'
                             }`}
@@ -468,18 +466,18 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 text-xs rounded-full ${
-                              user.status === 'active' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                              !user.is_suspended ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                             }`}
                           >
-                            {user.status}
+                            {user.is_suspended ? 'Suspendu' : 'Actif'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <button className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
+                            <button onClick={() => handleSuspend(user.id)} className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
                               <Shield size={18} />
                             </button>
-                            <button className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
+                            <button onClick={() => handleDeleteUser(user.id)} className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
                               <XCircle size={18} />
                             </button>
                           </div>
@@ -574,6 +572,5 @@ export default function AdminDashboard() {
         </div>
       </main>
     </div>
-    </ProtectedRoute>
   );
 }

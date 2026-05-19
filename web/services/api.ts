@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,7 +8,6 @@ export const api = axios.create({
   timeout: 10000,
 });
 
-// Intercepteur pour ajouter le token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -20,37 +19,30 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercepteur pour unwrapper la réponse backend { success, message, data }
 api.interceptors.response.use(
-  (response) => {
-    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
-      response.data = response.data.data;
-    }
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
-        
-        localStorage.setItem('accessToken', response.data.accessToken);
-        originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
-        
+
+        localStorage.setItem('accessToken', response.data.data.accessToken);
+        originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
+
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userRole');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

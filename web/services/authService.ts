@@ -11,6 +11,7 @@ export interface User {
 }
 
 export interface LoginResponse {
+  user: User;
   accessToken: string;
   refreshToken: string;
 }
@@ -18,12 +19,14 @@ export interface LoginResponse {
 export const authService = {
   // Connexion
   login: async (email: string, password: string, rememberMe?: boolean): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>('/auth/login', { email, password, rememberMe });
-
-    localStorage.setItem('accessToken', response.data.accessToken);
-    localStorage.setItem('refreshToken', response.data.refreshToken);
-
-    return response.data;
+    const response = await api.post('/auth/login', { email, password, rememberMe });
+    
+    if (response.data.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    }
+    
+    return response.data.data;
   },
 
   // Inscription
@@ -34,19 +37,20 @@ export const authService = {
     password: string;
     role: 'TENANT' | 'OWNER';
   }): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>('/auth/register', data);
-
-    localStorage.setItem('accessToken', response.data.accessToken);
-    localStorage.setItem('refreshToken', response.data.refreshToken);
-
-    return response.data;
+    const response = await api.post('/auth/register', data);
+    
+    if (response.data.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    }
+    
+    return response.data.data;
   },
 
   // Déconnexion
   logout: async (): Promise<void> => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      await api.post('/auth/logout', { refreshToken });
+      await api.post('/auth/logout', { refreshToken: localStorage.getItem('refreshToken') });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -58,8 +62,8 @@ export const authService = {
   // Récupérer l'utilisateur courant
   getCurrentUser: async (): Promise<User | null> => {
     try {
-      const response = await api.get<User>('/auth/me');
-      return response.data;
+      const response = await api.get('/auth/me');
+      return response.data.data;
     } catch (error) {
       return null;
     }
@@ -68,11 +72,10 @@ export const authService = {
   // Rafraîchir le token
   refreshToken: async (): Promise<string | null> => {
     try {
-      const token = localStorage.getItem('refreshToken');
-      const response = await api.post<{ accessToken: string; refreshToken: string }>('/auth/refresh', { refreshToken: token });
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      return response.data.accessToken;
+      const refreshToken = localStorage.getItem('refreshToken');
+      const response = await api.post('/auth/refresh', { refreshToken });
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      return response.data.data.accessToken;
     } catch (error) {
       return null;
     }

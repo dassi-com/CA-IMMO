@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 // Icône Google personnalisée
 const GoogleIcon = () => (
@@ -37,10 +38,9 @@ const FacebookIcon = () => (
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, user } = useAuth();
+  const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -58,32 +58,32 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
-    
+
     try {
-      const response = await login(formData.email, formData.password, formData.rememberMe);
-      
-      // Récupérer le rôle de l'utilisateur après connexion
-      const dashboardRoutes: Record<string, string> = {
-        'ADMIN': '/dashboard/admin',
-        'OWNER': '/dashboard/agent',
-        'TENANT': '/dashboard/tenant'
-      };
-      
-      // Utiliser la réponse directement au lieu d'attendre la mise à jour du contexte
-      const route = dashboardRoutes[response.user.role] || '/dashboard/tenant';
-      router.push(route);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erreur de connexion');
+      const response = await authLogin(formData.email, formData.password, formData.rememberMe);
+      toast.success('Connexion réussie');
+      const role = response?.user?.role;
+      if (role === 'ADMIN') router.push('/dashboard/admin');
+      else if (role === 'OWNER') router.push('/dashboard/agent');
+      else router.push('/');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Erreur de connexion';
+      toast.error(message);
+    } finally {
       setIsLoading(false);
     }
   };
 
   const handleSocialLogin = (provider: string) => {
+    if (provider === 'google') {
+      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    } else {
+      toast.error(`${provider} login is not available yet`);
+    }
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Profile Icon */}
         <div className="flex justify-center mb-6">
@@ -102,12 +102,6 @@ export default function LoginPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
           {/* Email Field */}
           <div className="mb-5">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
