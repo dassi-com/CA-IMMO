@@ -3,16 +3,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { api } from '@/services/api';
+import { propertyService } from '@/services/propertyService';
 
 interface City {
-  id: string;
   name: string;
   country: string;
+  image: string;
   slug: string;
-  image_url: string;
-  property_count: number;
-  is_active: boolean;
+  count: number;
 }
 
 export default function ExplorePopularCities() {
@@ -22,12 +20,39 @@ export default function ExplorePopularCities() {
   useEffect(() => {
     const loadCities = async () => {
       try {
-        // Appel API pour récupérer les villes populaires
-        const response = await api.get('/cities/popular');
-        setCities(response.data);
+        // Récupérer toutes les propriétés pour calculer les villes
+        const properties = await propertyService.getAll();
+        
+        // Compter les propriétés par ville
+        const cityMap = new Map<string, { count: number; country: string }>();
+        
+        properties.forEach(prop => {
+          const cityName = prop.city;
+          if (cityMap.has(cityName)) {
+            cityMap.get(cityName)!.count++;
+          } else {
+            cityMap.set(cityName, { count: 1, country: prop.country });
+          }
+        });
+        
+        // Convertir en tableau et trier par nombre de propriétés
+        const cityList = Array.from(cityMap.entries())
+          .map(([name, data]) => ({
+            name,
+            country: data.country,
+            slug: name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+            count: data.count,
+            // Images par défaut par ville (peuvent être remplacées par des URLs réelles depuis l'API)
+            image: getCityImage(name),
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5); // Top 5 villes
+          
+        setCities(cityList);
       } catch (error) {
         console.error('Error loading cities:', error);
-        setCities([]);
+        // Fallback avec des villes par défaut
+        setCities(getDefaultCities());
       } finally {
         setLoading(false);
       }
@@ -35,6 +60,27 @@ export default function ExplorePopularCities() {
     
     loadCities();
   }, []);
+
+  // Fonction pour obtenir l'image d'une ville
+  const getCityImage = (cityName: string): string => {
+    const images: Record<string, string> = {
+      'Douala': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop',
+      'Yaoundé': 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop',
+      'Libreville': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop',
+      'Brazzaville': 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop',
+      'Malabo': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop',
+    };
+    return images[cityName] || 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop';
+  };
+
+  // Fallback par défaut
+  const getDefaultCities = (): City[] => [
+    { name: 'Douala', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'douala', count: 0 },
+    { name: 'Yaoundé', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop', slug: 'yaounde', count: 0 },
+    { name: 'Libreville', country: 'Gabon', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'libreville', count: 0 },
+    { name: 'Brazzaville', country: 'Congo', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop', slug: 'brazzaville', count: 0 },
+    { name: 'Malabo', country: 'Guinée équatoriale', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'malabo', count: 0 },
+  ];
 
   if (loading) {
     return (
@@ -54,8 +100,6 @@ export default function ExplorePopularCities() {
     );
   }
 
-  if (cities.length === 0) return null;
-
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-6">
@@ -66,12 +110,12 @@ export default function ExplorePopularCities() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {cities.map((city) => (
             <Link
-              key={city.id}
+              key={city.slug}
               href={`/search?city=${encodeURIComponent(city.name)}`}
               className="group relative h-64 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
             >
               <Image
-                src={city.image_url}
+                src={city.image}
                 alt={city.name}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 20vw"
@@ -81,7 +125,7 @@ export default function ExplorePopularCities() {
               <div className="absolute bottom-4 left-4 right-4">
                 <h3 className="text-white font-bold text-xl">{city.name}</h3>
                 <p className="text-white/80 text-sm">{city.country}</p>
-                <p className="text-white/60 text-xs mt-1">{city.property_count} properties</p>
+                <p className="text-white/60 text-xs mt-1">{city.count} properties</p>
               </div>
             </Link>
           ))}
