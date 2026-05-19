@@ -19,23 +19,17 @@ import {
   LogIn,
 } from 'lucide-react';
 import { favoriteService } from '@/services/favoriteService';
-import { propertyService, Property } from '@/services/propertyService';
+import { Property } from '@/types/property';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Type adapté pour l'affichage
 interface FavoriteDisplay {
   id: string;
   title: string;
   location: string;
   price: number;
-  priceType: "sale" | "rent";
-  bedrooms: number;
-  bathrooms: number;
+  currency: string;
   area: number;
   image: string;
-  isVerified?: boolean;
-  isNew?: boolean;
-  isUrgent?: boolean;
   savedAt: Date;
 }
 
@@ -73,14 +67,9 @@ export default function FavoritesPage() {
         title: prop.title,
         location: `${prop.neighborhood}, ${prop.city}`,
         price: prop.price,
-        priceType: prop.listingType === 'sale' ? 'sale' : 'rent',
-        bedrooms: 0, // À adapter selon ton schéma
-        bathrooms: 0, // À adapter selon ton schéma
+        currency: prop.currency,
         area: prop.size_m2,
-        image: typeof prop.images?.[0] === 'string' ? prop.images[0] : (prop.images?.[0] as any)?.image_url || '/placeholder.jpg',
-        isVerified: false,
-        isNew: false,
-        isUrgent: false,
+        image: prop.images?.[0]?.image_url || '/placeholder.jpg',
         savedAt: new Date(prop.created_at),
       }));
       
@@ -115,14 +104,14 @@ export default function FavoritesPage() {
     }
   };
 
-  const formatPrice = (price: number, type: "sale" | "rent") => {
+  const formatPrice = (price: number, currency: string) => {
     if (price >= 1_000_000) {
-      return `${(price / 1_000_000).toFixed(1)}M XAF`;
+      return `${(price / 1_000_000).toFixed(1)}M ${currency}`;
     }
     if (price >= 1_000) {
-      return `${(price / 1000).toFixed(0)}K XAF`;
+      return `${(price / 1000).toFixed(0)}K ${currency}`;
     }
-    return `${price} XAF`;
+    return `${price} ${currency}`;
   };
 
   const sortedFavorites = getSortedFavorites();
@@ -222,18 +211,6 @@ export default function FavoritesPage() {
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                         className="object-cover hover:scale-105 transition duration-300"
                       />
-                      {/* Badges */}
-                      <div className="absolute top-2 left-2 flex gap-1">
-                        {property.isVerified && (
-                          <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">Verified</span>
-                        )}
-                        {property.isNew && (
-                          <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">New</span>
-                        )}
-                        {property.isUrgent && (
-                          <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">Urgent</span>
-                        )}
-                      </div>
                     </div>
                   </Link>
 
@@ -258,16 +235,6 @@ export default function FavoritesPage() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-600">
-                      {property.bedrooms > 0 && (
-                        <span className="flex items-center gap-1">
-                          <Bed className="w-3 h-3" /> {property.bedrooms}
-                        </span>
-                      )}
-                      {property.bathrooms > 0 && (
-                        <span className="flex items-center gap-1">
-                          <Bath className="w-3 h-3" /> {property.bathrooms}
-                        </span>
-                      )}
                       <span className="flex items-center gap-1">
                         <Square className="w-3 h-3" /> {property.area}m²
                       </span>
@@ -275,8 +242,7 @@ export default function FavoritesPage() {
 
                     <div className="flex justify-between items-center mt-3">
                       <span className="text-lg font-bold text-blue-600">
-                        {formatPrice(property.price, property.priceType)}
-                        {property.priceType === "rent" && <span className="text-sm font-normal">/month</span>}
+                        {formatPrice(property.price, property.currency)}
                       </span>
                       <button
                         onClick={() => {

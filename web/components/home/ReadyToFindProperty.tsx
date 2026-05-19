@@ -11,7 +11,7 @@ const features = [
     subtitle: 'Buy a Property',
     description: 'A real estate agent can provide you with a clear breakdown of costs so that you can avoid surprise expenses when purchasing your dream home.',
     buttonText: 'Find a local agent',
-    buttonLink: '/search?listingType=buy',
+    buttonLink: '/search',
     image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&q=80',
   },
   {
@@ -20,7 +20,7 @@ const features = [
     subtitle: 'Rent a Home',
     description: "We're creating a seamless online experience – from shopping on the largest rental network, to applying, to paying rent.",
     buttonText: 'Find rentals',
-    buttonLink: '/search?listingType=rent',
+    buttonLink: '/search',
     image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80',
   },
   {
@@ -29,7 +29,7 @@ const features = [
     subtitle: 'Relocate to Central Africa',
     description: 'Get comprehensive relocation support including property selection, legal assistance, and local integration services tailored for diaspora buyers.',
     buttonText: 'Start your journey',
-    buttonLink: '/search?listingType=relocate',
+    buttonLink: '/search',
     image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&q=80',
   },
 ];

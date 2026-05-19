@@ -40,8 +40,10 @@ import ChartCard, {
   Legend,
   ResponsiveContainer,
 } from '@/components/dashboard/ChartCard';
-import { adminService, User } from '@/services/adminService';
-import { propertyService, Property } from '@/services/propertyService';
+import { adminService } from '@/services/adminService';
+import { User } from '@/services/authService';
+import { propertyService } from '@/services/propertyService';
+import { Property } from '@/types/property';
 import toast from 'react-hot-toast';
 
 interface PendingListing {
@@ -101,8 +103,8 @@ export default function AdminDashboard() {
       setPendingListings(fetchedPending.map((p: Property) => ({
         id: p.id,
         title: p.title,
-        agentName: p.owner?.full_name || p.agent?.full_name || 'Inconnu',
-        agentEmail: p.owner?.email || p.agent?.email || '',
+        agentName: p.owner?.full_name || 'Inconnu',
+        agentEmail: p.owner?.email || '',
         date: new Date(p.created_at).toLocaleDateString(),
         price: `${p.price.toLocaleString()} ${p.currency}`,
         type: p.property_type,

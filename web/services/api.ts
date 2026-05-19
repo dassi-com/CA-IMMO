@@ -8,7 +8,6 @@ export const api = axios.create({
   timeout: 10000,
 });
 
-// Intercepteur pour ajouter le token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -20,31 +19,30 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercepteur pour rafraîchir le token
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
-        
+
         localStorage.setItem('accessToken', response.data.data.accessToken);
         originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
-        
+
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/profile';
+        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

@@ -75,7 +75,11 @@ export default function LoginPage() {
   };
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
+    if (provider === 'google') {
+      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    } else {
+      toast.error(`${provider} login is not available yet`);
+    }
   };
 
   return (

@@ -1,5 +1,5 @@
 import { api } from './api';
-import { Property } from './propertyService';
+import { Property } from '@/types/property';
 
 export interface OwnerStats {
   totalListings: number;

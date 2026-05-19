@@ -4,10 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const propertyTypes = [
-  { name: 'Houses', count: 234, image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&q=80', type: 'house' },
-  { name: 'Apartments', count: 456, image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80', type: 'apartment' },
-  { name: 'Land Plots', count: 178, image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80', type: 'land' },
-  { name: 'Commercial', count: 89, image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&q=80', type: 'commercial' },
+  { name: 'Houses', count: 234, image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&q=80', type: 'MAISON' },
+  { name: 'Apartments', count: 456, image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80', type: 'MAISON' },
+  { name: 'Land Plots', count: 178, image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80', type: 'TERRAIN' },
+  { name: 'Commercial', count: 89, image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&q=80', type: 'LOCAL_COMMERCIAL' },
 ];
 
 export default function BrowseByPropertyType() {
@@ -22,7 +22,7 @@ export default function BrowseByPropertyType() {
           {propertyTypes.map((type) => (
             <Link
               key={type.name}
-              href={`/search?type=${type.type}`}
+              href={`/search?property_type=${type.type}`}
               className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             >
               <div className="relative h-48">

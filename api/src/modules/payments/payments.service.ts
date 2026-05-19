@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import { Prisma, PaymentStatus } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
@@ -148,13 +147,8 @@ export const handleWebhookService = async (
   payload: FlutterwaveWebhookDto,
   signature: string
 ): Promise<void> => {
-  // Vérifier la signature du webhook
-  const hash = crypto
-    .createHmac("sha256", env.flutterwave.secretKey)
-    .update(JSON.stringify(payload))
-    .digest("hex");
-
-  if (hash !== signature) {
+  // Vérifier la signature du webhook (verif-hash est un hash partagé configuré dans le dashboard Flutterwave)
+  if (signature !== env.flutterwave.secretHash) {
     throw new AppError("Invalid webhook signature", 401);
   }
 

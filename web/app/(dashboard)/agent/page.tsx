@@ -34,8 +34,10 @@ import ChartCard, {
   AreaChart,
   Area,
 } from '@/components/dashboard/ChartCard';
-import { propertyService, Property } from '@/services/propertyService';
+import { propertyService } from '@/services/propertyService';
+import { Property } from '@/types/property';
 import { inquiryService, Inquiry } from '@/services/inquiryService';
+import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 interface ListingRow {
@@ -55,23 +57,6 @@ interface PendingRow {
   price: string;
 }
 
-interface VisitRow {
-  id: string;
-  tenantName: string;
-  propertyTitle: string;
-  date: string;
-  time: string;
-  status: string;
-  phone: string;
-}
-
-interface TopPerformer {
-  title: string;
-  views: number;
-  contacts: number;
-  conversion: string;
-}
-
 const monthlyPerformance = [
   { month: 'Sep', views: 180, contacts: 12 },
   { month: 'Oct', views: 220, contacts: 18 },
@@ -88,9 +73,8 @@ const propertyTypes = [
   { name: 'Commerces', value: 2, color: '#FCA5A5' },
 ];
 
-const topPerformers: TopPerformer[] = [];
-
 export default function AgentDashboard() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState<ListingRow[]>([]);
@@ -148,23 +132,23 @@ export default function AgentDashboard() {
     }
   };
 
+  const userName = user?.full_name || 'Agent';
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Sidebar role="agent" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
       <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
         <div className="p-6 lg:p-8">
-          {/* Header */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-gray-800">Bonjour, Marie Claire 📊</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {userName} 📊</h1>
             <p className="text-gray-600 mt-2">Gérez vos propriétés et suivez vos performances</p>
           </motion.div>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Total annonces"
@@ -204,7 +188,6 @@ export default function AgentDashboard() {
             />
           </div>
 
-          {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <ChartCard title="Performances mensuelles" icon={TrendingUp} delay={0.2}>
               <ResponsiveContainer width="100%" height="100%">
@@ -228,35 +211,32 @@ export default function AgentDashboard() {
               </ResponsiveContainer>
             </ChartCard>
 
-       
-
-<ChartCard title="Répartition des annonces" icon={Building2} delay={0.3}>
-  <ResponsiveContainer width="100%" height="100%">
-    <PieChart>
-      <Pie
-        data={propertyTypes}
-        cx="50%"
-        cy="50%"
-        innerRadius={60}
-        outerRadius={100}
-        paddingAngle={5}
-        dataKey="value"
-        label={({ name, percent }) => {
-          const percentage = percent ? (percent * 100).toFixed(0) : '0';
-          return `${name} (${percentage}%)`;
-        }}
-      >
-        {propertyTypes.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={entry.color} />
-        ))}
-      </Pie>
-      <Tooltip />
-    </PieChart>
-  </ResponsiveContainer>
-</ChartCard>
+            <ChartCard title="Répartition des annonces" icon={Building2} delay={0.3}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={propertyTypes}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => {
+                      const percentage = percent ? (percent * 100).toFixed(0) : '0';
+                      return `${name} (${percentage}%)`;
+                    }}
+                  >
+                    {propertyTypes.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartCard>
           </div>
 
-          {/* Recent Listings Table */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -270,21 +250,11 @@ export default function AgentDashboard() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Titre
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Statut
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Vues
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Contacts
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vues</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacts</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -295,17 +265,15 @@ export default function AgentDashboard() {
                         <div className="text-sm text-gray-500">{listing.date}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            listing.status === 'APPROVED'
-                              ? 'bg-green-100 text-green-600'
-                              : listing.status === 'PENDING'
-                              ? 'bg-yellow-100 text-yellow-600'
-                              : listing.status === 'REJECTED'
-                              ? 'bg-red-100 text-red-600'
-                              : 'bg-purple-100 text-purple-600'
-                          }`}
-                        >
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          listing.status === 'APPROVED'
+                            ? 'bg-green-100 text-green-600'
+                            : listing.status === 'PENDING'
+                            ? 'bg-yellow-100 text-yellow-600'
+                            : listing.status === 'REJECTED'
+                            ? 'bg-red-100 text-red-600'
+                            : 'bg-purple-100 text-purple-600'
+                        }`}>
                           {listing.status}
                         </span>
                       </td>
@@ -328,9 +296,7 @@ export default function AgentDashboard() {
             </div>
           </motion.div>
 
-          {/* Pending Listings and Visit Requests Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Pending Listings */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -342,27 +308,26 @@ export default function AgentDashboard() {
                 <Clock className="w-5 h-5 text-yellow-600" />
               </div>
               <div className="space-y-3">
-                    {pendingListings.length === 0 ? (
-                      <p className="text-gray-500 text-sm text-center py-4">Aucune annonce en attente</p>
-                    ) : (pendingListings.map((listing) => (
-                      <div key={listing.id} className="p-3 bg-yellow-50 rounded-xl">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-gray-800">{listing.title}</h4>
-                          <span className="text-xs text-yellow-600">En validation</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">{listing.type}</span>
-                          <span className="text-red-600 font-medium">{listing.price}</span>
-                        </div>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs text-gray-400">{listing.date}</span>
-                        </div>
-                      </div>
-                    )))}
+                {pendingListings.length === 0 ? (
+                  <p className="text-gray-500 text-sm text-center py-4">Aucune annonce en attente</p>
+                ) : (pendingListings.map((listing) => (
+                  <div key={listing.id} className="p-3 bg-yellow-50 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-gray-800">{listing.title}</h4>
+                      <span className="text-xs text-yellow-600">En validation</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">{listing.type}</span>
+                      <span className="text-red-600 font-medium">{listing.price}</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-xs text-gray-400">{listing.date}</span>
+                    </div>
+                  </div>
+                )))}
               </div>
             </motion.div>
 
-            {/* Visit Requests */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -400,9 +365,7 @@ export default function AgentDashboard() {
             </motion.div>
           </div>
 
-          {/* Featured Promotion and Top Performers */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Featured Promotion */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -432,7 +395,6 @@ export default function AgentDashboard() {
               </Link>
             </motion.div>
 
-            {/* Top Performers */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -441,21 +403,9 @@ export default function AgentDashboard() {
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Top performances par propriété</h3>
               <div className="space-y-4">
-                {topPerformers.map((performer, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <div>
-                      <h4 className="font-medium text-gray-800">{performer.title}</h4>
-                      <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                        <span>👁️ {performer.views} vues</span>
-                        <span>💬 {performer.contacts} contacts</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-green-600">{performer.conversion}</div>
-                      <div className="text-xs text-gray-500">taux conversion</div>
-                    </div>
-                  </div>
-                ))}
+                <p className="text-gray-500 text-sm text-center py-8">
+                  Les performances s'afficheront ici une fois vos annonces publiées.
+                </p>
               </div>
             </motion.div>
           </div>

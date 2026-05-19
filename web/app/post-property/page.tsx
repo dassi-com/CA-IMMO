@@ -7,7 +7,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { propertyService } from '@/services/propertyService';
+import { api } from '@/services/api';
 import toast from 'react-hot-toast';
+
+const PROPERTY_TYPE_MAP: Record<string, string> = {
+  house: 'MAISON',
+  apartment: 'MAISON',
+  villa: 'MAISON',
+  land: 'TERRAIN',
+  commercial: 'LOCAL_COMMERCIAL',
+  office: 'BUREAU',
+};
 
 export default function PostPropertyPage() {
   const router = useRouter();
@@ -31,25 +41,22 @@ export default function PostPropertyPage() {
       </div>
     );
   }
+
   const [photos, setPhotos] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [propertyId, setPropertyId] = useState<string | null>(null);
 
-  // Form state
   const [formData, setFormData] = useState({
     title: '',
     listingType: 'buy',
     propertyType: 'house',
+    country: 'Cameroon',
     city: '',
     neighborhood: '',
+    address: '',
     price: '',
     surface: '',
-    bedrooms: '',
-    bathrooms: '',
-    landSize: '',
-    yearBuilt: '',
-    furnished: 'no',
     description: '',
-    features: [] as string[],
   });
 
   const cities = [
@@ -59,25 +66,9 @@ export default function PostPropertyPage() {
     'Malabo', 'Bata'
   ];
 
-  const featuresList = [
-    'Swimming Pool', 'Garden', 'Garage', 'Security 24/7', 'Air Conditioning',
-    'Solar Panels', 'Generator', 'Modern Kitchen', 'Balcony', 'Elevator',
-    'Parking', 'Water Tank', 'Fiber Internet', 'Jacuzzi', 'Home Theater',
-    'Wine Cellar', 'Gym', 'Staff Quarters', 'Backup Generator', 'Water Well'
-  ];
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const toggleFeature = (feature: string) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.includes(feature)
-        ? prev.features.filter(f => f !== feature)
-        : [...prev.features, feature]
-    }));
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,27 +92,42 @@ export default function PostPropertyPage() {
     setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
+  const uploadPhotos = async (id: string) => {
+    if (photos.length === 0) return;
+    const formDataToSend = new FormData();
+    photos.forEach(photo => formDataToSend.append('images', photo));
+    await api.post(`/properties/${id}/images`, formDataToSend, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.description || formData.description.length < 20) {
+      toast.error('Description must be at least 20 characters');
+      return;
+    }
     setIsSubmitting(true);
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('listingType', formData.listingType);
-      formDataToSend.append('property_type', formData.propertyType.toUpperCase());
-      formDataToSend.append('city', formData.city);
-      formDataToSend.append('neighborhood', formData.neighborhood);
-      formDataToSend.append('price', formData.price);
-      formDataToSend.append('size_m2', formData.surface);
-      formDataToSend.append('bedrooms', formData.bedrooms);
-      formDataToSend.append('bathrooms', formData.bathrooms);
-      photos.forEach(photo => formDataToSend.append('images', photo));
+      const property = await propertyService.create({
+        title: formData.title,
+        description: formData.description,
+        country: formData.country,
+        city: formData.city,
+        neighborhood: formData.neighborhood,
+        address: formData.address,
+        property_type: PROPERTY_TYPE_MAP[formData.propertyType] || 'MAISON',
+        price: parseFloat(formData.price),
+        size_m2: parseFloat(formData.surface),
+      });
 
-      await propertyService.create(formDataToSend);
+      if (photos.length > 0) {
+        await uploadPhotos(property.id);
+      }
+
       toast.success('Annonce publiée avec succès ! En attente de validation.');
-      router.push('/');
+      router.push('/dashboard/agent');
     } catch (error: any) {
       const message = error?.response?.data?.message || "Erreur lors de la publication";
       toast.error(message);
@@ -133,9 +139,8 @@ export default function PostPropertyPage() {
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
         <div className="mb-6">
-          <Link href="/dashboard/agent" className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition mb-4">
+          <Link href="/dashboard/agent" className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-4">
             <ChevronLeft size={20} />
             <span>Back to Dashboard</span>
           </Link>
@@ -143,12 +148,10 @@ export default function PostPropertyPage() {
           <p className="text-gray-600">Fill in the details to list your property</p>
         </div>
 
-        {/* Formulaire */}
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6">
-          {/* Basic Information */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Basic Information</h2>
-            
+
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Property Title <span className="text-red-500">*</span>
@@ -159,7 +162,7 @@ export default function PostPropertyPage() {
                 value={formData.title}
                 onChange={handleInputChange}
                 placeholder="e.g., Modern Villa with Pool in Libreville"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
                 required
               />
             </div>
@@ -173,7 +176,7 @@ export default function PostPropertyPage() {
                   name="listingType"
                   value={formData.listingType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
                 >
                   <option value="buy">For Sale</option>
                   <option value="rent">For Rent</option>
@@ -188,7 +191,7 @@ export default function PostPropertyPage() {
                   name="propertyType"
                   value={formData.propertyType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
                 >
                   <option value="house">House</option>
                   <option value="apartment">Apartment</option>
@@ -201,11 +204,24 @@ export default function PostPropertyPage() {
             </div>
           </div>
 
-          {/* Location */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Location</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Country <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Cameroon"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  required
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   City <span className="text-red-500">*</span>
@@ -214,7 +230,7 @@ export default function PostPropertyPage() {
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
                   required
                 >
                   <option value="">Select city</option>
@@ -233,17 +249,30 @@ export default function PostPropertyPage() {
                   value={formData.neighborhood}
                   onChange={handleInputChange}
                   placeholder="e.g., Batterie IV, Bonanjo"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder="e.g., 123 Main Street"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
                   required
                 />
               </div>
             </div>
           </div>
 
-          {/* Property Details */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Property Details</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -255,7 +284,7 @@ export default function PostPropertyPage() {
                   value={formData.price}
                   onChange={handleInputChange}
                   placeholder="e.g., 450000000"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
                   required
                 />
               </div>
@@ -269,71 +298,13 @@ export default function PostPropertyPage() {
                   value={formData.surface}
                   onChange={handleInputChange}
                   placeholder="e.g., 350"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
                   required
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bedrooms</label>
-                <input
-                  type="number"
-                  name="bedrooms"
-                  value={formData.bedrooms}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 5"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bathrooms</label>
-                <input
-                  type="number"
-                  name="bathrooms"
-                  value={formData.bathrooms}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 4"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Land Size (m²)</label>
-                <input
-                  type="number"
-                  name="landSize"
-                  value={formData.landSize}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 800"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Year Built</label>
-                <input
-                  type="number"
-                  name="yearBuilt"
-                  value={formData.yearBuilt}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 2021"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Furnished</label>
-                <select
-                  name="furnished"
-                  value={formData.furnished}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600"
-                >
-                  <option value="no">No</option>
-                  <option value="partially">Partially</option>
-                  <option value="fully">Fully</option>
-                </select>
               </div>
             </div>
           </div>
 
-          {/* Description */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Description</h2>
             <textarea
@@ -341,38 +312,17 @@ export default function PostPropertyPage() {
               value={formData.description}
               onChange={handleInputChange}
               rows={5}
-              placeholder="Describe your property in detail..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 resize-none"
+              placeholder="Describe your property in detail... (minimum 20 characters)"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 resize-none"
+              required
             />
           </div>
 
-          {/* Features & Amenities */}
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Features & Amenities</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {featuresList.map((feature) => (
-                <button
-                  key={feature}
-                  type="button"
-                  onClick={() => toggleFeature(feature)}
-                  className={`text-left px-3 py-2 rounded-lg text-sm transition ${
-                    formData.features.includes(feature)
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {feature}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Photos */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
               Photos <span className="text-red-500">*</span>
             </h2>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-600 transition">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-600 transition">
               <input
                 type="file"
                 id="photo-upload"
@@ -387,8 +337,7 @@ export default function PostPropertyPage() {
                 <p className="text-gray-400 text-sm">PNG, JPG up to 10MB each (max 10 photos)</p>
               </label>
             </div>
-            
-            {/* Photo Previews */}
+
             {photoPreviews.length > 0 && (
               <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mt-4">
                 {photoPreviews.map((preview, index) => (
@@ -407,7 +356,6 @@ export default function PostPropertyPage() {
             )}
           </div>
 
-          {/* Actions */}
           <div className="flex gap-4 pt-4 border-t border-gray-200">
             <Link
               href="/dashboard/agent"
@@ -418,7 +366,7 @@ export default function PostPropertyPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50"
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50"
             >
               {isSubmitting ? 'Publishing...' : 'Publish Property'}
             </button>

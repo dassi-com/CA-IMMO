@@ -94,7 +94,7 @@ export default function TenantDashboard() {
         title: p.title,
         price: `${p.price.toLocaleString()} ${p.currency}`,
         location: `${p.neighborhood}, ${p.city}`,
-        image: typeof p.images?.[0] === 'string' ? p.images[0] : (p.images?.[0] as any)?.image_url || '/placeholder.jpg',
+        image: p.images?.[0]?.image_url || '/placeholder.jpg',
         type: p.property_type,
       })));
     } catch (error) {
