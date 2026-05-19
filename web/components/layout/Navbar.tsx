@@ -6,44 +6,23 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, User } from 'lucide-react';
 import Logo from '@/components/ui/logo';
+import { useUserRole, getDashboardLink } from '@/hooks/useUserRole';
 
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [userRole, setUserRole] = useState<'tenant' | 'agent' | 'admin'>('tenant');
+  const userRole = useUserRole();
+  const [dashboardLink, setDashboardLink] = useState('/dashboard/tenant');
   const pathname = usePathname();
 
-  // Récupérer le rôle (pour test, on peut le mettre en dur d'abord)
   useEffect(() => {
-    // Pour tester, on met un rôle par défaut
-    // Plus tard vous remplacerez par le vrai rôle depuis l'auth
-    const role = localStorage.getItem('userRole') as 'tenant' | 'agent' | 'admin';
-    if (role) {
-      setUserRole(role);
-    } else {
-      // Rôle par défaut pour tester
-      setUserRole('tenant');
-    }
-  }, []);
-
-  // Fonction pour obtenir le bon lien du dashboard
-  const getDashboardLink = () => {
-    switch (userRole) {
-      case 'admin':
-        return '/dashboard/admin';
-      case 'agent':
-        return '/dashboard/agent';
-      case 'tenant':
-        return '/dashboard/tenant';
-      default:
-        return '/dashboard/tenant';
-    }
-  };
+    setDashboardLink(getDashboardLink(userRole));
+  }, [userRole]);
 
   const navLinks = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Search', icon: Search },
-    { href: getDashboardLink(), label: 'Dashboard', icon: LayoutDashboard }, // ← Lien dynamique
+    { href: dashboardLink, label: 'Dashboard', icon: LayoutDashboard },
     { href: '/favorites', label: 'Favorites', icon: Heart },
   ];
 
@@ -152,7 +131,7 @@ export default function Navbar() {
               </Link>
               
               <Link 
-                href={getDashboardLink()} 
+                href={dashboardLink} 
                 onClick={() => setIsMenuOpen(false)} 
                 className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
                   pathname.includes('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'

@@ -24,6 +24,8 @@ export const authService = {
     if (response.data.accessToken) {
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('userRole', response.data.user.role);
+      localStorage.setItem('userId', response.data.user.id);
     }
     
     return response.data;
@@ -42,6 +44,8 @@ export const authService = {
     if (response.data.accessToken) {
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('userRole', response.data.user.role);
+      localStorage.setItem('userId', response.data.user.id);
     }
     
     return response.data;
@@ -56,6 +60,8 @@ export const authService = {
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userId');
     }
   },
 

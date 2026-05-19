@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { getDashboardLink } from '@/hooks/useUserRole';
 
 // Icône Google personnalisée
 const GoogleIcon = () => (
@@ -36,8 +38,10 @@ const FacebookIcon = () => (
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -50,16 +54,37 @@ export default function LoginPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // TODO: Appel API login
-    setTimeout(() => {
+    try {
+      // Appel du service de login
+      await login(formData.email, formData.password, formData.rememberMe);
+      
+      // Récupérer le rôle depuis localStorage (défini par authService)
+      const userRole = localStorage.getItem('userRole');
+      
+      // Redirection vers le bon dashboard basé sur le rôle
+      let dashboardRole: 'admin' | 'agent' | 'tenant' = 'tenant';
+      if (userRole === 'ADMIN') {
+        dashboardRole = 'admin';
+      } else if (userRole === 'OWNER') {
+        dashboardRole = 'agent';
+      }
+      
+      const dashboardPath = getDashboardLink(dashboardRole);
+      router.push(dashboardPath);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Email ou mot de passe incorrect');
+      console.error('Login error:', err);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -86,6 +111,14 @@ export default function LoginPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+          {/* Error Message */}
+          {error && (
+            <div className="mb-5 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+              <AlertCircle size={20} className="text-red-600 flex-shrink-0" />
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
           {/* Email Field */}
           <div className="mb-5">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">

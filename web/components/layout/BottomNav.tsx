@@ -5,32 +5,21 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Home, Search, LayoutDashboard, Heart, User } from 'lucide-react';
+import { useUserRole, getDashboardLink } from '@/hooks/useUserRole';
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const [userRole, setUserRole] = useState<'tenant' | 'agent' | 'admin'>('tenant');
+  const userRole = useUserRole();
+  const [dashboardLink, setDashboardLink] = useState('/dashboard/tenant');
 
   useEffect(() => {
-    const role = localStorage.getItem('userRole') as 'tenant' | 'agent' | 'admin';
-    if (role) {
-      setUserRole(role);
-    } else {
-      setUserRole('tenant'); // Rôle par défaut
-    }
-  }, []);
-
-  const getDashboardLink = () => {
-    switch (userRole) {
-      case 'admin': return '/dashboard/admin';
-      case 'agent': return '/dashboard/agent';
-      default: return '/dashboard/tenant';
-    }
-  };
+    setDashboardLink(getDashboardLink(userRole));
+  }, [userRole]);
 
   const items = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Search', icon: Search },
-    { href: getDashboardLink(), label: 'Dashboard', icon: LayoutDashboard },
+    { href: dashboardLink, label: 'Dashboard', icon: LayoutDashboard },
     { href: '/favorites', label: 'Favorites', icon: Heart },
     { href: '/profile', label: 'Profile', icon: User },
   ];
