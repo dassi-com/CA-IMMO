@@ -42,7 +42,7 @@ export const listProperties = asyncHandler(
 
 export const getProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const property = await getPropertyService(req.params.id);
+    const property = await getPropertyService(req.params.id as string);
     sendSuccess(res, property, "Property fetched successfully");
   }
 );
@@ -51,7 +51,7 @@ export const updateProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const dto = req.body as UpdatePropertyDto;
     const property = await updatePropertyService(
-      req.params.id,
+      req.params.id as string,
       req.user!.id,
       dto
     );
@@ -61,7 +61,7 @@ export const updateProperty = asyncHandler(
 
 export const deleteProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    await deletePropertyService(req.params.id, req.user!.id);
+    await deletePropertyService(req.params.id as string, req.user!.id);
     sendSuccess(res, null, "Property deleted successfully");
   }
 );
@@ -82,14 +82,14 @@ export const getMyProperties = asyncHandler(
 export const updatePropertyStatus = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const dto = req.body as UpdatePropertyStatusDto;
-    const property = await updatePropertyStatusService(req.params.id, dto);
+    const property = await updatePropertyStatusService(req.params.id as string, dto);
     sendSuccess(res, property, "Property status updated successfully");
   }
 );
 
 export const featureProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const property = await featurePropertyService(req.params.id);
+    const property = await featurePropertyService(req.params.id as string);
     sendSuccess(res, property, "Property featured successfully");
   }
 );

@@ -6,6 +6,9 @@ const requiredEnvVars = [
   "CLOUDINARY_API_KEY",
   "CLOUDINARY_API_SECRET",
   "FLUTTERWAVE_SECRET_KEY",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "GOOGLE_CALLBACK_URL",
 ] as const;
 
 export const validateEnv = (): void => {
@@ -40,4 +43,9 @@ export const env = {
     from: process.env.MAIL_FROM!,
   },
   clientUrl: process.env.CLIENT_URL ?? "http://localhost:3000",
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL!,
+  },
 };

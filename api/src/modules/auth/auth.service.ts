@@ -11,6 +11,8 @@ import {
   AuthTokens,
 } from "./auth.types";
 import { User } from "@prisma/client";
+import { Profile } from "passport-google-oauth20";
+import { sanitizeText } from "../../utils/sanitize";
 
 const SALT_ROUNDS = 12;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
@@ -49,6 +51,53 @@ const generateAuthTokens = async (user: User): Promise<AuthTokens> => {
   return { accessToken, refreshToken };
 };
 
+export { generateAuthTokens };
+
+// ─── Google Auth ──────────────────────────────────────────────────────────────
+
+export const googleAuthService = async (profile: Profile): Promise<User> => {
+  const email = profile.emails?.[0]?.value;
+  if (!email) {
+    throw new AppError("Google account must have an email", 400);
+  }
+
+  let user = await prisma.user.findUnique({
+    where: { google_id: profile.id },
+  });
+
+  if (user) {
+    return user;
+  }
+
+  user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (user) {
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { google_id: profile.id },
+    });
+    return user;
+  }
+
+  const fullName = sanitizeText(
+    profile.displayName ||
+    `${profile.name?.givenName || ""} ${profile.name?.familyName || ""}`.trim()
+  );
+
+  user = await prisma.user.create({
+    data: {
+      full_name: fullName,
+      email,
+      google_id: profile.id,
+      is_verified: true,
+    },
+  });
+
+  return user;
+};
+
 // ─── Service Methods ──────────────────────────────────────────────────────────
 
 export const registerService = async (dto: RegisterDto): Promise<AuthTokens> => {
@@ -62,12 +111,21 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokens> => 
   }
 
   // Vérifier si le téléphone existe déjà
-  const existingPhone = await prisma.user.findUnique({
-    where: { phone: dto.phone },
-  });
+  if (dto.phone) {
+    const existingPhone = await prisma.user.findUnique({
+      where: { phone: dto.phone },
+    });
 
-  if (existingPhone) {
-    throw new AppError("Phone number already in use", 409);
+    if (existingPhone) {
+      throw new AppError("Phone number already in use", 409);
+    }
+  }
+
+  // Valider le rôle (defense-in-depth : le validateur express n'est pas infaillible)
+  const allowedRoles = ["OWNER", "TENANT"];
+  const role = dto.role ?? "TENANT";
+  if (!allowedRoles.includes(role)) {
+    throw new AppError("Role must be OWNER or TENANT", 400);
   }
 
   // Hasher le mot de passe
@@ -76,11 +134,11 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokens> => 
   // Créer l'utilisateur
   const user = await prisma.user.create({
     data: {
-      full_name: dto.full_name,
+      full_name: sanitizeText(dto.full_name),
       email: dto.email,
       phone: dto.phone,
       password: hashedPassword,
-      role: dto.role ?? "TENANT",
+      role,
     },
   });
 
@@ -102,6 +160,12 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokens> => {
     throw new AppError("Your account has been suspended", 403);
   }
 
+  // Vérifier si le compte utilise Google Auth (pas de mot de passe)
+  // Message générique pour éviter l'énumération d'emails
+  if (!user.password) {
+    throw new AppError("Invalid email or password", 401);
+  }
+
   // Vérifier le mot de passe
   const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
@@ -114,7 +178,7 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokens> => {
 
 export const refreshTokenService = async (
   token: string
-): Promise<{ accessToken: string }> => {
+): Promise<AuthTokens> => {
   // Chercher le refresh token en base
   const storedToken = await prisma.refreshToken.findUnique({
     where: { token },
@@ -137,14 +201,10 @@ export const refreshTokenService = async (
     throw new AppError("Your account has been suspended", 403);
   }
 
-  // Générer un nouveau access token
-  const accessToken = generateAccessToken({
-    id: storedToken.user.id,
-    email: storedToken.user.email,
-    role: storedToken.user.role,
-  });
+  // Rotation du refresh token : supprimer l'ancien, en créer un nouveau
+  await prisma.refreshToken.delete({ where: { token } });
 
-  return { accessToken };
+  return generateAuthTokens(storedToken.user);
 };
 
 export const logoutService = async (token: string): Promise<void> => {

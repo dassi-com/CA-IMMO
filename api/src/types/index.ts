@@ -2,6 +2,22 @@ import { Request, Response, NextFunction } from "express";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { env } from "../config/env";
 
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      email: string;
+      role: string;
+    }
+  }
+}
+
+export type AuthenticatedUser = Express.User;
+
+export interface AuthenticatedRequest extends Request {
+  user?: AuthenticatedUser;
+}
+
 export class AppError extends Error {
   public statusCode: number;
   public isOperational: boolean;
