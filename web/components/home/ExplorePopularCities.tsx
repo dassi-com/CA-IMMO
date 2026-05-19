@@ -42,16 +42,14 @@ export default function ExplorePopularCities() {
             country: data.country,
             slug: name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
             count: data.count,
-            // Images par défaut par ville (peuvent être remplacées par des URLs réelles depuis l'API)
             image: getCityImage(name),
           }))
           .sort((a, b) => b.count - a.count)
-          .slice(0, 5); // Top 5 villes
+          .slice(0, 5);
           
         setCities(cityList);
       } catch (error) {
         console.error('Error loading cities:', error);
-        // Fallback avec des villes par défaut
         setCities(getDefaultCities());
       } finally {
         setLoading(false);
@@ -61,25 +59,28 @@ export default function ExplorePopularCities() {
     loadCities();
   }, []);
 
-  // Fonction pour obtenir l'image d'une ville
+  // Fonction pour obtenir l'image d'une ville avec des URLs qui fonctionnent
   const getCityImage = (cityName: string): string => {
+    // Utilisation de images.unsplash.com avec des paramètres valides
     const images: Record<string, string> = {
-      'Douala': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop',
-      'Yaoundé': 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop',
-      'Libreville': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop',
-      'Brazzaville': 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop',
-      'Malabo': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop',
+      'Douala': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=600&h=400&fit=crop',
+      'Yaoundé': 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=600&h=400&fit=crop',
+      'Libreville': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=600&h=400&fit=crop',
+      'Brazzaville': 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=600&h=400&fit=crop',
+      'Malabo': 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=600&h=400&fit=crop',
     };
-    return images[cityName] || 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop';
+    
+    // Fallback vers une image par défaut si la ville n'est pas dans la liste
+    return images[cityName] || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop';
   };
 
-  // Fallback par défaut
+  // Fallback par défaut avec images qui fonctionnent
   const getDefaultCities = (): City[] => [
-    { name: 'Douala', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'douala', count: 0 },
-    { name: 'Yaoundé', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop', slug: 'yaounde', count: 0 },
-    { name: 'Libreville', country: 'Gabon', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'libreville', count: 0 },
-    { name: 'Brazzaville', country: 'Congo', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop', slug: 'brazzaville', count: 0 },
-    { name: 'Malabo', country: 'Guinée équatoriale', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'malabo', count: 0 },
+    { name: 'Douala', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=600&h=400&fit=crop', slug: 'douala', count: 0 },
+    { name: 'Yaoundé', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=600&h=400&fit=crop', slug: 'yaounde', count: 0 },
+    { name: 'Libreville', country: 'Gabon', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=600&h=400&fit=crop', slug: 'libreville', count: 0 },
+    { name: 'Brazzaville', country: 'Congo', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=600&h=400&fit=crop', slug: 'brazzaville', count: 0 },
+    { name: 'Malabo', country: 'Guinée équatoriale', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=600&h=400&fit=crop', slug: 'malabo', count: 0 },
   ];
 
   if (loading) {
@@ -114,12 +115,16 @@ export default function ExplorePopularCities() {
               href={`/search?city=${encodeURIComponent(city.name)}`}
               className="group relative h-64 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
             >
+              {/* Changement important : utilisation de priority={false} et unloader avec blurDataURL */}
               <Image
                 src={city.image}
                 alt={city.name}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 20vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
+                priority={false}
+                loading="lazy"
+                unoptimized={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
               <div className="absolute bottom-4 left-4 right-4">

@@ -45,19 +45,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (email: string, password: string, rememberMe?: boolean) => {
-    const response = await authService.login(email, password, rememberMe);
-    setUser(response.user);
-    // Sauvegarder le rôle pour utilisation dans les composants
-    localStorage.setItem('userRole', response.user.role.toLowerCase());
-    return response; // ← Retourner la réponse
+    await authService.login(email, password, rememberMe);
+    // Le backend ne retourne que les tokens → on fetch l'utilisateur
+    const currentUser = await authService.getCurrentUser();
+    setUser(currentUser);
+    localStorage.setItem('userRole', currentUser!.role.toLowerCase());
+    return { user: currentUser };
   };
 
   const register = async (data: any) => {
-    const response = await authService.register(data);
-    setUser(response.user);
-    // Sauvegarder le rôle pour utilisation dans les composants
-    localStorage.setItem('userRole', response.user.role.toLowerCase());
-    return response; // ← Retourner la réponse
+    await authService.register(data);
+    const currentUser = await authService.getCurrentUser();
+    setUser(currentUser);
+    localStorage.setItem('userRole', currentUser!.role.toLowerCase());
+    return { user: currentUser };
   };
 
   const logout = async () => {

@@ -11,22 +11,26 @@ export interface User {
 }
 
 export interface LoginResponse {
-  user: User;
   accessToken: string;
   refreshToken: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
 }
 
 export const authService = {
   // Connexion
   login: async (email: string, password: string, rememberMe?: boolean): Promise<LoginResponse> => {
-    const response = await api.post('/auth/login', { email, password, rememberMe });
-    
-    if (response.data.accessToken) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-    }
-    
-    return response.data;
+    const response = await api.post<ApiResponse<LoginResponse>>('/auth/login', { email, password, rememberMe });
+    const result = response.data.data;
+
+    localStorage.setItem('accessToken', result.accessToken);
+    localStorage.setItem('refreshToken', result.refreshToken);
+
+    return result;
   },
 
   // Inscription
@@ -37,20 +41,20 @@ export const authService = {
     password: string;
     role: 'TENANT' | 'OWNER';
   }): Promise<LoginResponse> => {
-    const response = await api.post('/auth/register', data);
-    
-    if (response.data.accessToken) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-    }
-    
-    return response.data;
+    const response = await api.post<ApiResponse<LoginResponse>>('/auth/register', data);
+    const result = response.data.data;
+
+    localStorage.setItem('accessToken', result.accessToken);
+    localStorage.setItem('refreshToken', result.refreshToken);
+
+    return result;
   },
 
   // Déconnexion
   logout: async (): Promise<void> => {
     try {
-      await api.post('/auth/logout');
+      const refreshToken = localStorage.getItem('refreshToken');
+      await api.post('/auth/logout', { refreshToken });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -62,8 +66,8 @@ export const authService = {
   // Récupérer l'utilisateur courant
   getCurrentUser: async (): Promise<User | null> => {
     try {
-      const response = await api.get('/auth/me');
-      return response.data;
+      const response = await api.get<ApiResponse<User>>('/auth/me');
+      return response.data.data;
     } catch (error) {
       return null;
     }
@@ -72,10 +76,12 @@ export const authService = {
   // Rafraîchir le token
   refreshToken: async (): Promise<string | null> => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      const response = await api.post('/auth/refresh', { refreshToken });
-      localStorage.setItem('accessToken', response.data.accessToken);
-      return response.data.accessToken;
+      const token = localStorage.getItem('refreshToken');
+      const response = await api.post<ApiResponse<{ accessToken: string; refreshToken: string }>>('/auth/refresh', { refreshToken: token });
+      const result = response.data.data;
+      localStorage.setItem('accessToken', result.accessToken);
+      localStorage.setItem('refreshToken', result.refreshToken);
+      return result.accessToken;
     } catch (error) {
       return null;
     }
