@@ -1,7 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "include": ["prisma/seeder.ts"],
-  "compilerOptions": {
-    "types": ["node"]
-  }
-}
