@@ -1,4 +1,3 @@
-// web/components/layout/Navbar.tsx
 'use client';
 
 import Link from 'next/link';
@@ -45,7 +44,6 @@ export default function Navbar() {
 
   const isActiveLink = (href: string) => {
     if (href === '/') return pathname === href;
-    // Pour le dashboard, vérifier si on est sur n'importe quel dashboard
     if (href.includes('/dashboard')) return pathname.includes('/dashboard');
     return pathname === href;
   };
@@ -103,25 +101,36 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <>
+              <div className="flex items-center gap-3">
+                {/* ✅ MODIFICATION : Les deux boutons pointent vers /profile */}
                 <Link 
-                  href="/auth/login" 
-                  className="text-gray-600 hover:text-red-600 text-sm"
+                  href="/profile" 
+                  className="text-gray-600 hover:text-red-600 text-sm transition"
                 >
                   Login
                 </Link>
                 <Link 
-                  href="/auth/register" 
+                  href="/profile" 
                   className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition"
                 >
                   Sign Up
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex items-center space-x-4 md:hidden">
+            {/* ✅ MODIFICATION : Le lien profile est toujours visible */}
+            <Link 
+              href="/profile" 
+              className={`p-1.5 rounded-full transition ${
+                pathname === '/profile' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600'
+              }`}
+            >
+              <User size={20} />
+            </Link>
+
             {isAuthenticated && (
               <Link 
                 href="/favorites" 
@@ -132,15 +141,6 @@ export default function Navbar() {
                 <Heart size={20} />
               </Link>
             )}
-            
-            <Link 
-              href="/profile" 
-              className={`p-1.5 rounded-full transition ${
-                pathname === '/profile' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600'
-              }`}
-            >
-              <User size={20} />
-            </Link>
 
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)} 
@@ -177,6 +177,17 @@ export default function Navbar() {
                 <span>Search</span>
               </Link>
               
+              <Link 
+                href="/favorites" 
+                onClick={() => setIsMenuOpen(false)} 
+                className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
+                  pathname === '/favorites' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                }`}
+              >
+                <Heart size={18} />
+                <span>Favorites</span>
+              </Link>
+
               {isAuthenticated && (
                 <>
                   <Link 
@@ -188,17 +199,6 @@ export default function Navbar() {
                   >
                     <LayoutDashboard size={18} />
                     <span>Dashboard</span>
-                  </Link>
-                  
-                  <Link 
-                    href="/favorites" 
-                    onClick={() => setIsMenuOpen(false)} 
-                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                      pathname === '/favorites' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                    }`}
-                  >
-                    <Heart size={18} />
-                    <span>Favorites</span>
                   </Link>
 
                   <div className="pt-2 mt-1 border-t border-gray-100">
@@ -222,21 +222,15 @@ export default function Navbar() {
                 </>
               )}
 
+              {/* ✅ MODIFICATION : Section non authentifié dans menu mobile */}
               {!isAuthenticated && (
                 <div className="pt-2 mt-1 border-t border-gray-100 space-y-2">
                   <Link 
-                    href="/auth/login" 
-                    onClick={() => setIsMenuOpen(false)} 
-                    className="block text-center text-gray-600 hover:text-red-600 py-2"
-                  >
-                    Login
-                  </Link>
-                  <Link 
-                    href="/auth/register" 
+                    href="/profile" 
                     onClick={() => setIsMenuOpen(false)} 
                     className="block text-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
                   >
-                    Sign Up
+                    Sign In / Sign Up
                   </Link>
                 </div>
               )}

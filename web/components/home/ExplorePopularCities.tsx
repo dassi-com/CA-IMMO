@@ -1,17 +1,61 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { api } from '@/services/api';
 
-const cities = [
-  { name: 'Douala', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'douala' },
-  { name: 'Yaoundé', country: 'Cameroun', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop', slug: 'yaounde' },
-  { name: 'Libreville', country: 'Gabon', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'libreville' },
-  { name: 'Brazzaville', country: 'Congo', image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&h=300&fit=crop', slug: 'brazzaville' },
-  { name: 'Malabo', country: 'Guinée équatoriale', image: 'https://images.unsplash.com/photo-1580060839134-75f5edde2f11?w=400&h=300&fit=crop', slug: 'malabo' },
-];
+interface City {
+  id: string;
+  name: string;
+  country: string;
+  slug: string;
+  image_url: string;
+  property_count: number;
+  is_active: boolean;
+}
 
 export default function ExplorePopularCities() {
+  const [cities, setCities] = useState<City[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        // Appel API pour récupérer les villes populaires
+        const response = await api.get('/cities/popular');
+        setCities(response.data);
+      } catch (error) {
+        console.error('Error loading cities:', error);
+        setCities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadCities();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <div className="h-8 w-48 bg-gray-200 rounded mx-auto mb-2 animate-pulse"></div>
+            <div className="h-4 w-64 bg-gray-200 rounded mx-auto animate-pulse"></div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-64 bg-gray-200 rounded-xl animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (cities.length === 0) return null;
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-6">
@@ -22,12 +66,12 @@ export default function ExplorePopularCities() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {cities.map((city) => (
             <Link
-              key={city.slug}
-              href={`/search?city=${city.slug}`}
+              key={city.id}
+              href={`/search?city=${encodeURIComponent(city.name)}`}
               className="group relative h-64 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
             >
               <Image
-                src={city.image}
+                src={city.image_url}
                 alt={city.name}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 20vw"
@@ -37,6 +81,7 @@ export default function ExplorePopularCities() {
               <div className="absolute bottom-4 left-4 right-4">
                 <h3 className="text-white font-bold text-xl">{city.name}</h3>
                 <p className="text-white/80 text-sm">{city.country}</p>
+                <p className="text-white/60 text-xs mt-1">{city.property_count} properties</p>
               </div>
             </Link>
           ))}

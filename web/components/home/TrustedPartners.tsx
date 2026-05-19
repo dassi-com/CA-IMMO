@@ -1,27 +1,47 @@
-import Image from 'next/image';
+'use client';
+
+import { CheckCircle } from 'lucide-react';
 
 const partners = [
-  { name: 'Partner 1', logo: 'https://via.placeholder.com/120x60?text=Partner+1' },
-  { name: 'Partner 2', logo: 'https://via.placeholder.com/120x60?text=Partner+2' },
-  { name: 'Partner 3', logo: 'https://via.placeholder.com/120x60?text=Partner+3' },
-  { name: 'Partner 4', logo: 'https://via.placeholder.com/120x60?text=Partner+4' },
-  { name: 'Partner 5', logo: 'https://via.placeholder.com/120x60?text=Partner+5' },
+  'BGFI Bank', 'Gabonaise Immobilière', 'Afriland First Bank', 'Ecobank',
+  'UBA Gabon', 'Société Générale', 'RE/MAX', 'Century 21',
+  "Sotheby's International", 'Knight Frank', 'CBRE', 'JLL'
+];
+
+const certifications = [
+  'ISO 9001 Certified',
+  'CEMAC Compliant',
+  'Data Protection Certified',
+  'Secure Payments'
 ];
 
 export default function TrustedPartners() {
   return (
-    <section className="py-12 bg-white border-y border-gray-100">
-      <div className="container mx-auto px-6">
-        <p className="text-center text-gray-500 text-sm mb-8">Trusted by leading companies</p>
-        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-          {partners.map((partner, index) => (
-            <div key={index} className="relative w-24 h-12 grayscale hover:grayscale-0 transition">
-              <Image
-                src={partner.logo}
-                alt={partner.name}
-                fill
-                className="object-contain"
-              />
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-gray-900">Our Trusted Partners</h2>
+          <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
+            We collaborate with leading local and international organizations to provide you with the best real estate services in Central Africa
+          </p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-12">
+          {partners.map((partner) => (
+            <div key={partner} className="bg-gray-50 rounded-lg p-4 text-center hover:shadow-md transition">
+              <p className="font-medium text-gray-700">{partner}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mb-8">
+          <h3 className="text-xl font-bold text-gray-900">Certified & Trusted</h3>
+          <p className="text-gray-600 mt-1">Our platform meets international standards for real estate services</p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-6">
+          {certifications.map((cert) => (
+            <div key={cert} className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full">
+              <CheckCircle size={18} className="text-green-500" />
+              <span className="text-gray-700 text-sm">{cert}</span>
             </div>
           ))}
         </div>
