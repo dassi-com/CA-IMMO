@@ -1,5 +1,3 @@
-// types/property.ts
-
 export type ListingType = 'sale' | 'rent';
 export type PropertyTypeCategory = 'MAISON' | 'BUREAU' | 'ENTREPOT' | 'LOCAL_COMMERCIAL' | 'TERRAIN';
 export type PropertyStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -10,6 +8,9 @@ export interface Agent {
   email: string;
   phone: string;
   avatar?: string;
+  agency?: string;
+  rating?: number;
+  listings?: number;
 }
 
 export interface PropertyImage {
