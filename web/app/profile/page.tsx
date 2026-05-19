@@ -88,7 +88,6 @@ export default function ProfilePage() {
     setIsLoading(true);
     
     // TODO: Appel API login
-    console.log('Login:', loginData);
     
     setTimeout(() => {
       setIsLoading(false);
@@ -106,7 +105,6 @@ export default function ProfilePage() {
     setIsLoading(true);
     
     // TODO: Appel API register
-    console.log('Register:', registerData);
     
     setTimeout(() => {
       setIsLoading(false);
@@ -114,7 +112,6 @@ export default function ProfilePage() {
   };
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
   };
 
   return (

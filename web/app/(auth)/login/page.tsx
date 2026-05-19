@@ -80,7 +80,6 @@ export default function LoginPage() {
   };
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
   };
 
   return (

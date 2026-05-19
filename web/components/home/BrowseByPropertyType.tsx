@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { api } from '@/services/api';
 
 interface PropertyTypeStats {
   id: string;
@@ -36,33 +35,17 @@ const defaultImages: Record<string, string> = {
   'VILLA': 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop',
 };
 
+const defaultTypes: PropertyTypeStats[] = [
+  { id: 'MAISON', name: 'Villas & Maisons', slug: 'maison', count: 0, image_url: defaultImages['MAISON'], color: 'bg-blue-500' },
+  { id: 'BUREAU', name: 'Bureaux', slug: 'bureau', count: 0, image_url: defaultImages['BUREAU'], color: 'bg-green-500' },
+  { id: 'ENTREPOT', name: 'Entrepôts', slug: 'entrepot', count: 0, image_url: defaultImages['ENTREPOT'], color: 'bg-orange-500' },
+  { id: 'LOCAL_COMMERCIAL', name: 'Locaux Commerciaux', slug: 'commercial', count: 0, image_url: defaultImages['LOCAL_COMMERCIAL'], color: 'bg-purple-500' },
+  { id: 'TERRAIN', name: 'Terrains', slug: 'terrain', count: 0, image_url: defaultImages['TERRAIN'], color: 'bg-emerald-500' },
+];
+
 export default function BrowseByPropertyType() {
-  const [propertyTypes, setPropertyTypes] = useState<PropertyTypeStats[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadPropertyTypes = async () => {
-      try {
-        // Appel API pour récupérer les types de biens avec leurs comptes
-        const response = await api.get('/property-types/stats');
-        setPropertyTypes(response.data);
-      } catch (error) {
-        console.error('Error loading property types:', error);
-        // Fallback avec données par défaut mais comptes à 0
-        setPropertyTypes([
-          { id: 'MAISON', name: 'Villas & Maisons', slug: 'maison', count: 0, image_url: defaultImages['MAISON'], color: 'bg-blue-500' },
-          { id: 'BUREAU', name: 'Bureaux', slug: 'bureau', count: 0, image_url: defaultImages['BUREAU'], color: 'bg-green-500' },
-          { id: 'ENTREPOT', name: 'Entrepôts', slug: 'entrepot', count: 0, image_url: defaultImages['ENTREPOT'], color: 'bg-orange-500' },
-          { id: 'LOCAL_COMMERCIAL', name: 'Locaux Commerciaux', slug: 'commercial', count: 0, image_url: defaultImages['LOCAL_COMMERCIAL'], color: 'bg-purple-500' },
-          { id: 'TERRAIN', name: 'Terrains', slug: 'terrain', count: 0, image_url: defaultImages['TERRAIN'], color: 'bg-emerald-500' },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPropertyTypes();
-  }, []);
+  const [propertyTypes, setPropertyTypes] = useState<PropertyTypeStats[]>(defaultTypes);
+  const [loading, setLoading] = useState(false);
 
   if (loading) {
     return (

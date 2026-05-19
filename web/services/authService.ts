@@ -15,22 +15,15 @@ export interface LoginResponse {
   refreshToken: string;
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
-
 export const authService = {
   // Connexion
   login: async (email: string, password: string, rememberMe?: boolean): Promise<LoginResponse> => {
-    const response = await api.post<ApiResponse<LoginResponse>>('/auth/login', { email, password, rememberMe });
-    const result = response.data.data;
+    const response = await api.post<LoginResponse>('/auth/login', { email, password, rememberMe });
 
-    localStorage.setItem('accessToken', result.accessToken);
-    localStorage.setItem('refreshToken', result.refreshToken);
+    localStorage.setItem('accessToken', response.data.accessToken);
+    localStorage.setItem('refreshToken', response.data.refreshToken);
 
-    return result;
+    return response.data;
   },
 
   // Inscription
@@ -41,13 +34,12 @@ export const authService = {
     password: string;
     role: 'TENANT' | 'OWNER';
   }): Promise<LoginResponse> => {
-    const response = await api.post<ApiResponse<LoginResponse>>('/auth/register', data);
-    const result = response.data.data;
+    const response = await api.post<LoginResponse>('/auth/register', data);
 
-    localStorage.setItem('accessToken', result.accessToken);
-    localStorage.setItem('refreshToken', result.refreshToken);
+    localStorage.setItem('accessToken', response.data.accessToken);
+    localStorage.setItem('refreshToken', response.data.refreshToken);
 
-    return result;
+    return response.data;
   },
 
   // Déconnexion
@@ -66,8 +58,8 @@ export const authService = {
   // Récupérer l'utilisateur courant
   getCurrentUser: async (): Promise<User | null> => {
     try {
-      const response = await api.get<ApiResponse<User>>('/auth/me');
-      return response.data.data;
+      const response = await api.get<User>('/auth/me');
+      return response.data;
     } catch (error) {
       return null;
     }
@@ -77,11 +69,10 @@ export const authService = {
   refreshToken: async (): Promise<string | null> => {
     try {
       const token = localStorage.getItem('refreshToken');
-      const response = await api.post<ApiResponse<{ accessToken: string; refreshToken: string }>>('/auth/refresh', { refreshToken: token });
-      const result = response.data.data;
-      localStorage.setItem('accessToken', result.accessToken);
-      localStorage.setItem('refreshToken', result.refreshToken);
-      return result.accessToken;
+      const response = await api.post<{ accessToken: string; refreshToken: string }>('/auth/refresh', { refreshToken: token });
+      localStorage.setItem('accessToken', response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      return response.data.accessToken;
     } catch (error) {
       return null;
     }

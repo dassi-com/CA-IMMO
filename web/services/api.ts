@@ -20,9 +20,14 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercepteur pour rafraîchir le token
+// Intercepteur pour unwrapper la réponse backend { success, message, data }
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     
@@ -41,7 +46,7 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('userRole');
-        window.location.href = '/auth/login';
+        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
