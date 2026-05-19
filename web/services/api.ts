@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 30000,
+  timeout: 10000,
 });
 
 // Intercepteur pour ajouter le token
@@ -20,7 +20,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercepteur pour les erreurs et refresh token
+// Intercepteur pour rafraîchir le token
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -40,7 +40,8 @@ api.interceptors.response.use(
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+        localStorage.removeItem('userRole');
+        window.location.href = '/auth/login';
         return Promise.reject(refreshError);
       }
     }

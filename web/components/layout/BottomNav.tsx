@@ -3,23 +3,32 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import { Home, Search, LayoutDashboard, Heart, User } from 'lucide-react';
-import { useUserRole, getDashboardLink } from '@/hooks/useUserRole';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const userRole = useUserRole();
-  const [dashboardLink, setDashboardLink] = useState('/dashboard/tenant');
+  const { user, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    setDashboardLink(getDashboardLink(userRole));
-  }, [userRole]);
+  const getDashboardLink = () => {
+    if (!user) return '/dashboard/tenant';
+    
+    switch (user.role) {
+      case 'ADMIN':
+        return '/dashboard/admin';
+      case 'OWNER':
+        return '/dashboard/agent';
+      case 'TENANT':
+        return '/dashboard/tenant';
+      default:
+        return '/dashboard/tenant';
+    }
+  };
 
   const items = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Search', icon: Search },
-    { href: dashboardLink, label: 'Dashboard', icon: LayoutDashboard },
+    ...(isAuthenticated ? [{ href: getDashboardLink(), label: 'Dashboard', icon: LayoutDashboard }] : []),
     { href: '/favorites', label: 'Favorites', icon: Heart },
     { href: '/profile', label: 'Profile', icon: User },
   ];

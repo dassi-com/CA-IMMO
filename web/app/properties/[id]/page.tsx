@@ -3,21 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import { ArrowLeft, MapPin, Bed, Bath, Square, Star, Phone, MessageCircle, Calendar, Mail, Lock, Unlock } from 'lucide-react';
 import { getPropertyById } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import UnlockModal from '@/components/ui/UnlockModal';
-
-// Fonction utilitaire pour obtenir la localisation complète
-const getPropertyFullLocation = (property: Property): string => {
-  return `${property.neighborhood}, ${property.city}, ${property.country}`;
-};
-
-// Fonction utilitaire pour obtenir la localisation courte
-const getPropertyShortLocation = (property: Property): string => {
-  return `${property.neighborhood}, ${property.city}`;
-};
+import { getPropertyFullLocation, getFormattedPrice } from '@/lib/utils/property';
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
@@ -26,7 +16,7 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // TODO: Remplacer par vrai état d'auth
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const loadProperty = async () => {
@@ -47,18 +37,10 @@ export default function PropertyDetailPage() {
     loadProperty();
   }, [id, router]);
 
-  const formatPrice = (price: number, unit: string) => {
-    if (price >= 1000000) {
-      return `${(price / 1000000).toFixed(1)}M ${unit}`;
-    }
-    return `${price.toLocaleString()} ${unit}`;
-  };
-
   const handleUnlock = () => {
     if (!isAuthenticated) {
       setIsModalOpen(true);
     } else {
-      // TODO: Débloquer les infos de contact
       console.log('Contact unlocked');
     }
   };
@@ -107,7 +89,6 @@ export default function PropertyDetailPage() {
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               />
-              {/* Image counter */}
               {property.images && property.images.length > 0 && (
                 <div className="absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1 rounded-full">
                   {selectedImage + 1} / {property.images.length}
@@ -136,24 +117,24 @@ export default function PropertyDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Colonne gauche - Description */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Titre et prix */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <h1 className="text-2xl font-bold text-gray-900">{property.title}</h1>
                   <div className="text-right">
                     <span className="text-2xl font-bold text-red-600">
-                      {formatPrice(property.price, property.priceUnit || 'FCFA')}
+                      {getFormattedPrice(property.price, property.currency)}
                     </span>
                     {property.listingType === 'rent' && (
                       <span className="text-gray-500 text-sm block">/month</span>
                     )}
                   </div>
                 </div>
+                
                 <div className="flex items-center gap-2 text-gray-500 mb-4">
                   <MapPin size={18} />
-                  {/* ✅ CORRECTION : Utilisation de la fonction utilitaire */}
                   <span>{getPropertyFullLocation(property)}</span>
                 </div>
+                
                 {/* Badges */}
                 <div className="flex gap-2 mb-6">
                   {property.verified && (
@@ -169,28 +150,34 @@ export default function PropertyDetailPage() {
 
                 {/* Caractéristiques principales */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg mb-6">
-                  {property.bedrooms && (
+                  {property.bedrooms > 0 && (
                     <div className="text-center">
                       <Bed className="mx-auto text-gray-500 mb-1" size={20} />
                       <div className="font-semibold">{property.bedrooms}</div>
                       <div className="text-xs text-gray-500">Bedrooms</div>
                     </div>
                   )}
-                  {property.bathrooms && (
+                  {property.bathrooms > 0 && (
                     <div className="text-center">
                       <Bath className="mx-auto text-gray-500 mb-1" size={20} />
                       <div className="font-semibold">{property.bathrooms}</div>
                       <div className="text-xs text-gray-500">Bathrooms</div>
                     </div>
                   )}
-                  {property.size_m2 && (
+                  {property.size_m2 > 0 && (
                     <div className="text-center">
                       <Square className="mx-auto text-gray-500 mb-1" size={20} />
                       <div className="font-semibold">{property.size_m2} m²</div>
                       <div className="text-xs text-gray-500">Living Area</div>
                     </div>
                   )}
-
+                  {property.area && property.area > 0 && (
+                    <div className="text-center">
+                      <Square className="mx-auto text-gray-500 mb-1" size={20} />
+                      <div className="font-semibold">{property.area} m²</div>
+                      <div className="text-xs text-gray-500">Land Size</div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tabs */}
@@ -231,7 +218,7 @@ export default function PropertyDetailPage() {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Property Type</span>
-                      <span className="text-gray-900 capitalize">{property.property_type?.toLowerCase()}</span>
+                      <span className="text-gray-900 capitalize">{property.property_type}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Listing Type</span>
@@ -239,7 +226,7 @@ export default function PropertyDetailPage() {
                     </div>
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="text-gray-500">Added on</span>
-                      <span className="text-gray-900">{new Date(property.created_at || property.createdAt).toLocaleDateString()}</span>
+                      <span className="text-gray-900">{new Date(property.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -252,22 +239,24 @@ export default function PropertyDetailPage() {
                 <h3 className="font-semibold text-gray-900 mb-4">Contact Agent</h3>
                 
                 {/* Agent info */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                    <span className="text-red-600 font-bold text-xl">
-                      {property.agent?.full_name?.charAt(0) || 'A'}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{property.agent?.full_name || 'Agent'}</p>
-                    <p className="text-sm text-gray-500">Real Estate Agent</p>
-                    <div className="flex items-center gap-1 mt-1">
-                      <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                      <span className="text-sm font-medium">4.5</span>
-                      <span className="text-xs text-gray-400">(12 listings)</span>
+                {property.agent ? (
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                      <span className="text-red-600 font-bold text-xl">
+                        {property.agent.full_name.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{property.agent.full_name}</p>
+                      <p className="text-sm text-gray-500">{property.agent.email}</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm font-medium">4.8</span>
+                        <span className="text-xs text-gray-400">(12 listings)</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : null}
 
                 {/* Contact details (locked) */}
                 <div className="space-y-3 mb-6">
@@ -334,7 +323,6 @@ export default function PropertyDetailPage() {
         </div>
       </div>
 
-      {/* Modal d'unlock / connexion */}
       <UnlockModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );

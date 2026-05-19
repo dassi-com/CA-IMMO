@@ -79,7 +79,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             {/* Rating agent */}
             <div className="flex items-center gap-1">
               <Star size={14} className="text-yellow-400 fill-yellow-400" />
-              <span className="text-sm text-gray-600">4.5</span>
+              <span className="text-sm text-gray-600">{property.agent?.rating ?? 'N/A'}</span>
             </div>
           </div>
 
@@ -91,24 +91,24 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           {/* Localisation */}
           <div className="flex items-center gap-1 text-gray-500 text-sm mb-3">
             <MapPin size={14} />
-            <span className="line-clamp-1">{property.city}, {property.country}</span>
+            <span className="line-clamp-1">{property.neighborhood ? `${property.neighborhood}, ${property.city}` : property.city}</span>
           </div>
 
           {/* Caractéristiques */}
           <div className="flex items-center gap-4 text-gray-500 text-sm">
-            {property.bedrooms && (
+            {property.bedrooms > 0 && (
               <div className="flex items-center gap-1">
                 <Bed size={14} />
                 <span>{property.bedrooms}</span>
               </div>
             )}
-            {property.bathrooms && (
+            {property.bathrooms > 0 && (
               <div className="flex items-center gap-1">
                 <Bath size={14} />
                 <span>{property.bathrooms}</span>
               </div>
             )}
-            {property.size_m2 && (
+            {property.size_m2 > 0 && (
               <div className="flex items-center gap-1">
                 <Square size={14} />
                 <span>{property.size_m2} m²</span>

@@ -1,5 +1,5 @@
 import { api } from './api';
-import { Property } from '@/types/property';
+import { Property } from './propertyService';
 
 // Statistiques Tenant
 export interface TenantStats {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -16,9 +16,11 @@ import {
   X,
   CheckCircle2,
 } from 'lucide-react';
+import { favoriteService } from '@/services/favoriteService';
+import { propertyService, Property } from '@/services/propertyService';
 
-// Types
-interface FavoriteProperty {
+// Type adapté pour l'affichage
+interface FavoriteDisplay {
   id: string;
   title: string;
   location: string;
@@ -34,97 +36,58 @@ interface FavoriteProperty {
   savedAt: Date;
 }
 
-// Données fictives
-const mockFavorites: FavoriteProperty[] = [
-  {
-    id: "1",
-    title: "Modern Villa with Pool in Libreville",
-    location: "Batterie IV, Libreville",
-    price: 450000000,
-    priceType: "sale",
-    bedrooms: 5,
-    bathrooms: 4,
-    area: 350,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop",
-    isVerified: true,
-    savedAt: new Date("2024-01-15")
-  },
-  {
-    id: "2",
-    title: "Luxury Apartment in Douala City Center",
-    location: "Bonanjo, Douala",
-    price: 75000000,
-    priceType: "sale",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 120,
-    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop",
-    isNew: true,
-    savedAt: new Date("2024-01-10")
-  },
-  {
-    id: "3",
-    title: "Prime Commercial Land in Yaoundé",
-    location: "Bastos, Yaoundé",
-    price: 180000000,
-    priceType: "sale",
-    bedrooms: 0,
-    bathrooms: 0,
-    area: 2000,
-    image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop",
-    isUrgent: true,
-    savedAt: new Date("2024-01-05")
-  },
-  {
-    id: "4",
-    title: "Modern Office Space in Brazzaville",
-    location: "Plateau, Brazzaville",
-    price: 2500000,
-    priceType: "rent",
-    bedrooms: 0,
-    bathrooms: 0,
-    area: 200,
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop",
-    savedAt: new Date("2023-12-28")
-  },
-  {
-    id: "5",
-    title: "Beachfront Apartment in Port-Gentil",
-    location: "Quartier Bord de Mer, Port-Gentil",
-    price: 850000,
-    priceType: "rent",
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 85,
-    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop",
-    isNew: true,
-    savedAt: new Date("2023-12-20")
-  },
-  {
-    id: "6",
-    title: "Family House in Yaoundé",
-    location: "Odza, Yaoundé",
-    price: 120000000,
-    priceType: "sale",
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 200,
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=400&fit=crop",
-    savedAt: new Date("2023-12-15")
-  }
-];
-
 type SortOption = "recent" | "price-asc" | "price-desc";
 
 export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState<FavoriteProperty[]>(mockFavorites);
+  const [favorites, setFavorites] = useState<FavoriteDisplay[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState<FavoriteProperty | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<FavoriteDisplay | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const removeFavorite = (id: string) => {
-    setFavorites(prev => prev.filter(p => p.id !== id));
+  // Charger les favoris depuis l'API
+  useEffect(() => {
+    loadFavorites();
+  }, []);
+
+  const loadFavorites = async () => {
+    setIsLoading(true);
+    try {
+      const favoriteProperties = await favoriteService.getFavorites();
+      
+      // Convertir les propriétés au format d'affichage
+      const formattedFavorites: FavoriteDisplay[] = favoriteProperties.map((prop: Property) => ({
+        id: prop.id,
+        title: prop.title,
+        location: `${prop.neighborhood}, ${prop.city}`,
+        price: prop.price,
+        priceType: prop.property_type === 'MAISON' || prop.property_type === 'TERRAIN' ? 'sale' : 'rent',
+        bedrooms: 0, // À adapter selon ton schéma
+        bathrooms: 0, // À adapter selon ton schéma
+        area: prop.size_m2,
+        image: prop.images?.[0] || '/placeholder.jpg',
+        isVerified: false,
+        isNew: false,
+        isUrgent: false,
+        savedAt: new Date(prop.created_at),
+      }));
+      
+      setFavorites(formattedFavorites);
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const removeFavorite = async (id: string) => {
+    try {
+      await favoriteService.removeFromFavorites(id);
+      setFavorites(prev => prev.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+    }
   };
 
   const getSortedFavorites = () => {
@@ -152,6 +115,30 @@ export default function FavoritesPage() {
   };
 
   const sortedFavorites = getSortedFavorites();
+
+  // Affichage du chargement
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20 pb-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center animate-pulse">
+              <Heart className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <div className="h-7 w-32 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-4 w-24 bg-gray-200 rounded mt-1 animate-pulse"></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-xl h-96 animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-24">
@@ -209,7 +196,6 @@ export default function FavoritesPage() {
                 <div key={property.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
                   <Link href={`/properties/${property.id}`}>
                     <div className="relative h-48 overflow-hidden">
-                      {/* Image avec fill ET sizes (correction) */}
                       <Image
                         src={property.image}
                         alt={property.title}
@@ -239,7 +225,10 @@ export default function FavoritesPage() {
                           {property.title}
                         </h3>
                       </Link>
-                      <button onClick={() => removeFavorite(property.id)} className="p-1 hover:bg-red-50 rounded transition">
+                      <button 
+                        onClick={() => removeFavorite(property.id)} 
+                        className="p-1 hover:bg-red-50 rounded transition"
+                      >
                         <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-500" />
                       </button>
                     </div>

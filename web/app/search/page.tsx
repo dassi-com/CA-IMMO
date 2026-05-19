@@ -70,7 +70,7 @@ export default function SearchPage() {
         result.sort((a, b) => b.price - a.price);
         break;
       case 'popular':
-        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
     }
 

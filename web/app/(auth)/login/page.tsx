@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getDashboardLink } from '@/hooks/useUserRole';
 
 // Icône Google personnalisée
 const GoogleIcon = () => (
@@ -38,7 +37,7 @@ const FacebookIcon = () => (
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -54,7 +53,6 @@ export default function LoginPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,26 +61,20 @@ export default function LoginPage() {
     setError('');
     
     try {
-      // Appel du service de login
-      await login(formData.email, formData.password, formData.rememberMe);
+      const response = await login(formData.email, formData.password, formData.rememberMe);
       
-      // Récupérer le rôle depuis localStorage (défini par authService)
-      const userRole = localStorage.getItem('userRole');
+      // Récupérer le rôle de l'utilisateur après connexion
+      const dashboardRoutes: Record<string, string> = {
+        'ADMIN': '/dashboard/admin',
+        'OWNER': '/dashboard/agent',
+        'TENANT': '/dashboard/tenant'
+      };
       
-      // Redirection vers le bon dashboard basé sur le rôle
-      let dashboardRole: 'admin' | 'agent' | 'tenant' = 'tenant';
-      if (userRole === 'ADMIN') {
-        dashboardRole = 'admin';
-      } else if (userRole === 'OWNER') {
-        dashboardRole = 'agent';
-      }
-      
-      const dashboardPath = getDashboardLink(dashboardRole);
-      router.push(dashboardPath);
+      // Utiliser la réponse directement au lieu d'attendre la mise à jour du contexte
+      const route = dashboardRoutes[response.user.role] || '/dashboard/tenant';
+      router.push(route);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Email ou mot de passe incorrect');
-      console.error('Login error:', err);
-    } finally {
+      setError(err.response?.data?.message || 'Erreur de connexion');
       setIsLoading(false);
     }
   };
@@ -92,7 +84,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Profile Icon */}
         <div className="flex justify-center mb-6">
@@ -113,12 +105,10 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
           {/* Error Message */}
           {error && (
-            <div className="mb-5 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-              <AlertCircle size={20} className="text-red-600 flex-shrink-0" />
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              {error}
             </div>
           )}
-
           {/* Email Field */}
           <div className="mb-5">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">

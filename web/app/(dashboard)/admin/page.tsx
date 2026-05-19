@@ -21,6 +21,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
 import ChartCard, {
@@ -203,10 +204,11 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Sidebar role="admin" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+    <ProtectedRoute requiredRole="ADMIN">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <Sidebar role="admin" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
-      <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
+        <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
         <div className="p-6 lg:p-8">
           {/* Header */}
           <motion.div
@@ -572,5 +574,6 @@ export default function AdminDashboard() {
         </div>
       </main>
     </div>
+    </ProtectedRoute>
   );
 }

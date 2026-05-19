@@ -1,41 +1,32 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { Home, Search, LayoutDashboard, Heart, PlusCircle, LogOut } from 'lucide-react';
-import { useUserRole, getDashboardLink } from '@/hooks/useUserRole';
 import { useAuth } from '@/contexts/AuthContext';
+
+const navItems = [
+  { href: '/dashboard/agent', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/properties', label: 'Mes annonces', icon: Home },
+  { href: '/search', label: 'Rechercher', icon: Search },
+  { href: '/favorites', label: 'Favoris', icon: Heart },
+];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const userRole = useUserRole();
-  const { logout } = useAuth();
-  const [dashboardLink, setDashboardLink] = useState('/dashboard/tenant');
-
-  useEffect(() => {
-    setDashboardLink(getDashboardLink(userRole));
-  }, [userRole]);
+  const { logout, user } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     router.push('/');
   };
 
-  const navItems = [
-    { href: dashboardLink, label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/properties', label: 'Mes annonces', icon: Home },
-    { href: '/search', label: 'Rechercher', icon: Search },
-    { href: '/favorites', label: 'Favoris', icon: Heart },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-md min-h-screen hidden md:block">
+    <div className="bg-gray-50 flex-1" style={{ minHeight: 'calc(100vh - 4rem)' }}>
+      <div className="flex min-h-full">
+        <aside className="w-64 bg-white shadow-md hidden md:block" style={{ minHeight: 'calc(100vh - 4rem)' }}>
           <div className="p-6">
-            <h2 className="text-xl font-bold text-primary-500">Dashboard</h2>
+            <h2 className="text-xl font-bold text-red-600">Dashboard</h2>
           </div>
           <nav className="mt-6">
             {navItems.map((item) => {
@@ -45,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   key={item.href}
                   href={item.href}
                   className={`flex items-center space-x-3 px-6 py-3 transition ${
-                    isActive ? 'bg-primary-50 text-primary-500 border-r-4 border-primary-500' : 'text-gray-600 hover:bg-gray-100'
+                    isActive ? 'bg-red-50 text-red-600 border-r-4 border-red-600' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   <item.icon size={20} />
@@ -55,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
             <button 
               onClick={handleLogout}
-              className="flex items-center space-x-3 px-6 py-3 text-red-500 hover:bg-gray-100 w-full mt-4 cursor-pointer transition"
+              className="flex items-center space-x-3 px-6 py-3 text-red-600 hover:bg-red-50 w-full mt-4 transition"
             >
               <LogOut size={20} />
               <span>Déconnexion</span>

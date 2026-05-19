@@ -1,5 +1,6 @@
 import { api } from './api';
 import { User } from './authService';
+import { Property } from './propertyService';
 
 export const adminService = {
   // Gestion utilisateurs
