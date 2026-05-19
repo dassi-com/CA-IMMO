@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -7,7 +8,24 @@ import { Lock, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/services/api';
 import toast from 'react-hot-toast';
 
+function LoadingFallback() {
+  return (
+    <div className="text-center">
+      <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <p className="text-gray-500">Chargement...</p>
+    </div>
+  );
+}
+
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
