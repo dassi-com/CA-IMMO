@@ -95,8 +95,9 @@ export default function AdminDashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [fetchedUsers, fetchedPending] = await Promise.all([
+      const [fetchedUsers, allProperties, fetchedPending] = await Promise.all([
         adminService.getAllUsers().catch(() => []),
+        propertyService.getAll().catch(() => []),
         propertyService.getPending().catch(() => []),
       ]);
       setUsers(fetchedUsers);
@@ -109,12 +110,12 @@ export default function AdminDashboard() {
         price: `${p.price.toLocaleString()} ${p.currency}`,
         type: p.property_type,
       })));
-      setStats(prev => ({
+      setStats({
         totalUsers: fetchedUsers.length,
-        totalListings: fetchedPending.length + (prev.totalListings || 0),
+        totalListings: allProperties.length,
         pendingListings: fetchedPending.length,
         totalRevenue: 0,
-      }));
+      });
     } catch (error) {
       console.error('Error loading admin data:', error);
     } finally {

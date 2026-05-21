@@ -65,6 +65,17 @@ export const authService = {
     }
   },
 
+  // Mettre à jour le profil
+  updateProfile: async (data: { full_name?: string; email?: string; phone?: string }): Promise<User> => {
+    const response = await api.put('/auth/profile', data);
+    return response.data.data;
+  },
+
+  // Changer le mot de passe
+  changePassword: async (data: { current_password: string; new_password: string; confirm_password: string }): Promise<void> => {
+    await api.put('/auth/password', data);
+  },
+
   // Rafraîchir le token
   refreshToken: async (): Promise<string | null> => {
     try {

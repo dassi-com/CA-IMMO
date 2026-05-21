@@ -34,25 +34,26 @@ interface SidebarProps {
 
 const navigationItems: Record<string, { name: string; href: string; icon: React.ComponentType<{ size?: number }> }[]> = {
   tenant: [
-    { name: 'Dashboard', href: '/tenant', icon: Home },
+    { name: 'Dashboard', href: '#dashboard', icon: Home },
     { name: 'Mes favoris', href: '/favorites', icon: Heart },
-    { name: 'Visites', href: '/tenant/visits', icon: Calendar },
-    { name: 'Messages', href: '/tenant/messages', icon: MessageSquare },
-    { name: 'Alertes', href: '/tenant/alerts', icon: Bell },
+    { name: 'Visites', href: '#visites', icon: Calendar },
+    { name: 'Messages', href: '#messages', icon: MessageSquare },
+    { name: 'Alertes', href: '#alertes', icon: Bell },
+    { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
   agent: [
     { name: 'Dashboard', href: '#dashboard', icon: Home },
     { name: 'Mes annonces', href: '#liste-annonces', icon: Building2 },
     { name: 'Messages', href: '#messages', icon: MessageSquare },
     { name: 'Statistiques', href: '#statistiques', icon: BarChart3 },
-    { name: 'Paramètres', href: '/agent/settings', icon: Settings },
+    { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
   admin: [
     { name: 'Dashboard', href: '/admin', icon: Home },
     { name: 'Utilisateurs', href: '/admin/users', icon: Users },
     { name: 'Annonces', href: '/admin/listings', icon: FileText },
     { name: 'Paiements', href: '/admin/payments', icon: DollarSign },
-    { name: 'Paramètres', href: '/admin/settings', icon: Settings },
+    { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
 };
 

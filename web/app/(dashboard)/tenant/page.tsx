@@ -123,7 +123,7 @@ export default function TenantDashboard() {
           </motion.div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div id="dashboard" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Propriétés favorites"
               value={favoritesCount}
@@ -219,6 +219,7 @@ export default function TenantDashboard() {
           </div>
 
           {/* Favorite Properties */}
+          <div id="favoris">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -263,10 +264,12 @@ export default function TenantDashboard() {
               ))}
             </div>
           </motion.div>
+          </div>
 
           {/* Visits and Alerts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Upcoming Visits */}
+            <div id="visites">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -280,8 +283,10 @@ export default function TenantDashboard() {
                 </p>
               </div>
             </motion.div>
+            </div>
 
             {/* Active Alerts */}
+            <div id="alertes">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -310,6 +315,21 @@ export default function TenantDashboard() {
                 + Créer une alerte
               </button>
             </motion.div>
+            </div>
+          </div>
+
+          <div id="messages">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65 }}
+            className="bg-white rounded-2xl shadow-lg p-6 mb-8"
+          >
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Messages</h3>
+            <p className="text-gray-500 text-sm text-center py-8">
+              Aucun message pour le moment. Contactez un agent depuis une annonce pour démarrer une conversation.
+            </p>
+          </motion.div>
           </div>
 
           {/* Recommendations */}
