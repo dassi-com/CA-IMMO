@@ -100,7 +100,7 @@ const options: swaggerJsdoc.Options = {
         },
         RegisterDto: {
           type: 'object',
-          required: ['full_name', 'email', 'phone', 'password'],
+          required: ['full_name', 'email', 'phone', 'password', 'confirm_password'],
           properties: {
             full_name: { type: 'string', example: 'Jonathan Dev' },
             email: {
@@ -110,6 +110,7 @@ const options: swaggerJsdoc.Options = {
             },
             phone: { type: 'string', example: '+237612345678' },
             password: { type: 'string', example: 'Password123' },
+            confirm_password: { type: 'string', example: 'Password123' },
             role: {
               type: 'string',
               enum: ['OWNER', 'TENANT'],

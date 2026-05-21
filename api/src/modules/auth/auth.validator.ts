@@ -33,6 +33,12 @@ export const registerValidator: ValidationChain[] = [
       "Password must contain at least one uppercase, one lowercase and one number"
     ),
 
+  body("confirm_password")
+    .notEmpty()
+    .withMessage("Password confirmation is required")
+    .custom((value, { req }) => value === req.body.password)
+    .withMessage("Passwords do not match"),
+
   body("role")
     .optional()
     .isIn(["OWNER", "TENANT"])
