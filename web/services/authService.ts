@@ -31,6 +31,7 @@ export const authService = {
     email: string;
     phone: string;
     password: string;
+    confirm_password: string;
     role: 'TENANT' | 'OWNER';
   }): Promise<AuthResponse> => {
     const response = await api.post('/auth/register', data);

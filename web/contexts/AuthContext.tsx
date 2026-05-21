@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<{ user: User } & AuthResponse>;
-  register: (data: { full_name: string; email: string; phone: string; password: string; role: 'TENANT' | 'OWNER' }) => Promise<void>;
+  register: (data: { full_name: string; email: string; phone: string; password: string; confirm_password: string; role: 'TENANT' | 'OWNER' }) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { ...tokens, user: currentUser! };
   };
 
-  const register = async (data: { full_name: string; email: string; phone: string; password: string; role: 'TENANT' | 'OWNER' }) => {
+  const register = async (data: { full_name: string; email: string; phone: string; password: string; confirm_password: string; role: 'TENANT' | 'OWNER' }) => {
     await authService.register(data);
     const currentUser = await authService.getCurrentUser();
     if (currentUser) setUser(currentUser);

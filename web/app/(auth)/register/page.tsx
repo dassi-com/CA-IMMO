@@ -98,6 +98,7 @@ export default function RegisterPage() {
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
+        confirm_password: formData.password,
         role: formData.role,
       });
       toast.success('Compte créé avec succès! Redirection en cours...');
