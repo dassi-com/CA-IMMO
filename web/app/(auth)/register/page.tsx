@@ -127,7 +127,7 @@ export default function RegisterPage() {
           {/* Phone */}
           <div className="mb-4">
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-              Téléphone
+              Téléphone <span className="text-gray-400 text-xs">(optionnel)</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -136,10 +136,9 @@ export default function RegisterPage() {
               <input
                 id="phone"
                 type="tel"
-                placeholder="Votre téléphone"
+                placeholder="Votre téléphone (optionnel)"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
                 className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
               />
             </div>
