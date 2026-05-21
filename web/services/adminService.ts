@@ -18,7 +18,10 @@ export const adminService = {
   },
 
   getAllProperties: async (): Promise<Property[]> => {
-    const response = await api.get('/properties?limit=100');
-    return response.data.data;
+    const [approved, pending] = await Promise.all([
+      api.get('/properties?limit=100').then(r => r.data.data).catch(() => []),
+      api.get('/properties/pending').then(r => r.data.data).catch(() => []),
+    ]);
+    return [...approved, ...pending];
   },
 };
