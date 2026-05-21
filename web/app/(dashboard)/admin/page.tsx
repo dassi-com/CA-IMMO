@@ -109,12 +109,12 @@ export default function AdminDashboard() {
         price: `${p.price.toLocaleString()} ${p.currency}`,
         type: p.property_type,
       })));
-      setStats({
+      setStats(prev => ({
         totalUsers: fetchedUsers.length,
-        totalListings: fetchedPending.length + (stats.totalListings || 0),
+        totalListings: fetchedPending.length + (prev.totalListings || 0),
         pendingListings: fetchedPending.length,
         totalRevenue: 0,
-      });
+      }));
     } catch (error) {
       console.error('Error loading admin data:', error);
     } finally {
@@ -445,11 +445,11 @@ export default function AdminDashboard() {
                   <tbody className="divide-y divide-gray-200">
                     {filteredUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-gray-900">{user.full_name}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-600">{user.email}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-medium text-gray-900">{user.full_name}</div>
+                        <div className="text-sm text-gray-500">{user.email}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-600">{user.phone || '—'}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 text-xs rounded-full ${

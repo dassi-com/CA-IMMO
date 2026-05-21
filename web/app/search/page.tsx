@@ -1,15 +1,39 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Filter, SlidersHorizontal, Grid3x3, List, ChevronDown, X } from 'lucide-react';
+import { Filter, Grid3x3, List, ChevronDown, X } from 'lucide-react';
 import PropertyCard from '@/components/properties/PropertyCard';
 import { getProperties } from '@/services/propertyService';
 import { Property } from '@/types/property';
 
 type SortOption = 'newest' | 'price_asc' | 'price_desc';
 
+function SearchFallback() {
+  return (
+    <div className="container mx-auto px-4 py-8 pt-24">
+      <div className="animate-pulse">
+        <div className="h-8 bg-gray-200 w-1/4 mb-6 rounded" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-gray-200 rounded-xl h-96" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchFallback />}>
+      <SearchContent />
+    </Suspense>
+  );
+}
+
+function SearchContent() {
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);

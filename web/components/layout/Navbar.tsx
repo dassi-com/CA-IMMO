@@ -76,9 +76,9 @@ export default function Navbar() {
 
             {isAuthenticated ? (
               <Link
-                href="/profile"
+                href={getDashboardLink()}
                 className={`p-1.5 rounded-full transition ${
-                  pathname === '/profile' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                  pathname.includes('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
                 }`}
               >
                 <User size={20} />
@@ -109,16 +109,16 @@ export default function Navbar() {
 
             {isAuthenticated ? (
               <Link
-                href="/profile"
+                href={getDashboardLink()}
                 className={`p-1.5 rounded-full transition ${
-                  pathname === '/profile' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600'
+                  pathname.includes('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600'
                 }`}
               >
                 <User size={20} />
               </Link>
             ) : (
               <Link
-                href="/login"
+                href="/register"
                 className="p-1.5 rounded-full text-gray-600 hover:text-red-600 transition"
               >
                 <LogIn size={20} />

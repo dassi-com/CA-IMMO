@@ -39,7 +39,7 @@ export default function UnlockModal({ isOpen, onClose }: UnlockModalProps) {
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-100 p-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <Lock size={20} className="text-primary-600" />
+            <Lock size={20} className="text-red-600" />
             <h2 className="text-xl font-semibold text-gray-900">
               {isLogin ? 'Sign In' : 'Create Account'}
             </h2>
@@ -127,7 +127,7 @@ export default function UnlockModal({ isOpen, onClose }: UnlockModalProps) {
 
             {isLogin && (
               <div className="text-right">
-                <Link href="/forgot-password" className="text-sm text-primary-600 hover:underline">
+                <Link href="/forgot-password" className="text-sm text-red-600 hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -135,7 +135,7 @@ export default function UnlockModal({ isOpen, onClose }: UnlockModalProps) {
 
             <button
               type="submit"
-              className="w-full bg-primary-600 text-white py-2.5 rounded-lg font-medium hover:bg-primary-700 transition"
+              className="w-full bg-red-600 text-white py-2.5 rounded-lg font-medium hover:bg-red-700 transition"
             >
               {isLogin ? 'Sign In' : 'Create Account'}
             </button>
@@ -146,7 +146,7 @@ export default function UnlockModal({ isOpen, onClose }: UnlockModalProps) {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-primary-600 hover:underline font-medium"
+                className="text-red-600 hover:underline font-medium"
               >
                 {isLogin ? 'Sign Up' : 'Sign In'}
               </button>

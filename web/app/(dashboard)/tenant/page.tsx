@@ -147,7 +147,7 @@ export default function TenantDashboard() {
               value={0}
               icon={MessageSquare}
               trend={8}
-              trendLabel="aucun message"
+              trendLabel="total messages"
               color="from-green-500 to-emerald-500"
               delay={0.3}
             />
@@ -158,31 +158,6 @@ export default function TenantDashboard() {
               trend={1}
               trendLabel="alertes"
               color="from-yellow-500 to-orange-500"
-              delay={0.4}
-            />
-            <StatsCard
-              title="Visites programmées"
-              value={0}
-              icon={Calendar}
-              trend={-5}
-              trendLabel="vs mois dernier"
-              color="from-blue-500 to-cyan-500"
-              delay={0.2}
-            />
-            <StatsCard
-              title="Messages envoyés"
-              value={0}
-              icon={MessageSquare}
-              trend={8}
-              trendLabel="vs mois dernier"
-              color="from-green-500 to-emerald-500"
-              delay={0.3}
-            />
-            <StatsCard
-              title="Alertes actives"
-              value={activeAlerts.length}
-              icon={Bell}
-              color="from-purple-500 to-indigo-500"
               delay={0.4}
             />
           </div>
