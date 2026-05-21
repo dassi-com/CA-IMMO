@@ -44,6 +44,7 @@ interface ListingRow {
   id: string;
   title: string;
   status: string;
+  property_type: string;
   views: number;
   contacts: number;
   date: string;
@@ -87,6 +88,7 @@ export default function AgentDashboard() {
         id: p.id,
         title: p.title,
         status: p.status,
+        property_type: p.property_type,
         views: 0,
         contacts: 0,
         date: new Date(p.created_at).toLocaleDateString(),

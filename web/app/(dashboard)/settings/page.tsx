@@ -324,23 +324,7 @@ export default function SettingsPage() {
                 </div>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-gradient-to-br from-red-600 to-red-700 rounded-2xl shadow-lg p-6 text-white"
-              >
-                <h3 className="font-bold text-lg mb-2">Besoin d'aide ?</h3>
-                <p className="text-sm opacity-90 mb-4">
-                  Contactez notre équipe support pour toute question concernant votre compte.
-                </p>
-                <a
-                  href="mailto:support@centralafricahomes.com"
-                  className="block w-full py-2.5 bg-white text-red-600 rounded-xl font-medium text-center hover:bg-gray-100 transition-colors"
-                >
-                  Contacter le support
-                </a>
-              </motion.div>
+
             </div>
           </div>
         </div>
