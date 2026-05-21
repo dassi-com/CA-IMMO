@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home,
@@ -23,6 +23,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarProps {
   role: 'tenant' | 'agent' | 'admin';
@@ -31,7 +32,7 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-const navigationItems = {
+const navigationItems: Record<string, { name: string; href: string; icon: React.ComponentType<{ size?: number }> }[]> = {
   tenant: [
     { name: 'Dashboard', href: '/tenant', icon: Home },
     { name: 'Mes favoris', href: '/favorites', icon: Heart },
@@ -40,10 +41,10 @@ const navigationItems = {
     { name: 'Alertes', href: '/tenant/alerts', icon: Bell },
   ],
   agent: [
-    { name: 'Dashboard', href: '/agent', icon: Home },
-    { name: 'Mes annonces', href: '/agent/listings', icon: Building2 },
-    { name: 'Messages', href: '/agent/messages', icon: MessageSquare },
-    { name: 'Statistiques', href: '/agent/stats', icon: BarChart3 },
+    { name: 'Dashboard', href: '#dashboard', icon: Home },
+    { name: 'Mes annonces', href: '#liste-annonces', icon: Building2 },
+    { name: 'Messages', href: '#messages', icon: MessageSquare },
+    { name: 'Statistiques', href: '#statistiques', icon: BarChart3 },
     { name: 'Paramètres', href: '/agent/settings', icon: Settings },
   ],
   admin: [
@@ -57,6 +58,8 @@ const navigationItems = {
 
 export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const items = navigationItems[role];
@@ -64,6 +67,19 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     if (!isMobileMenuOpen && onClose) onClose();
+  };
+
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const el = document.getElementById(href.slice(1));
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
   };
 
   return (
@@ -110,8 +126,29 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
           {/* Navigation */}
           <nav className="flex-1 py-6">
             {items.map((item) => {
-              const isActive = pathname === item.href;
-              return (
+              const isActive = item.href.startsWith('#') ? false : pathname === item.href;
+              return item.href.startsWith('#') ? (
+                <a key={item.name} href={item.href} onClick={(e) => handleNavClick(e, item.href)}>
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    className={`relative flex items-center gap-3 px-6 py-3 mx-3 rounded-lg transition-all text-white/70 hover:bg-white/10 hover:text-white`}
+                  >
+                    <item.icon size={20} />
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="text-sm font-medium"
+                        >
+                          {item.name}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </a>
+              ) : (
                 <Link key={item.name} href={item.href}>
                   <motion.div
                     whileHover={{ x: 5 }}
@@ -142,7 +179,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
 
           {/* Bottom Section */}
           <div className="p-6 border-t border-white/10">
-            <button className="flex items-center gap-3 text-white/70 hover:text-white w-full">
+            <button onClick={handleLogout} className="flex items-center gap-3 text-white/70 hover:text-white w-full">
               <LogOut size={20} />
               <AnimatePresence>
                 {isOpen && (
@@ -201,23 +238,39 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                   </div>
                 </div>
                 <nav className="flex-1 py-6">
-                  {items.map((item) => (
-                    <Link key={item.name} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
-                      <div
-                        className={`flex items-center gap-3 px-6 py-3 mx-3 rounded-lg ${
-                          pathname === item.href
-                            ? 'bg-red-600 text-white'
-                            : 'text-white/70 hover:bg-white/10'
-                        }`}
+                  {items.map((item) =>
+                    item.href.startsWith('#') ? (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        onClick={(e) => {
+                          handleNavClick(e, item.href);
+                          setIsMobileMenuOpen(false);
+                        }}
                       >
-                        <item.icon size={20} />
-                        <span className="text-sm font-medium">{item.name}</span>
-                      </div>
-                    </Link>
-                  ))}
+                        <div className="flex items-center gap-3 px-6 py-3 mx-3 rounded-lg text-white/70 hover:bg-white/10">
+                          <item.icon size={20} />
+                          <span className="text-sm font-medium">{item.name}</span>
+                        </div>
+                      </a>
+                    ) : (
+                      <Link key={item.name} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
+                        <div
+                          className={`flex items-center gap-3 px-6 py-3 mx-3 rounded-lg ${
+                            pathname === item.href
+                              ? 'bg-red-600 text-white'
+                              : 'text-white/70 hover:bg-white/10'
+                          }`}
+                        >
+                          <item.icon size={20} />
+                          <span className="text-sm font-medium">{item.name}</span>
+                        </div>
+                      </Link>
+                    )
+                  )}
                 </nav>
                 <div className="p-6 border-t border-white/10">
-                  <button className="flex items-center gap-3 text-white/70 w-full">
+                  <button onClick={handleLogout} className="flex items-center gap-3 text-white/70 w-full">
                     <LogOut size={20} />
                     <span className="text-sm">Déconnexion</span>
                   </button>

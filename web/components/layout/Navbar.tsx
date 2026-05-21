@@ -44,7 +44,9 @@ export default function Navbar() {
               <Link
                 href={getDashboardLink()}
                 className={`flex items-center space-x-1 text-sm transition ${
-                  pathname.includes('/dashboard') ? 'text-red-600 font-medium' : 'text-gray-600 hover:text-red-600'
+                  pathname === '/admin' || pathname === '/agent' || pathname === '/tenant'
+                    ? 'text-red-600 font-medium'
+                    : 'text-gray-600 hover:text-red-600'
                 }`}
               >
                 <LayoutDashboard size={16} />
@@ -74,16 +76,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {isAuthenticated ? (
-              <Link
-                href={getDashboardLink()}
-                className={`p-1.5 rounded-full transition ${
-                  pathname.includes('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                }`}
-              >
-                <User size={20} />
-              </Link>
-            ) : (
+            {!isAuthenticated && (
               <Link
                 href="/login"
                 className="flex items-center space-x-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition"
@@ -107,16 +100,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {isAuthenticated ? (
-              <Link
-                href={getDashboardLink()}
-                className={`p-1.5 rounded-full transition ${
-                  pathname.includes('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600'
-                }`}
-              >
-                <User size={20} />
-              </Link>
-            ) : (
+            {!isAuthenticated && (
               <Link
                 href="/register"
                 className="p-1.5 rounded-full text-gray-600 hover:text-red-600 transition"

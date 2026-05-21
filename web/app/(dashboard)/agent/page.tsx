@@ -145,11 +145,11 @@ export default function AgentDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {userName} 📊</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {userName}</h1>
             <p className="text-gray-600 mt-2">Gérez vos propriétés et suivez vos performances</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div id="dashboard" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Total annonces"
               value={totalListings}
@@ -237,6 +237,7 @@ export default function AgentDashboard() {
             </ChartCard>
           </div>
 
+          <div id="liste-annonces">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -281,9 +282,9 @@ export default function AgentDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap text-gray-600">{listing.contacts}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <button className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
+                          <Link href={`/properties/${listing.id}/edit`} className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors inline-block">
                             <Edit size={18} />
-                          </button>
+                          </Link>
                           <button onClick={() => handleDelete(listing.id)} className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
                             <Trash2 size={18} />
                           </button>
@@ -295,7 +296,9 @@ export default function AgentDashboard() {
               </table>
             </div>
           </motion.div>
+          </div>
 
+          <div id="messages">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -364,7 +367,9 @@ export default function AgentDashboard() {
               </div>
             </motion.div>
           </div>
+          </div>
 
+          <div id="statistiques">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -408,6 +413,7 @@ export default function AgentDashboard() {
                 </p>
               </div>
             </motion.div>
+          </div>
           </div>
         </div>
       </main>
