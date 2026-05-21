@@ -106,7 +106,7 @@ export default function RegisterPage() {
       // Attendre un peu avant de rediriger pour que le toast soit visible
       setTimeout(() => {
         if (formData.role === 'OWNER') {
-          router.push('/dashboard/agent');
+          router.push('/agent');
         } else {
           router.push('/');
         }

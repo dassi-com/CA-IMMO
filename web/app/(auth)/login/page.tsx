@@ -101,9 +101,9 @@ export default function LoginPage() {
       setTimeout(() => {
         const role = response?.user?.role;
         if (role === 'ADMIN') {
-          router.push('/dashboard/admin');
+          router.push('/admin');
         } else if (role === 'OWNER') {
-          router.push('/dashboard/agent');
+          router.push('/agent');
         } else {
           router.push('/');
         }

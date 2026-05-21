@@ -74,9 +74,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const getDashboardLink = useCallback(() => {
     if (!user) return '/login';
     switch (user.role) {
-      case 'ADMIN': return '/dashboard/admin';
-      case 'OWNER': return '/dashboard/agent';
-      case 'TENANT': return '/dashboard/tenant';
+      case 'ADMIN': return '/admin';
+      case 'OWNER': return '/agent';
+      case 'TENANT': return '/tenant';
       default: return '/login';
     }
   }, [user]);

@@ -119,7 +119,7 @@ export default function PostPropertyPage() {
       }
 
       toast.success('Annonce publiée avec succès ! En attente de validation.');
-      router.push('/dashboard/agent');
+      router.push('/agent');
     } catch (error: any) {
       const message = error?.response?.data?.message || "Erreur lors de la publication";
       toast.error(message);
@@ -132,7 +132,7 @@ export default function PostPropertyPage() {
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-6">
-          <Link href="/dashboard/agent" className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-4">
+          <Link href="/agent" className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-4">
             <ChevronLeft size={20} />
             <span>Back to Dashboard</span>
           </Link>
@@ -350,7 +350,7 @@ export default function PostPropertyPage() {
 
           <div className="flex gap-4 pt-4 border-t border-gray-200">
             <Link
-              href="/dashboard/agent"
+              href="/agent"
               className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
             >
               Cancel

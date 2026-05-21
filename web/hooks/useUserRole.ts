@@ -25,12 +25,12 @@ export const useUserRole = (): UserRole => {
 export const getDashboardLink = (role: UserRole): string => {
   switch (role) {
     case 'admin':
-      return '/dashboard/admin';
+      return '/admin';
     case 'agent':
-      return '/dashboard/agent';
+      return '/agent';
     case 'tenant':
-      return '/dashboard/tenant';
+      return '/tenant';
     default:
-      return '/dashboard/tenant';
+      return '/tenant';
   }
 };
