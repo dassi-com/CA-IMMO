@@ -56,12 +56,8 @@ export default function RegisterPage() {
       newErrors.password = 'Le mot de passe est requis';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Le mot de passe doit contenir au moins 8 caractères';
-    } else if (!/[A-Z]/.test(formData.password)) {
-      newErrors.password = 'Le mot de passe doit contenir au moins une majuscule';
-    } else if (!/[a-z]/.test(formData.password)) {
-      newErrors.password = 'Le mot de passe doit contenir au moins une minuscule';
-    } else if (!/[0-9]/.test(formData.password)) {
-      newErrors.password = 'Le mot de passe doit contenir au moins un chiffre';
+    } else if (!/^[a-zA-Z0-9]+$/.test(formData.password)) {
+      newErrors.password = 'Le mot de passe doit être alphanumérique (lettres et chiffres uniquement)';
     }
 
     // Validation de la confirmation du mot de passe
