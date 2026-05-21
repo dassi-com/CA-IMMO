@@ -1,5 +1,5 @@
-import nodemailer from "nodemailer";
-import { env } from "../config/env";
+import nodemailer from 'nodemailer';
+import { env } from '../config/env';
 
 const transporter = nodemailer.createTransport({
   host: env.mail.host,
@@ -16,9 +16,9 @@ export const sendPasswordResetEmail = async (
   resetUrl: string
 ): Promise<void> => {
   await transporter.sendMail({
-    from: `"Immo Platform" <${env.mail.from}>`,
+    from: `"Central Africa Homes" <${env.mail.from}>`,
     to: email,
-    subject: "Réinitialisation de mot de passe",
+    subject: 'Réinitialisation de mot de passe',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
         <h2>Réinitialisation de mot de passe</h2>
