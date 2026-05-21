@@ -2,8 +2,7 @@ import { body, param, query, ValidationChain } from "express-validator";
 
 export const initiatePaymentValidator: ValidationChain[] = [
   body("property_id")
-    .notEmpty()
-    .withMessage("Property ID is required")
+    .optional()
     .isUUID()
     .withMessage("Invalid property ID"),
 
@@ -25,6 +24,18 @@ export const initiatePaymentValidator: ValidationChain[] = [
     .withMessage("Phone number is required")
     .isMobilePhone("any")
     .withMessage("Invalid phone number"),
+
+  body("type")
+    .optional()
+    .isIn(["FEATURED", "AGENT_FEATURE"])
+    .withMessage("Type must be FEATURED or AGENT_FEATURE"),
+
+  body("property_id")
+    .if(body("type").equals("AGENT_FEATURE").not())
+    .notEmpty()
+    .withMessage("Property ID is required for FEATURED payment")
+    .isUUID()
+    .withMessage("Invalid property ID"),
 ];
 
 export const paymentIdValidator: ValidationChain[] = [

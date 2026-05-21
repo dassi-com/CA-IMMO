@@ -9,6 +9,7 @@ import {
   listUsers,
   getUser,
   suspendUser,
+  featureUser,
   deleteUser,
 } from "./users.controller";
 import {
@@ -208,6 +209,39 @@ router.patch(
   authorize("ADMIN"),
   validate(getUserValidator),
   suspendUser
+);
+
+/**
+ * @swagger
+ * /users/{id}/feature:
+ *   patch:
+ *     summary: Activer/désactiver la mise en avant d'un agent (Admin)
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Statut de mise en avant modifié
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.patch(
+  "/:id/feature",
+  authenticate,
+  authorize("ADMIN"),
+  validate(getUserValidator),
+  featureUser
 );
 
 /**

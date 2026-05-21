@@ -21,6 +21,7 @@ const mapUserToResponse = (user: any): UserResponseDto => {
     role: user.role,
     is_verified: user.is_verified,
     is_suspended: user.is_suspended,
+    is_featured: user.is_featured,
     created_at: user.created_at,
     updated_at: user.updated_at,
   };
@@ -203,6 +204,23 @@ export const suspendUserService = async (userId: string): Promise<UserResponseDt
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: { is_suspended: true },
+  });
+
+  return mapUserToResponse(updatedUser);
+};
+
+export const featureUserService = async (userId: string): Promise<UserResponseDto> => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { is_featured: !user.is_featured },
   });
 
   return mapUserToResponse(updatedUser);

@@ -20,7 +20,7 @@ export interface FlutterwavePaymentPayload {
     name: string;
   };
   meta: {
-    property_id: string;
+    property_id?: string;
     owner_id: string;
     payment_db_id: string;
   };
