@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
     if (isLoading) return;
 
     if (!isAuthenticated || !user) {
-      router.push('/auth/login');
+      router.push('/login');
       return;
     }
 

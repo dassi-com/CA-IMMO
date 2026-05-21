@@ -43,11 +43,13 @@ export default function RegisterPage() {
       newErrors.email = 'L\'email n\'est pas valide';
     }
 
-    // Validation du téléphone (optionnel mais si rempli, doit être valide)
-    if (formData.phone.trim()) {
-      const phoneRegex = /^[\d\s\-\+\(\)]{8,}$/;
+    // Validation du téléphone (obligatoire)
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Le téléphone est requis';
+    } else {
+      const phoneRegex = /^[\d\s\-\+\(\)\.]{7,}$/;
       if (!phoneRegex.test(formData.phone)) {
-        newErrors.phone = 'Le téléphone n\'est pas valide (minimum 8 caractères)';
+        newErrors.phone = 'Le téléphone doit contenir au moins 7 caractères (chiffres, espaces, tirets ou parenthèses)';
       }
     }
 
@@ -56,8 +58,8 @@ export default function RegisterPage() {
       newErrors.password = 'Le mot de passe est requis';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Le mot de passe doit contenir au moins 8 caractères';
-    } else if (!/^[a-zA-Z0-9]+$/.test(formData.password)) {
-      newErrors.password = 'Le mot de passe doit être alphanumérique (lettres et chiffres uniquement)';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      newErrors.password = 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre';
     }
 
     // Validation de la confirmation du mot de passe
@@ -108,10 +110,15 @@ export default function RegisterPage() {
           router.push('/');
         }
       }, 1500);
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "Erreur lors de l'inscription";
-      setErrors({ submit: errorMessage });
-      toast.error(errorMessage);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string; errors?: Array<{ message: string }> } } };
+      const data = err?.response?.data;
+      let detailedError = data?.message || "Erreur lors de l'inscription";
+      if (data?.errors && Array.isArray(data.errors)) {
+        detailedError = data.errors.map((e) => e.message).join(', ');
+      }
+      setErrors({ submit: detailedError });
+      toast.error(detailedError);
       console.error('Registration error:', error);
     } finally {
       setIsLoading(false);
@@ -228,7 +235,7 @@ export default function RegisterPage() {
           {/* Phone */}
           <div className="mb-4">
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-              Téléphone <span className="text-gray-400 text-xs">(optionnel)</span>
+              Téléphone
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -238,9 +245,10 @@ export default function RegisterPage() {
                 id="phone"
                 name="phone"
                 type="tel"
-                placeholder="Votre téléphone (optionnel)"
+                placeholder="Votre téléphone"
                 value={formData.phone}
                 onChange={handleChange}
+                required
                 className={`w-full pl-10 pr-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
                   errors.phone ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
                 }`}

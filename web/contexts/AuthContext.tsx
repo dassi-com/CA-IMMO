@@ -1,12 +1,12 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { authService, User, LoginResponse } from '@/services/authService';
+import { authService, User, AuthResponse } from '@/services/authService';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<LoginResponse>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ user: User } & AuthResponse>;
   register: (data: { full_name: string; email: string; phone: string; password: string; role: 'TENANT' | 'OWNER' }) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -30,35 +30,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      checkAuth();
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
-    } catch (error) {
+    } catch {
       setUser(null);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      Promise.resolve().then(() => {
+        setUser(null);
+        setIsLoading(false);
+      });
+      return;
+    }
+    Promise.resolve().then(() => checkAuth());
+  }, [checkAuth]);
 
   const login = async (email: string, password: string, rememberMe?: boolean) => {
-    const response = await authService.login(email, password, rememberMe);
-    if (response.user) setUser(response.user);
-    return response;
+    const tokens = await authService.login(email, password, rememberMe);
+    const currentUser = await authService.getCurrentUser();
+    if (currentUser) setUser(currentUser);
+    return { ...tokens, user: currentUser! };
   };
 
   const register = async (data: { full_name: string; email: string; phone: string; password: string; role: 'TENANT' | 'OWNER' }) => {
-    const response = await authService.register(data);
-    if (response.user) setUser(response.user);
+    await authService.register(data);
+    const currentUser = await authService.getCurrentUser();
+    if (currentUser) setUser(currentUser);
   };
 
   const logout = async () => {

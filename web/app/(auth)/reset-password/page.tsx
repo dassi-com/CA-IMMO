@@ -55,9 +55,14 @@ function ResetPasswordForm() {
       await api.post('/auth/reset-password', { token, password, email });
       setDone(true);
       toast.success('Mot de passe réinitialisé avec succès');
-    } catch (error: any) {
-      const message = error?.response?.data?.message || 'Erreur lors de la réinitialisation';
-      toast.error(message);
+    } catch (error: unknown) {
+      const err = error as { response?: { status?: number; data?: { message?: string } } };
+      const data = err?.response?.data;
+      if (err?.response?.status === 404) {
+        toast.error('Cette fonctionnalité n\'est pas encore disponible');
+      } else {
+        toast.error(data?.message || 'Erreur lors de la réinitialisation');
+      }
     } finally {
       setIsLoading(false);
     }

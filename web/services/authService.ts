@@ -10,41 +10,36 @@ export interface User {
   is_suspended: boolean;
 }
 
-export interface LoginResponse {
-  user: User;
+export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
 }
 
 export const authService = {
-  // Connexion
-  login: async (email: string, password: string, rememberMe?: boolean): Promise<LoginResponse> => {
+  login: async (email: string, password: string, rememberMe?: boolean): Promise<AuthResponse> => {
     const response = await api.post('/auth/login', { email, password, rememberMe });
-    
-    if (response.data.data.accessToken) {
-      localStorage.setItem('accessToken', response.data.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    const data = response.data.data;
+    if (data.accessToken) {
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
     }
-    
-    return response.data.data;
+    return data;
   },
 
-  // Inscription
   register: async (data: {
     full_name: string;
     email: string;
     phone: string;
     password: string;
     role: 'TENANT' | 'OWNER';
-  }): Promise<LoginResponse> => {
+  }): Promise<AuthResponse> => {
     const response = await api.post('/auth/register', data);
-    
-    if (response.data.data.accessToken) {
-      localStorage.setItem('accessToken', response.data.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    const result = response.data.data;
+    if (result.accessToken) {
+      localStorage.setItem('accessToken', result.accessToken);
+      localStorage.setItem('refreshToken', result.refreshToken);
     }
-    
-    return response.data.data;
+    return result;
   },
 
   // Déconnexion

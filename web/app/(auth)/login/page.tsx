@@ -108,10 +108,15 @@ export default function LoginPage() {
           router.push('/');
         }
       }, 1500);
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || 'Erreur de connexion';
-      setErrors({ submit: errorMessage });
-      toast.error(errorMessage);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string; errors?: Array<{ message: string }> } } };
+      const data = err?.response?.data;
+      let detailedError = data?.message || 'Erreur de connexion';
+      if (data?.errors && Array.isArray(data.errors)) {
+        detailedError = data.errors.map((e) => e.message).join(', ');
+      }
+      setErrors({ submit: detailedError });
+      toast.error(detailedError);
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
