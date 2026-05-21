@@ -72,13 +72,14 @@ export default function AdminDashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [fetchedUsers, fetchedAll, fetchedPending] = await Promise.all([
+      const [fetchedUsers, fetchedApproved, fetchedPending] = await Promise.all([
         adminService.getAllUsers().catch(() => []),
         adminService.getAllProperties().catch(() => []),
         propertyService.getPending().catch(() => []),
       ]);
+      const combined = [...fetchedApproved, ...fetchedPending];
       setUsers(fetchedUsers);
-      setAllProperties(fetchedAll);
+      setAllProperties(combined);
       setPendingListings(fetchedPending.map((p: Property) => ({
         id: p.id,
         title: p.title,
@@ -90,7 +91,7 @@ export default function AdminDashboard() {
       })));
       setStats({
         totalUsers: fetchedUsers.length,
-        totalListings: fetchedAll.length,
+        totalListings: combined.length,
         pendingListings: fetchedPending.length,
         totalRevenue: 0,
       });

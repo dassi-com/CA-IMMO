@@ -18,7 +18,7 @@ export const adminService = {
   },
 
   getAllProperties: async (): Promise<Property[]> => {
-    const response = await api.get('/properties/admin/all');
+    const response = await api.get('/properties?limit=100');
     return response.data.data;
   },
 };

@@ -35,8 +35,11 @@ export default function AdminListingsPage() {
   const loadListings = async () => {
     setLoading(true);
     try {
-      const data = await adminService.getAllProperties();
-      setListings(data);
+      const [approved, pending] = await Promise.all([
+        adminService.getAllProperties().catch(() => [] as Property[]),
+        propertyService.getPending().catch(() => [] as Property[]),
+      ]);
+      setListings([...approved, ...pending]);
     } catch {
       toast.error('Erreur lors du chargement des annonces');
     } finally {
