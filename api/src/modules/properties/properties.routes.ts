@@ -12,6 +12,7 @@ import {
   updatePropertyStatus,
   featureProperty,
   listPendingProperties,
+  listAllProperties,
 } from "./properties.controller";
 import {
   createPropertyValidator,
@@ -184,6 +185,14 @@ router.get(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
+router.get(
+  "/admin/all",
+  authenticate,
+  authorize("ADMIN"),
+  validate(propertiesListValidator),
+  listAllProperties
+);
+
 router.get(
   "/pending",
   authenticate,

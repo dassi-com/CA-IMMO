@@ -13,12 +13,10 @@ import {
   XCircle,
   Star,
   Search,
-  MoreVertical,
   Shield,
   Mail,
   Phone,
   Calendar,
-  AlertCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
@@ -44,6 +42,7 @@ import { adminService } from '@/services/adminService';
 import { User } from '@/services/authService';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 interface PendingListing {
@@ -56,24 +55,6 @@ interface PendingListing {
   type: string;
 }
 
-interface PaymentRequest {
-  id: string;
-  agentName: string;
-  amount: number;
-  package: string;
-  date: string;
-  status: string;
-  reference: string;
-}
-
-interface SystemAlert {
-  id: string;
-  type: string;
-  message: string;
-  date: string;
-  priority: string;
-}
-
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -81,12 +62,8 @@ export default function AdminDashboard() {
 
   const [stats, setStats] = useState({ totalUsers: 0, totalListings: 0, pendingListings: 0, totalRevenue: 0 });
   const [users, setUsers] = useState<User[]>([]);
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [pendingListings, setPendingListings] = useState<PendingListing[]>([]);
-  const [paymentRequests, setPaymentRequests] = useState<PaymentRequest[]>([]);
-  const [systemAlerts] = useState<SystemAlert[]>([
-    { id: 'a1', type: 'warning', message: 'Plus de 10 annonces en attente depuis plus de 48h', date: new Date().toISOString().split('T')[0], priority: 'high' },
-    { id: 'a2', type: 'info', message: 'Bienvenue sur le tableau de bord administrateur', date: new Date().toISOString().split('T')[0], priority: 'medium' },
-  ]);
 
   useEffect(() => {
     loadData();
@@ -95,12 +72,13 @@ export default function AdminDashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [fetchedUsers, allProperties, fetchedPending] = await Promise.all([
+      const [fetchedUsers, fetchedAll, fetchedPending] = await Promise.all([
         adminService.getAllUsers().catch(() => []),
-        propertyService.getAll().catch(() => []),
+        adminService.getAllProperties().catch(() => []),
         propertyService.getPending().catch(() => []),
       ]);
       setUsers(fetchedUsers);
+      setAllProperties(fetchedAll);
       setPendingListings(fetchedPending.map((p: Property) => ({
         id: p.id,
         title: p.title,
@@ -112,7 +90,7 @@ export default function AdminDashboard() {
       })));
       setStats({
         totalUsers: fetchedUsers.length,
-        totalListings: allProperties.length,
+        totalListings: fetchedAll.length,
         pendingListings: fetchedPending.length,
         totalRevenue: 0,
       });
@@ -179,30 +157,6 @@ export default function AdminDashboard() {
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const userRegistrations = [
-    { month: 'Sep', tenants: 12, agents: 3, admins: 0 },
-    { month: 'Oct', tenants: 18, agents: 5, admins: 0 },
-    { month: 'Nov', tenants: 15, agents: 4, admins: 0 },
-    { month: 'Dec', tenants: 25, agents: 7, admins: 1 },
-    { month: 'Jan', tenants: 20, agents: 6, admins: 0 },
-    { month: 'Fév', tenants: 14, agents: 4, admins: 0 },
-  ];
-
-  const listingsByStatus = [
-    { status: 'APPROVED', count: 280, color: '#10B981' },
-    { status: 'PENDING', count: 45, color: '#F59E0B' },
-    { status: 'REJECTED', count: 12, color: '#EF4444' },
-    { status: 'FEATURED', count: 5, color: '#8B5CF6' },
-  ];
-
-  const topCities = [
-    { city: 'Yaoundé', count: 145, percentage: 42 },
-    { city: 'Douala', count: 128, percentage: 37 },
-    { city: 'Bafoussam', count: 32, percentage: 9 },
-    { city: 'Garoua', count: 21, percentage: 6 },
-    { city: 'Maroua', count: 16, percentage: 5 },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Sidebar role="admin" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
@@ -261,36 +215,45 @@ export default function AdminDashboard() {
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ChartCard title="Nouvelles inscriptions" icon={TrendingUp} delay={0.2}>
+            <ChartCard title="Répartition des utilisateurs" icon={TrendingUp} delay={0.2}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={userRegistrations}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" />
-                  <YAxis stroke="#6B7280" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                  <Legend />
-                  <Area type="monotone" dataKey="tenants" stackId="1" fill="#DC2626" stroke="#DC2626" name="Locataires" />
-                  <Area type="monotone" dataKey="agents" stackId="1" fill="#FCA5A5" stroke="#FCA5A5" name="Agents" />
-                </AreaChart>
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: 'Locataires', value: users.filter(u => u.role === 'TENANT').length, color: '#DC2626' },
+                      { name: 'Agents', value: users.filter(u => u.role === 'OWNER').length, color: '#FCA5A5' },
+                      { name: 'Admins', value: users.filter(u => u.role === 'ADMIN').length, color: '#8B5CF6' },
+                    ]}
+                    cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => percent ? `${name} (${(percent * 100).toFixed(0)}%)` : name}
+                  >
+                    {[{ color: '#DC2626' }, { color: '#FCA5A5' }, { color: '#8B5CF6' }].map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
               </ResponsiveContainer>
             </ChartCard>
 
             <ChartCard title="Annonces par statut" icon={Building2} delay={0.3}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={listingsByStatus}>
+                <BarChart data={[
+                  { status: 'Approuvées', count: allProperties.filter(p => p.status === 'APPROVED').length, color: '#10B981' },
+                  { status: 'En attente', count: allProperties.filter(p => p.status === 'PENDING').length, color: '#F59E0B' },
+                  { status: 'Rejetées', count: allProperties.filter(p => p.status === 'REJECTED').length, color: '#EF4444' },
+                ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                   <XAxis dataKey="status" stroke="#6B7280" />
                   <YAxis stroke="#6B7280" />
                   <Tooltip />
                   <Bar dataKey="count" fill="#DC2626" radius={[8, 8, 0, 0]}>
-                    {listingsByStatus.map((entry, index) => (
+                    {[
+                      { status: 'Approuvées', count: allProperties.filter(p => p.status === 'APPROVED').length, color: '#10B981' },
+                      { status: 'En attente', count: allProperties.filter(p => p.status === 'PENDING').length, color: '#F59E0B' },
+                      { status: 'Rejetées', count: allProperties.filter(p => p.status === 'REJECTED').length, color: '#EF4444' },
+                    ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Bar>
@@ -300,34 +263,36 @@ export default function AdminDashboard() {
           </div>
 
           {/* Top Cities Chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-lg p-6 mb-8"
-          >
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Top villes par nombre d'annonces</h3>
-            <div className="space-y-4">
-              {topCities.map((city, index) => (
-                <div key={index}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-gray-700">{city.city}</span>
-                    <span className="text-gray-600 font-medium">
-                      {city.count} annonces ({city.percentage}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${city.percentage}%` }}
-                      transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                      className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full"
-                    />
-                  </div>
+          {allProperties.length > 0 && (() => {
+            const cityCount: Record<string, number> = {};
+            allProperties.forEach(p => { cityCount[p.city] = (cityCount[p.city] || 0) + 1; });
+            const topCities = Object.entries(cityCount)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 5)
+              .map(([city, count]) => ({ city, count, percentage: Math.round((count / allProperties.length) * 100) }));
+            return (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Top villes par nombre d'annonces</h3>
+                <div className="space-y-4">
+                  {topCities.map((city, index) => (
+                    <div key={index}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-gray-700">{city.city}</span>
+                        <span className="text-gray-600 font-medium">{city.count} annonces ({city.percentage}%)</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <motion.div initial={{ width: 0 }}
+                          animate={{ width: `${city.percentage}%` }}
+                          transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
+                          className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </motion.div>
+              </motion.div>
+            );
+          })()}
 
           {/* Pending Listings Table */}
           <motion.div
@@ -490,86 +455,25 @@ export default function AdminDashboard() {
               </div>
             </motion.div>
 
-            {/* Payment Requests */}
+            {/* Quick links */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className="bg-gradient-to-br from-red-600 to-red-700 rounded-2xl shadow-lg p-6 text-white"
             >
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Demandes de mise en avant récentes</h3>
-              <div className="space-y-3">
-                {paymentRequests.map((payment) => (
-                  <div key={payment.id} className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-medium text-gray-800">{payment.agentName}</h4>
-                        <p className="text-sm text-gray-600">{payment.package}</p>
-                      </div>
-                      <div
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          payment.status === 'confirmed'
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-yellow-100 text-yellow-600'
-                        }`}
-                      >
-                        {payment.status === 'confirmed' ? 'Confirmé' : 'En attente'}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">{payment.date}</span>
-                      <span className="font-bold text-red-600">{payment.amount.toLocaleString()} FCFA</span>
-                    </div>
-                    <div className="flex gap-2 mt-3">
-                      <button className="flex-1 py-1.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">
-                        Confirmer
-                      </button>
-                      <button className="flex-1 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors">
-                        Rejeter
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <h3 className="text-xl font-bold mb-2">Gestion rapide</h3>
+              <p className="text-sm opacity-90 mb-4">
+                {stats.pendingListings} annonces en attente de validation
+              </p>
+              <Link href="/admin/listings" className="block w-full py-2.5 bg-white text-red-600 rounded-xl font-medium text-center hover:bg-gray-100 transition-colors mb-3">
+                Voir les annonces
+              </Link>
+              <Link href="/admin/users" className="block w-full py-2.5 bg-white/20 text-white rounded-xl font-medium text-center hover:bg-white/30 transition-colors">
+                Gérer les utilisateurs
+              </Link>
             </motion.div>
           </div>
-
-          {/* System Alerts */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="bg-white rounded-2xl shadow-lg p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-red-600" />
-              <h2 className="text-xl font-bold text-gray-800">Alertes système</h2>
-            </div>
-            <div className="space-y-3">
-              {systemAlerts.map((alert) => (
-                <div
-                  key={alert.id}
-                  className={`p-4 rounded-xl border-l-4 ${
-                    alert.priority === 'high'
-                      ? 'border-red-500 bg-red-50'
-                      : alert.priority === 'medium'
-                      ? 'border-yellow-500 bg-yellow-50'
-                      : 'border-green-500 bg-green-50'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-gray-800">{alert.message}</p>
-                      <p className="text-sm text-gray-500 mt-1">{alert.date}</p>
-                    </div>
-                    <button className="text-gray-400 hover:text-gray-600">
-                      <MoreVertical size={18} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </main>
     </div>

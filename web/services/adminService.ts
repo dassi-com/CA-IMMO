@@ -1,8 +1,8 @@
 import { api } from './api';
 import { User } from './authService';
+import { Property } from '@/types/property';
 
 export const adminService = {
-  // Gestion utilisateurs
   getAllUsers: async (): Promise<User[]> => {
     const response = await api.get('/users');
     return response.data.data;
@@ -15,5 +15,10 @@ export const adminService = {
 
   deleteUser: async (userId: string): Promise<void> => {
     await api.delete(`/users/${userId}`);
+  },
+
+  getAllProperties: async (): Promise<Property[]> => {
+    const response = await api.get('/properties/admin/all');
+    return response.data.data;
   },
 };

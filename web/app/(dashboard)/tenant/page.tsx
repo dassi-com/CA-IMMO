@@ -9,18 +9,12 @@ import {
   TrendingUp,
   Home,
   MapPin,
-  Eye,
-  Star,
-  Clock,
-  CheckCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
 import ChartCard, {
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -43,37 +37,11 @@ interface FavoriteItem {
   type: string;
 }
 
-const favoritesActivity = [
-  { month: 'Sep', favorites: 4 },
-  { month: 'Oct', favorites: 7 },
-  { month: 'Nov', favorites: 5 },
-  { month: 'Dec', favorites: 9 },
-  { month: 'Jan', favorites: 6 },
-  { month: 'Fév', favorites: 8 },
-];
-
 const budgetData = [
   { name: 'Achat (50-100M)', value: 35, color: '#DC2626' },
   { name: 'Achat (100-200M)', value: 25, color: '#EF4444' },
   { name: 'Location (<500k)', value: 20, color: '#F87171' },
   { name: 'Location (500k-1M)', value: 20, color: '#FCA5A5' },
-];
-
-const activeAlerts = [
-  {
-    id: 'alert1',
-    type: 'price',
-    criteria: 'Prix inférieur à 100,000,000 FCFA',
-    description: 'Alerte pour maisons à Yaoundé',
-    active: true,
-  },
-  {
-    id: 'alert2',
-    type: 'area',
-    criteria: 'Nouveaux biens à Douala',
-    description: 'Quartiers: Bonapriso, Akwa, Bali',
-    active: true,
-  },
 ];
 
 export default function TenantDashboard() {
@@ -153,7 +121,7 @@ export default function TenantDashboard() {
             />
             <StatsCard
               title="Alertes actives"
-              value={activeAlerts.length}
+              value={0}
               icon={Bell}
               trend={1}
               trendLabel="alertes"
@@ -164,30 +132,23 @@ export default function TenantDashboard() {
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ChartCard title="Activité des favoris" icon={TrendingUp} delay={0.2}>
+            <ChartCard title="Types de favoris" icon={TrendingUp} delay={0.2}>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={favoritesActivity}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" />
-                  <YAxis stroke="#6B7280" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="favorites"
-                    stroke="#DC2626"
-                    strokeWidth={2}
-                    dot={{ fill: '#DC2626', r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
+                <PieChart>
+                  <Pie cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}
+                    data={(() => {
+                      const counts: Record<string, number> = {};
+                      favoriteProperties.forEach(p => { counts[p.type] = (counts[p.type] || 0) + 1; });
+                      return Object.entries(counts).length > 0
+                        ? Object.entries(counts).map(([type, count], i) => ({ name: type, value: count, color: ['#DC2626','#EF4444','#F87171','#FCA5A5'][i % 4] }))
+                        : [{ name: 'Aucun favori', value: 1, color: '#E5E7EB' }];
+                    })()}
+                    dataKey="value"
+                    label={({ name, percent }) => percent ? `${name} (${(percent * 100).toFixed(0)}%)` : name}>
+                    <Cell fill="#DC2626" />
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
               </ResponsiveContainer>
             </ChartCard>
 
@@ -295,21 +256,11 @@ export default function TenantDashboard() {
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Alertes actives</h3>
               <div className="space-y-3">
-                {activeAlerts.map((alert) => (
-                  <div key={alert.id} className="p-3 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Bell className="w-4 h-4 text-red-600" />
-                        <span className="font-medium text-gray-800">{alert.criteria}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-600" />
-                        <span className="text-xs text-green-600">Active</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600">{alert.description}</p>
-                  </div>
-                ))}
+                <div className="p-3 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    Aucune alerte configurée. Créez une alerte pour être notifié des nouvelles annonces.
+                  </p>
+                </div>
               </div>
               <button className="mt-4 w-full py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
                 + Créer une alerte

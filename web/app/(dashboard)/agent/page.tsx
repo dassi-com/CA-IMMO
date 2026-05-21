@@ -57,21 +57,7 @@ interface PendingRow {
   price: string;
 }
 
-const monthlyPerformance = [
-  { month: 'Sep', views: 180, contacts: 12 },
-  { month: 'Oct', views: 220, contacts: 18 },
-  { month: 'Nov', views: 195, contacts: 15 },
-  { month: 'Dec', views: 280, contacts: 25 },
-  { month: 'Jan', views: 245, contacts: 22 },
-  { month: 'Fév', views: 127, contacts: 11 },
-];
 
-const propertyTypes = [
-  { name: 'Villas', value: 8, color: '#DC2626' },
-  { name: 'Appartements', value: 10, color: '#EF4444' },
-  { name: 'Terrains', value: 4, color: '#F87171' },
-  { name: 'Commerces', value: 2, color: '#FCA5A5' },
-];
 
 export default function AgentDashboard() {
   const { user } = useAuth();
@@ -188,54 +174,45 @@ export default function AgentDashboard() {
             />
           </div>
 
+          {(listings.length > 0 || inquiries.length > 0) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ChartCard title="Performances mensuelles" icon={TrendingUp} delay={0.2}>
+            <ChartCard title="Annonces par statut" icon={TrendingUp} delay={0.2}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyPerformance}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" />
-                  <YAxis yAxisId="left" stroke="#6B7280" />
-                  <YAxis yAxisId="right" orientation="right" stroke="#6B7280" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                  <Legend />
-                  <Bar yAxisId="left" dataKey="views" fill="#DC2626" name="Vues" />
-                  <Bar yAxisId="right" dataKey="contacts" fill="#FCA5A5" name="Contacts" />
-                </BarChart>
+                <PieChart>
+                  <Pie cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}
+                    data={[
+                      { name: 'Approuvées', value: listings.filter(l => l.status === 'APPROVED').length, color: '#10B981' },
+                      { name: 'En attente', value: listings.filter(l => l.status === 'PENDING').length, color: '#F59E0B' },
+                      { name: 'Rejetées', value: listings.filter(l => l.status === 'REJECTED').length, color: '#EF4444' },
+                    ]}
+                    dataKey="value"
+                    label={({ name, percent }) => percent ? `${name} (${(percent * 100).toFixed(0)}%)` : name}>
+                    {[1,2,3].map((_, i) => <Cell key={i} fill={['#10B981','#F59E0B','#EF4444'][i]} />)}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Répartition des annonces" icon={Building2} delay={0.3}>
+            <ChartCard title="Types de biens" icon={Building2} delay={0.3}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={propertyTypes}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
+                  <Pie cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}
+                    data={(() => {
+                      const counts: Record<string, number> = {};
+                      listings.forEach(l => { counts[l.property_type] = (counts[l.property_type] || 0) + 1; });
+                      return Object.entries(counts).map(([type, count]) => ({ name: type, value: count, color: '#DC2626' }));
+                    })()}
                     dataKey="value"
-                    label={({ name, percent }) => {
-                      const percentage = percent ? (percent * 100).toFixed(0) : '0';
-                      return `${name} (${percentage}%)`;
-                    }}
-                  >
-                    {propertyTypes.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
+                    label={({ name, percent }) => percent ? `${name} (${(percent * 100).toFixed(0)}%)` : name}>
+                    {listings.map((_, i) => <Cell key={i} fill={['#DC2626','#EF4444','#F87171','#FCA5A5'][i % 4]} />)}
                   </Pie>
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
           </div>
+          )}
 
           <div id="liste-annonces">
           <motion.div

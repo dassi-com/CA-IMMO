@@ -34,7 +34,7 @@ interface SidebarProps {
 
 const navigationItems: Record<string, { name: string; href: string; icon: React.ComponentType<{ size?: number }> }[]> = {
   tenant: [
-    { name: 'Dashboard', href: '#dashboard', icon: Home },
+    { name: 'Dashboard', href: '/tenant', icon: Home },
     { name: 'Mes favoris', href: '/favorites', icon: Heart },
     { name: 'Visites', href: '#visites', icon: Calendar },
     { name: 'Messages', href: '#messages', icon: MessageSquare },
@@ -42,10 +42,10 @@ const navigationItems: Record<string, { name: string; href: string; icon: React.
     { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
   agent: [
-    { name: 'Dashboard', href: '#dashboard', icon: Home },
-    { name: 'Mes annonces', href: '#liste-annonces', icon: Building2 },
-    { name: 'Messages', href: '#messages', icon: MessageSquare },
-    { name: 'Statistiques', href: '#statistiques', icon: BarChart3 },
+    { name: 'Dashboard', href: '/agent', icon: Home },
+    { name: 'Mes annonces', href: '/agent/listings', icon: Building2 },
+    { name: 'Messages', href: '/agent/messages', icon: MessageSquare },
+    { name: 'Statistiques', href: '/agent/stats', icon: BarChart3 },
     { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
   admin: [
