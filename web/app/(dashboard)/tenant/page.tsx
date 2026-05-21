@@ -227,60 +227,35 @@ export default function TenantDashboard() {
           </motion.div>
           </div>
 
-          {/* Visits and Alerts Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Upcoming Visits */}
-            <div id="visites">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
-            >
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Visites à venir</h3>
-              <div className="space-y-4">
-                <p className="text-gray-500 text-sm text-center py-8">
-                  Aucune visite prévue. Parcourez les annonces pour planifier des visites.
-                </p>
+          {/* Quick links to pages */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <Link href="/tenant/visits" className="bg-white rounded-2xl shadow-lg p-5 hover:shadow-xl transition-shadow flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                <Calendar size={24} />
               </div>
-            </motion.div>
-            </div>
-
-            {/* Active Alerts */}
-            <div id="alertes">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
-            >
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Alertes actives</h3>
-              <div className="space-y-3">
-                <div className="p-3 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    Aucune alerte configurée. Créez une alerte pour être notifié des nouvelles annonces.
-                  </p>
-                </div>
+              <div>
+                <p className="font-semibold text-gray-800">Mes visites</p>
+                <p className="text-sm text-gray-500">Planifier et suivre</p>
               </div>
-              <button className="mt-4 w-full py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                + Créer une alerte
-              </button>
-            </motion.div>
-            </div>
-          </div>
-
-          <div id="messages">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65 }}
-            className="bg-white rounded-2xl shadow-lg p-6 mb-8"
-          >
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Messages</h3>
-            <p className="text-gray-500 text-sm text-center py-8">
-              Aucun message pour le moment. Contactez un agent depuis une annonce pour démarrer une conversation.
-            </p>
-          </motion.div>
+            </Link>
+            <Link href="/tenant/messages" className="bg-white rounded-2xl shadow-lg p-5 hover:shadow-xl transition-shadow flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
+                <MessageSquare size={24} />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Mes messages</p>
+                <p className="text-sm text-gray-500">Voir mes demandes</p>
+              </div>
+            </Link>
+            <Link href="/tenant/alerts" className="bg-white rounded-2xl shadow-lg p-5 hover:shadow-xl transition-shadow flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center text-yellow-600">
+                <Bell size={24} />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Mes alertes</p>
+                <p className="text-sm text-gray-500">Gérer mes alertes</p>
+              </div>
+            </Link>
           </div>
 
           {/* Recommendations */}

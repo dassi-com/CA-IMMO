@@ -36,9 +36,9 @@ const navigationItems: Record<string, { name: string; href: string; icon: React.
   tenant: [
     { name: 'Dashboard', href: '/tenant', icon: Home },
     { name: 'Mes favoris', href: '/favorites', icon: Heart },
-    { name: 'Visites', href: '#visites', icon: Calendar },
-    { name: 'Messages', href: '#messages', icon: MessageSquare },
-    { name: 'Alertes', href: '#alertes', icon: Bell },
+    { name: 'Visites', href: '/tenant/visits', icon: Calendar },
+    { name: 'Messages', href: '/tenant/messages', icon: MessageSquare },
+    { name: 'Alertes', href: '/tenant/alerts', icon: Bell },
     { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
   agent: [
