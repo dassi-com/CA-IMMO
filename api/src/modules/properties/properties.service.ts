@@ -90,23 +90,25 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
   }
 
   if (query.price_min || query.price_max) {
-    where.price = {};
+    const priceFilter: Prisma.FloatFilter = {};
     if (query.price_min) {
-      where.price = { ...where.price as object, gte: parseFloat(query.price_min) };
+      priceFilter.gte = parseFloat(query.price_min);
     }
     if (query.price_max) {
-      where.price = { ...where.price as object, lte: parseFloat(query.price_max) };
+      priceFilter.lte = parseFloat(query.price_max);
     }
+    where.price = priceFilter;
   }
 
   if (query.size_min || query.size_max) {
-    where.size_m2 = {};
+    const sizeFilter: Prisma.FloatFilter = {};
     if (query.size_min) {
-      where.size_m2 = { ...where.size_m2 as object, gte: parseFloat(query.size_min) };
+      sizeFilter.gte = parseFloat(query.size_min);
     }
     if (query.size_max) {
-      where.size_m2 = { ...where.size_m2 as object, lte: parseFloat(query.size_max) };
+      sizeFilter.lte = parseFloat(query.size_max);
     }
+    where.size_m2 = sizeFilter;
   }
 
   // Featured en haut, puis tri demandé
@@ -304,4 +306,44 @@ export const featurePropertyService = async (propertyId: string) => {
   });
 
   return updatedProperty;
+};
+
+export const listPendingPropertiesService = async (query: PropertiesListQuery) => {
+  const page = Math.max(1, parseInt(query.page ?? "1", 10));
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
+  const skip = (page - 1) * limit;
+
+  const where: Prisma.PropertyWhereInput = {
+    is_deleted: false,
+    status: "PENDING",
+  };
+
+  if (query.city) {
+    where.city = { contains: query.city, mode: "insensitive" };
+  }
+
+  if (query.property_type) {
+    where.property_type = query.property_type as PropertyType;
+  }
+
+  const [total, properties] = await Promise.all([
+    prisma.property.count({ where }),
+    prisma.property.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { created_at: "desc" },
+      include: propertyInclude,
+    }),
+  ]);
+
+  return {
+    properties,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };

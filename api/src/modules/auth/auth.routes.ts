@@ -1,13 +1,16 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { register, login, refresh, logout, getMe, googleCallback } from "./auth.controller";
+import { register, login, refresh, logout, getMe, forgotPassword, resetPassword, googleCallback } from "./auth.controller";
 import { validate } from "../../middlewares/validate.middleware";
-import { authenticate } from "../../middlewares/auth.midlleware";
+import { authenticate } from "../../middlewares/auth.middleware";
 import {
   registerValidator,
   loginValidator,
   refreshValidator,
+  forgotPasswordValidator,
+  resetPasswordValidator,
 } from "./auth.validator";
 import passport from "../../config/passport";
+import { env } from "../../config/env";
 
 const router = Router();
 
@@ -144,6 +147,55 @@ router.get("/me", authenticate, getMe);
 
 /**
  * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Demander un lien de réinitialisation de mot de passe
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Si l'email existe, un lien a été envoyé
+ */
+router.post("/forgot-password", validate(forgotPasswordValidator), forgotPassword);
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Réinitialiser le mot de passe
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Mot de passe réinitialisé avec succès
+ *       400:
+ *         description: Token invalide ou expiré
+ */
+router.post("/reset-password", validate(resetPasswordValidator), resetPassword);
+
+/**
+ * @swagger
  * /auth/google:
  *   get:
  *     summary: Authentifier avec Google
@@ -172,7 +224,7 @@ router.get(
         return next(err);
       }
       if (!user) {
-        return res.redirect(`${process.env.CLIENT_URL ?? "http://localhost:3000"}/login?error=authentication_failed`);
+        return res.redirect(`${env.clientUrl}/login?error=authentication_failed`);
       }
       (req as any).user = user;
       next();

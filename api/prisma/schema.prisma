@@ -53,15 +53,18 @@ model User {
   password     String?
   google_id    String?   @unique
   role         Role      @default(TENANT)
-  is_verified  Boolean   @default(false)
-  is_suspended Boolean   @default(false)
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  is_verified        Boolean   @default(false)
+  is_suspended       Boolean   @default(false)
+  reset_token        String?   @unique
+  reset_token_expires DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
   
   properties   Property[]
   inquiries    Inquiry[]
   payments     Payment[]
   reviews      Review[]
+  favorites    Favorite[]
   refresh_tokens RefreshToken[]
 
   @@index([email])
@@ -92,6 +95,7 @@ model Property {
   inquiries     Inquiry[]
   payments      Payment[]
   reviews       Review[]
+  favorites     Favorite[]
 
   @@index([status, is_deleted])
   @@index([city, neighborhood])
@@ -165,8 +169,23 @@ model Review {
   property    Property @relation(fields: [property_id], references: [id])
   reviewer    User     @relation(fields: [reviewer_id], references: [id])
 
-  @@index([property_id])
+@@index([property_id])
   @@map("reviews")
+}
+
+model Favorite {
+  id          String   @id @default(uuid())
+  user_id     String
+  property_id String
+  created_at  DateTime @default(now())
+
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  property    Property @relation(fields: [property_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, property_id])
+  @@index([user_id])
+  @@index([property_id])
+  @@map("favorites")
 }
 
 model RefreshToken {

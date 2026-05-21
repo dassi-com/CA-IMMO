@@ -43,13 +43,13 @@ export default function RegisterPage() {
       newErrors.email = 'L\'email n\'est pas valide';
     }
 
-    // Validation du téléphone (obligatoire)
+    // Validation du téléphone (obligatoire, format international exigé par le backend)
     if (!formData.phone.trim()) {
       newErrors.phone = 'Le téléphone est requis';
     } else {
-      const phoneRegex = /^[\d\s\-\+\(\)\.]{7,}$/;
-      if (!phoneRegex.test(formData.phone)) {
-        newErrors.phone = 'Le téléphone doit contenir au moins 7 caractères (chiffres, espaces, tirets ou parenthèses)';
+      const phoneRegex = /^\+[\d\s\-\(\)\.]{7,20}$/;
+      if (!phoneRegex.test(formData.phone.trim())) {
+        newErrors.phone = 'Entrez un numéro valide avec indicatif (ex: +237691234567)';
       }
     }
 
@@ -111,14 +111,23 @@ export default function RegisterPage() {
         }
       }, 1500);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string; errors?: Array<{ message: string }> } } };
+      const err = error as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } } };
       const data = err?.response?.data;
-      let detailedError = data?.message || "Erreur lors de l'inscription";
+      const fieldMap: Record<string, string> = { full_name: 'name' };
       if (data?.errors && Array.isArray(data.errors)) {
-        detailedError = data.errors.map((e) => e.message).join(', ');
+        const fieldErrors: Record<string, string> = {};
+        data.errors.forEach((e) => {
+          const key = fieldMap[e.field] || e.field;
+          fieldErrors[key] = e.message;
+        });
+        setErrors(prev => ({ ...prev, ...fieldErrors }));
+        const allMessages = data.errors.map((e) => e.message).join(', ');
+        toast.error(allMessages);
+      } else {
+        const msg = data?.message || "Erreur lors de l'inscription";
+        setErrors(prev => ({ ...prev, submit: msg }));
+        toast.error(msg);
       }
-      setErrors({ submit: detailedError });
-      toast.error(detailedError);
       console.error('Registration error:', error);
     } finally {
       setIsLoading(false);
@@ -245,7 +254,7 @@ export default function RegisterPage() {
                 id="phone"
                 name="phone"
                 type="tel"
-                placeholder="Votre téléphone"
+                placeholder="+237691234567"
                 value={formData.phone}
                 onChange={handleChange}
                 required

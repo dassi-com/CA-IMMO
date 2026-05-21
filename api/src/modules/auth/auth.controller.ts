@@ -9,35 +9,37 @@ import {
   refreshTokenService,
   logoutService,
   getMeService,
-  generateAuthTokens,
+  forgotPasswordService,
+  resetPasswordService,
+  generateAuthTokensWithUser,
 } from "./auth.service";
-import { RegisterDto, LoginDto } from "./auth.types";
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto } from "./auth.types";
 import { User } from "@prisma/client";
 
 export const register = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const dto = req.body as RegisterDto;
-    const tokens = await registerService(dto);
+    const result = await registerService(dto);
 
-    sendSuccess(res, tokens, "Account created successfully", 201);
+    sendSuccess(res, result, "Account created successfully", 201);
   }
 );
 
 export const login = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const dto = req.body as LoginDto;
-    const tokens = await loginService(dto);
+    const result = await loginService(dto);
 
-    sendSuccess(res, tokens, "Login successful");
+    sendSuccess(res, result, "Login successful");
   }
 );
 
 export const refresh = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const { refreshToken } = req.body as { refreshToken: string };
-    const tokens = await refreshTokenService(refreshToken);
+    const result = await refreshTokenService(refreshToken);
 
-    sendSuccess(res, tokens, "Token refreshed successfully");
+    sendSuccess(res, result, "Token refreshed successfully");
   }
 );
 
@@ -58,12 +60,30 @@ export const getMe = asyncHandler(
   }
 );
 
+export const forgotPassword = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const dto = req.body as ForgotPasswordDto;
+    await forgotPasswordService(dto);
+
+    sendSuccess(res, null, "If this email exists, a reset link has been sent");
+  }
+);
+
+export const resetPassword = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const dto = req.body as ResetPasswordDto;
+    await resetPasswordService(dto);
+
+    sendSuccess(res, null, "Password reset successfully");
+  }
+);
+
 export const googleCallback = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user = req.user as User;
-    const tokens = await generateAuthTokens(user);
+    const result = await generateAuthTokensWithUser(user);
 
-    const redirectUrl = `${env.clientUrl}/auth/google/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
+    const redirectUrl = `${env.clientUrl}/auth/google/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`;
     res.redirect(redirectUrl);
   }
 );

@@ -34,6 +34,7 @@ export const env = {
   flutterwave: {
     secretKey: process.env.FLUTTERWAVE_SECRET_KEY!,
     publicKey: process.env.FLUTTERWAVE_PUBLIC_KEY!,
+    secretHash: process.env.FLUTTERWAVE_SECRET_HASH!,
   },
   mail: {
     host: process.env.MAIL_HOST ?? "smtp.gmail.com",

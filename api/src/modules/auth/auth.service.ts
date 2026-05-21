@@ -7,18 +7,21 @@ import { env } from "../../config/env";
 import {
   RegisterDto,
   LoginDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
   TokenPayload,
   AuthTokens,
+  AuthTokensWithUser,
 } from "./auth.types";
 import { User } from "@prisma/client";
 import { Profile } from "passport-google-oauth20";
 import { sanitizeText } from "../../utils/sanitize";
+import { sendPasswordResetEmail } from "../../utils/mail";
 
 const SALT_ROUNDS = 12;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
-const REFRESH_TOKEN_EXPIRES_IN_MS = 7 * 24 * 60 * 60 * 1000; // 7 jours
-
-// ─── Token Helpers ────────────────────────────────────────────────────────────
+const REFRESH_TOKEN_EXPIRES_IN_MS = 7 * 24 * 60 * 60 * 1000;
+const RESET_TOKEN_EXPIRES_IN_MS = 60 * 60 * 1000;
 
 const generateAccessToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, env.jwtSecret, {
@@ -30,6 +33,15 @@ const generateRefreshToken = (): string => {
   return crypto.randomBytes(64).toString("hex");
 };
 
+const generateResetToken = (): string => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+const excludePassword = (user: User): Omit<User, "password"> => {
+  const { password, ...userWithoutPassword } = user;
+  return userWithoutPassword;
+};
+
 const generateAuthTokens = async (user: User): Promise<AuthTokens> => {
   const accessToken = generateAccessToken({
     id: user.id,
@@ -39,7 +51,6 @@ const generateAuthTokens = async (user: User): Promise<AuthTokens> => {
 
   const refreshToken = generateRefreshToken();
 
-  // Stocker le refresh token en base
   await prisma.refreshToken.create({
     data: {
       token: refreshToken,
@@ -51,9 +62,12 @@ const generateAuthTokens = async (user: User): Promise<AuthTokens> => {
   return { accessToken, refreshToken };
 };
 
-export { generateAuthTokens };
+const generateAuthTokensWithUser = async (user: User): Promise<AuthTokensWithUser> => {
+  const tokens = await generateAuthTokens(user);
+  return { ...tokens, user: excludePassword(user) };
+};
 
-// ─── Google Auth ──────────────────────────────────────────────────────────────
+export { generateAuthTokens, generateAuthTokensWithUser };
 
 export const googleAuthService = async (profile: Profile): Promise<User> => {
   const email = profile.emails?.[0]?.value;
@@ -98,10 +112,7 @@ export const googleAuthService = async (profile: Profile): Promise<User> => {
   return user;
 };
 
-// ─── Service Methods ──────────────────────────────────────────────────────────
-
-export const registerService = async (dto: RegisterDto): Promise<AuthTokens> => {
-  // Vérifier si l'email existe déjà
+export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithUser> => {
   const existingUser = await prisma.user.findUnique({
     where: { email: dto.email },
   });
@@ -110,7 +121,6 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokens> => 
     throw new AppError("Email already in use", 409);
   }
 
-  // Vérifier si le téléphone existe déjà
   if (dto.phone) {
     const existingPhone = await prisma.user.findUnique({
       where: { phone: dto.phone },
@@ -121,17 +131,14 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokens> => 
     }
   }
 
-  // Valider le rôle (defense-in-depth : le validateur express n'est pas infaillible)
   const allowedRoles = ["OWNER", "TENANT"];
   const role = dto.role ?? "TENANT";
   if (!allowedRoles.includes(role)) {
     throw new AppError("Role must be OWNER or TENANT", 400);
   }
 
-  // Hasher le mot de passe
   const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
 
-  // Créer l'utilisateur
   const user = await prisma.user.create({
     data: {
       full_name: sanitizeText(dto.full_name),
@@ -142,11 +149,10 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokens> => 
     },
   });
 
-  return generateAuthTokens(user);
+  return generateAuthTokensWithUser(user);
 };
 
-export const loginService = async (dto: LoginDto): Promise<AuthTokens> => {
-  // Trouver l'utilisateur
+export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> => {
   const user = await prisma.user.findUnique({
     where: { email: dto.email },
   });
@@ -155,31 +161,26 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokens> => {
     throw new AppError("Invalid email or password", 401);
   }
 
-  // Vérifier si le compte est suspendu
   if (user.is_suspended) {
     throw new AppError("Your account has been suspended", 403);
   }
 
-  // Vérifier si le compte utilise Google Auth (pas de mot de passe)
-  // Message générique pour éviter l'énumération d'emails
   if (!user.password) {
     throw new AppError("Invalid email or password", 401);
   }
 
-  // Vérifier le mot de passe
   const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
   if (!isPasswordValid) {
     throw new AppError("Invalid email or password", 401);
   }
 
-  return generateAuthTokens(user);
+  return generateAuthTokensWithUser(user);
 };
 
 export const refreshTokenService = async (
   token: string
-): Promise<AuthTokens> => {
-  // Chercher le refresh token en base
+): Promise<AuthTokensWithUser> => {
   const storedToken = await prisma.refreshToken.findUnique({
     where: { token },
     include: { user: true },
@@ -189,22 +190,18 @@ export const refreshTokenService = async (
     throw new AppError("Invalid refresh token", 401);
   }
 
-  // Vérifier l'expiration
   if (storedToken.expires_at < new Date()) {
-    // Supprimer le token expiré
     await prisma.refreshToken.delete({ where: { token } });
     throw new AppError("Refresh token expired, please login again", 401);
   }
 
-  // Vérifier si l'utilisateur est suspendu
   if (storedToken.user.is_suspended) {
     throw new AppError("Your account has been suspended", 403);
   }
 
-  // Rotation du refresh token : supprimer l'ancien, en créer un nouveau
   await prisma.refreshToken.delete({ where: { token } });
 
-  return generateAuthTokens(storedToken.user);
+  return generateAuthTokensWithUser(storedToken.user);
 };
 
 export const logoutService = async (token: string): Promise<void> => {
@@ -232,4 +229,64 @@ export const getMeService = async (
   }
 
   return user;
+};
+
+export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<void> => {
+  const user = await prisma.user.findUnique({
+    where: { email: dto.email },
+  });
+
+  if (!user || !user.password) {
+    return;
+  }
+
+  const resetToken = generateResetToken();
+  const hashedToken = await bcrypt.hash(resetToken, SALT_ROUNDS);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      reset_token: hashedToken,
+      reset_token_expires: new Date(Date.now() + RESET_TOKEN_EXPIRES_IN_MS),
+    },
+  });
+
+  const resetUrl = `${env.clientUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
+
+  await sendPasswordResetEmail(user.email, resetUrl);
+};
+
+export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void> => {
+  const user = await prisma.user.findUnique({
+    where: { email: dto.email },
+  });
+
+  if (!user || !user.reset_token || !user.reset_token_expires) {
+    throw new AppError("Invalid or expired reset token", 400);
+  }
+
+  if (user.reset_token_expires < new Date()) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { reset_token: null, reset_token_expires: null },
+    });
+    throw new AppError("Reset token has expired", 400);
+  }
+
+  const isTokenValid = await bcrypt.compare(dto.token, user.reset_token);
+
+  if (!isTokenValid) {
+    throw new AppError("Invalid reset token", 400);
+  }
+
+  const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      reset_token: null,
+      reset_token_expires: null,
+    },
+  });
 };

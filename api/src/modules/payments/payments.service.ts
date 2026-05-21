@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import { Prisma, PaymentStatus } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
@@ -7,6 +6,7 @@ import {
   initiateFlutterwavePayment,
   verifyFlutterwaveTransaction,
 } from "../../config/flutterwave";
+import crypto from "node:crypto";
 import {
   InitiatePaymentDto,
   FlutterwaveWebhookDto,
@@ -148,13 +148,8 @@ export const handleWebhookService = async (
   payload: FlutterwaveWebhookDto,
   signature: string
 ): Promise<void> => {
-  // Vérifier la signature du webhook
-  const hash = crypto
-    .createHmac("sha256", env.flutterwave.secretKey)
-    .update(JSON.stringify(payload))
-    .digest("hex");
-
-  if (hash !== signature) {
+  // Vérifier la signature du webhook (verif-hash est un hash partagé configuré dans le dashboard Flutterwave)
+  if (signature !== env.flutterwave.secretHash) {
     throw new AppError("Invalid webhook signature", 401);
   }
 
@@ -213,7 +208,7 @@ export const handleWebhookService = async (
 
 export const confirmPaymentManuallyService = async (
   paymentId: string
-): Promise<typeof paymentInclude & { id: string }> => {
+): Promise<Prisma.PaymentGetPayload<{ include: typeof paymentInclude }>> => {
   const payment = await prisma.payment.findUnique({
     where: { id: paymentId },
     include: paymentInclude,
@@ -244,7 +239,7 @@ export const confirmPaymentManuallyService = async (
     }),
   ]);
 
-  return updatedPayment as any;
+  return updatedPayment;
 };
 
 export const getMyPaymentsService = async (

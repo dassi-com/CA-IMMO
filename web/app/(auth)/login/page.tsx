@@ -109,14 +109,19 @@ export default function LoginPage() {
         }
       }, 1500);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string; errors?: Array<{ message: string }> } } };
+      const err = error as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } } };
       const data = err?.response?.data;
-      let detailedError = data?.message || 'Erreur de connexion';
       if (data?.errors && Array.isArray(data.errors)) {
-        detailedError = data.errors.map((e) => e.message).join(', ');
+        const fieldErrors: Record<string, string> = {};
+        data.errors.forEach((e) => { fieldErrors[e.field] = e.message; });
+        setErrors(prev => ({ ...prev, ...fieldErrors }));
+        const allMessages = data.errors.map((e) => e.message).join(', ');
+        toast.error(allMessages);
+      } else {
+        const msg = data?.message || 'Erreur de connexion';
+        setErrors(prev => ({ ...prev, submit: msg }));
+        toast.error(msg);
       }
-      setErrors({ submit: detailedError });
-      toast.error(detailedError);
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);

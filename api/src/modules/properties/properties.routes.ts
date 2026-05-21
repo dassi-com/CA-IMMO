@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate } from "../../middlewares/auth.midlleware";
+import { authenticate } from "../../middlewares/auth.middleware";
 import { authorize } from "../../middlewares/role.middleware";
 import { validate } from "../../middlewares/validate.middleware";
 import {
@@ -11,6 +11,7 @@ import {
   getMyProperties,
   updatePropertyStatus,
   featureProperty,
+  listPendingProperties,
 } from "./properties.controller";
 import {
   createPropertyValidator,
@@ -162,6 +163,33 @@ router.get(
   authorize("OWNER"),
   validate(propertiesListValidator),
   getMyProperties
+);
+
+/**
+ * @swagger
+ * /properties/pending:
+ *   get:
+ *     summary: Lister les annonces en attente (Admin)
+ *     tags: [Properties]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *     responses:
+ *       200:
+ *         description: Liste des annonces en attente
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+router.get(
+  "/pending",
+  authenticate,
+  authorize("ADMIN"),
+  validate(propertiesListValidator),
+  listPendingProperties
 );
 
 /**
