@@ -8,6 +8,7 @@ export interface User {
   role: 'ADMIN' | 'OWNER' | 'TENANT';
   is_verified: boolean;
   is_suspended: boolean;
+  created_at: string;
 }
 
 export interface AuthResponse {

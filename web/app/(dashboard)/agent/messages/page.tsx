@@ -51,17 +51,17 @@ export default function AgentMessagesPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Sidebar role="agent" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
       <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
-        <div className="p-6 lg:p-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="p-4 lg:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Messages</h1>
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">Messages</h1>
               <p className="text-gray-500 mt-1">{inquiries.length} message(s) reçu(s)</p>
             </div>
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input type="text" placeholder="Rechercher..." value={searchTerm}
                 onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 w-64" />
+                className="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500" />
             </div>
           </div>
 
@@ -74,32 +74,32 @@ export default function AgentMessagesPage() {
               <div className="divide-y divide-gray-100">
                 {paginated.map((inq, idx) => (
                   <motion.div key={inq.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}
-                    className="p-5 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-start justify-between mb-2">
+                    className="p-4 lg:p-5 hover:bg-gray-50 transition-colors">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold">
+                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold flex-shrink-0">
                           {inq.name.charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{inq.name}</p>
-                          <div className="flex items-center gap-3 text-sm text-gray-500">
-                            <span className="flex items-center gap-1"><Mail size={14} />{inq.email}</span>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 truncate">{inq.name}</p>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-gray-500">
+                            <span className="flex items-center gap-1 truncate"><Mail size={14} />{inq.email}</span>
                             {inq.phone_number && <span className="flex items-center gap-1"><Phone size={14} />{inq.phone_number}</span>}
                           </div>
                         </div>
                       </div>
-                      <span className="text-xs text-gray-400 flex items-center gap-1">
+                      <span className="text-xs text-gray-400 flex items-center gap-1 flex-shrink-0">
                         <Calendar size={12} />
                         {new Date(inq.created_at).toLocaleDateString()}
                       </span>
                     </div>
                     {inq.message && (
-                      <p className="text-gray-600 text-sm ml-13 pl-13 mt-2">{inq.message}</p>
+                      <p className="text-gray-600 text-sm mt-2 ml-0 sm:ml-13">{inq.message}</p>
                     )}
                     {inq.property && (
                       <div className="flex items-center gap-2 mt-3 text-sm text-blue-600">
                         <Home size={14} />
-                        <span>Demande pour : {inq.property.title}</span>
+                        <span className="truncate">Demande pour : {inq.property.title}</span>
                       </div>
                     )}
                   </motion.div>
@@ -108,7 +108,7 @@ export default function AgentMessagesPage() {
             )}
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+              <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-100 gap-3">
                 <span className="text-sm text-gray-500">Page {currentPage} sur {totalPages}</span>
                 <div className="flex items-center gap-2">
                   <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}

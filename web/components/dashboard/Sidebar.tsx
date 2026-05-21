@@ -216,13 +216,13 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              className="fixed inset-0 bg-black/20 z-40 lg:hidden"
             />
             <motion.aside
               initial={{ x: -300 }}
               animate={{ x: 0 }}
               exit={{ x: -300 }}
-              className="fixed left-0 top-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 shadow-2xl lg:hidden"
+              className="fixed left-0 top-0 w-72 h-full bg-black/60 backdrop-blur-xl text-white z-50 shadow-2xl lg:hidden"
             >
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b border-white/10">

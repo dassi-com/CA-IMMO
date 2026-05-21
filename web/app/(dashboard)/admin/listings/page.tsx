@@ -16,6 +16,7 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
+import { adminService } from '@/services/adminService';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import toast from 'react-hot-toast';
@@ -34,7 +35,7 @@ export default function AdminListingsPage() {
   const loadListings = async () => {
     setLoading(true);
     try {
-      const data = await propertyService.getAll();
+      const data = await adminService.getAllProperties();
       setListings(data);
     } catch {
       toast.error('Erreur lors du chargement des annonces');
