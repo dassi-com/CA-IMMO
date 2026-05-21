@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -41,11 +41,35 @@ export default function LoginPage() {
   const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
+
+  // Validation du formulaire
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'L\'email est requis';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'L\'email n\'est pas valide';
+      }
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Le mot de passe est requis';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -53,33 +77,55 @@ export default function LoginPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Effacer l'erreur du champ quand l'utilisateur commence à taper
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error('Veuillez corriger les erreurs du formulaire');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const response = await authLogin(formData.email, formData.password, formData.rememberMe);
-      toast.success('Connexion réussie');
-      const role = response?.user?.role;
-      if (role === 'ADMIN') router.push('/dashboard/admin');
-      else if (role === 'OWNER') router.push('/dashboard/agent');
-      else router.push('/');
+      toast.success('Connexion réussie! Redirection en cours...');
+      
+      // Attendre un peu avant de rediriger
+      setTimeout(() => {
+        const role = response?.user?.role;
+        if (role === 'ADMIN') {
+          router.push('/dashboard/admin');
+        } else if (role === 'OWNER') {
+          router.push('/dashboard/agent');
+        } else {
+          router.push('/');
+        }
+      }, 1500);
     } catch (error: any) {
-      const message = error?.response?.data?.message || 'Erreur de connexion';
-      toast.error(message);
+      const errorMessage = error?.response?.data?.message || error?.message || 'Erreur de connexion';
+      setErrors({ submit: errorMessage });
+      toast.error(errorMessage);
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    if (provider === 'google') {
-      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
-    } else {
-      toast.error(`${provider} login is not available yet`);
-    }
+  const renderErrorMessage = (fieldName: string) => {
+    if (!errors[fieldName]) return null;
+    return (
+      <div className="flex items-center gap-2 mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+        <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+        <span className="text-sm text-red-600">{errors[fieldName]}</span>
+      </div>
+    );
   };
 
   return (
@@ -102,6 +148,14 @@ export default function LoginPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+          {/* Erreur globale */}
+          {errors.submit && (
+            <div className="mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <span className="text-sm text-red-600">{errors.submit}</span>
+            </div>
+          )}
+
           {/* Email Field */}
           <div className="mb-5">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -118,10 +172,13 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className={`block w-full pl-10 pr-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
+                  errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
+                }`}
                 placeholder="Enter your email"
               />
             </div>
+            {renderErrorMessage('email')}
           </div>
 
           {/* Password Field */}
@@ -140,7 +197,9 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className={`block w-full pl-10 pr-10 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
+                  errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
+                }`}
                 placeholder="Enter your password"
               />
               <button
@@ -155,6 +214,7 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            {renderErrorMessage('password')}
           </div>
 
           {/* Remember Me & Forgot Password */}
@@ -204,7 +264,13 @@ export default function LoginPage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => handleSocialLogin('google')}
+              onClick={() => {
+                if (process.env.NEXT_PUBLIC_API_URL) {
+                  window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+                } else {
+                  toast.error('Google login is not available');
+                }
+              }}
               className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-gray-700 font-medium"
             >
               <GoogleIcon />
@@ -212,7 +278,7 @@ export default function LoginPage() {
             </button>
             <button
               type="button"
-              onClick={() => handleSocialLogin('facebook')}
+              onClick={() => toast.error('Facebook login is not available yet')}
               className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-gray-700 font-medium"
             >
               <FacebookIcon />
