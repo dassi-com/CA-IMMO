@@ -40,6 +40,17 @@ enum PaymentStatus {
   FAILED
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum FeatureTarget {
+  AGENT
+  PROPERTY
+}
+
 enum PaymentType {
   FEATURED
   SUBSCRIPTION
@@ -68,6 +79,9 @@ model User {
   reviews      Review[]
   favorites    Favorite[]
   refresh_tokens RefreshToken[]
+  featureRequests FeatureRequest[] @relation("requester")
+  reviewedRequests FeatureRequest[] @relation("reviewer")
+  agentFeatureRequests FeatureRequest[] @relation("agentFeatures")
 
   @@index([email])
   @@map("users")
@@ -98,6 +112,7 @@ model Property {
   payments      Payment[]
   reviews       Review[]
   favorites     Favorite[]
+  featureRequests FeatureRequest[] @relation("propertyFeatures")
 
   @@index([status, is_deleted])
   @@index([city, neighborhood])
@@ -202,4 +217,32 @@ model RefreshToken {
   @@index([token])
   @@index([user_id])
   @@map("refresh_tokens")
+}
+
+model FeatureRequest {
+  id            String        @id @default(uuid())
+  requester_id  String
+  target        FeatureTarget
+  target_id     String        // ID de l'agent (User) ou propriété (Property)
+  property_id   String?       // NULL si target=AGENT, remplit si target=PROPERTY
+  agent_id      String?       // NULL si target=PROPERTY, remplit si target=AGENT
+  status        RequestStatus @default(PENDING)
+  reason        String?
+  reviewed_by   String?
+  reviewed_at   DateTime?
+  rejection_reason String?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+
+  requester     User          @relation("requester", fields: [requester_id], references: [id], onDelete: Cascade)
+  property      Property?     @relation("propertyFeatures", fields: [property_id], references: [id], onDelete: Cascade)
+  agent         User?         @relation("agentFeatures", fields: [agent_id], references: [id], onDelete: Cascade)
+  reviewer      User?         @relation("reviewer", fields: [reviewed_by], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([target])
+  @@index([requester_id])
+  @@index([property_id])
+  @@index([agent_id])
+  @@map("feature_requests")
 }
