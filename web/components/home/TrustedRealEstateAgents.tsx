@@ -15,9 +15,19 @@ export default function TrustedRealEstateAgents() {
     const load = async () => {
       try {
         const data = await adminService.getFeaturedAgents();
-        setAgents(data.slice(0, 3));
+        if (data && data.length > 0) {
+          setAgents(data.slice(0, 3));
+        } else {
+          const allAgents = await adminService.getAgents();
+          setAgents(allAgents.slice(0, 3));
+        }
       } catch {
-        console.error('Erreur chargement agents');
+        try {
+          const allAgents = await adminService.getAgents();
+          setAgents(allAgents.slice(0, 3));
+        } catch {
+          console.error('Erreur chargement agents');
+        }
       } finally {
         setLoading(false);
       }

@@ -14,7 +14,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { adminService } from '@/services/adminService';
-import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import { User } from '@/services/authService';
 
@@ -52,8 +51,8 @@ export default function AdminDashboardPage() {
   const stats = [
     { label: 'Annonces totales', value: properties.length, icon: Building2, color: 'from-blue-500 to-blue-600', link: '/admin/listings' },
     { label: 'En attente', value: pendingCount, icon: Clock, color: 'from-yellow-500 to-yellow-600', link: '/admin/listings' },
-    { label: 'Approuv├®es', value: approvedCount, icon: CheckCircle, color: 'from-green-500 to-green-600', link: '/admin/listings' },
-    { label: 'Rejet├®es', value: rejectedCount, icon: XCircle, color: 'from-red-500 to-red-600', link: '/admin/listings' },
+    { label: 'Approuvees', value: approvedCount, icon: CheckCircle, color: 'from-green-500 to-green-600', link: '/admin/listings' },
+    { label: 'Rejetees', value: rejectedCount, icon: XCircle, color: 'from-red-500 to-red-600', link: '/admin/listings' },
     { label: 'En avant', value: featuredCount, icon: TrendingUp, color: 'from-purple-500 to-purple-600', link: '/admin/listings' },
     { label: 'Agents', value: agentCount, icon: Users, color: 'from-indigo-500 to-indigo-600', link: '/admin/users' },
     { label: 'Locataires', value: tenantCount, icon: DollarSign, color: 'from-teal-500 to-teal-600', link: '/admin/users' },
@@ -103,7 +102,7 @@ export default function AdminDashboardPage() {
                   animate={{ opacity: 1, x: 0 }}
                   className="bg-white rounded-2xl shadow-lg p-6"
                 >
-                  <h2 className="text-lg font-bold text-gray-800 mb-4">Annonces r├®centes</h2>
+                  <h2 className="text-lg font-bold text-gray-800 mb-4">Annonces recentes</h2>
                   {recentProperties.length === 0 ? (
                     <p className="text-gray-400 text-center py-8">Aucune annonce</p>
                   ) : (
@@ -119,7 +118,7 @@ export default function AdminDashboardPage() {
                             p.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
                             'bg-red-100 text-red-700'
                           }`}>
-                            {p.status === 'APPROVED' ? 'Approuv├®e' : p.status === 'PENDING' ? 'En attente' : 'Rejet├®e'}
+                            {p.status === 'APPROVED' ? 'Approuvee' : p.status === 'PENDING' ? 'En attente' : 'Rejetee'}
                           </span>
                         </div>
                       ))}
@@ -135,11 +134,11 @@ export default function AdminDashboardPage() {
                   <h2 className="text-lg font-bold text-gray-800 mb-4">Actions rapides</h2>
                   <div className="space-y-3">
                     <Link href="/admin/listings" className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
-                      <p className="font-medium text-blue-700">G├®rer les annonces</p>
+                      <p className="font-medium text-blue-700">Gerer les annonces</p>
                       <p className="text-sm text-blue-500">{pendingCount} en attente d'approbation</p>
                     </Link>
                     <Link href="/admin/users" className="block p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors">
-                      <p className="font-medium text-purple-700">G├®rer les utilisateurs</p>
+                      <p className="font-medium text-purple-700">Gerer les utilisateurs</p>
                       <p className="text-sm text-purple-500">{users.length} utilisateurs inscrits</p>
                     </Link>
                     <Link href="/admin/payments" className="block p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors">
