@@ -8,6 +8,8 @@ export interface User {
   role: 'ADMIN' | 'OWNER' | 'TENANT';
   is_verified: boolean;
   is_suspended: boolean;
+  is_featured?: boolean;
+  avatar_url?: string;
   created_at: string;
 }
 
@@ -67,9 +69,19 @@ export const authService = {
   },
 
   // Mettre à jour le profil
-  updateProfile: async (data: { full_name?: string; email?: string; phone?: string }): Promise<User> => {
+  updateProfile: async (data: { full_name?: string; email?: string; phone?: string; avatar_url?: string }): Promise<User> => {
     const response = await api.put('/auth/profile', data);
     return response.data.data;
+  },
+
+  // Upload avatar
+  uploadAvatar: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const response = await api.post('/auth/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.data.avatar_url;
   },
 
   // Changer le mot de passe

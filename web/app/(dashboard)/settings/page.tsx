@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   User,
   Mail,
@@ -11,8 +11,10 @@ import {
   Save,
   ChevronLeft,
   Shield,
+  Camera,
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,12 +27,15 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
 
   const role = isAdmin ? 'admin' : isAgent ? 'agent' : 'tenant';
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState({
     full_name: user?.full_name || '',
     email: user?.email || '',
     phone: user?.phone || '',
   });
+
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   const [passwords, setPasswords] = useState({
     current_password: '',
@@ -86,6 +91,25 @@ export default function SettingsPage() {
       toast.error(msg);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Veuillez sélectionner une image');
+      return;
+    }
+    setAvatarUploading(true);
+    try {
+      const avatarUrl = await authService.uploadAvatar(file);
+      toast.success('Photo de profil mise à jour');
+      window.location.reload();
+    } catch {
+      toast.error("Erreur lors du téléchargement de l'image");
+    } finally {
+      setAvatarUploading(false);
     }
   };
 
@@ -287,15 +311,36 @@ export default function SettingsPage() {
                   <Shield size={20} className="text-red-600" />
                   Mon compte
                 </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg">
-                      {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                  <div className="space-y-4">
+                  <div className="flex flex-col items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                    <div className="relative">
+                      {user?.avatar_url ? (
+                        <Image src={user.avatar_url} alt={user.full_name} width={64} height={64} className="rounded-full object-cover w-16 h-16" />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xl">
+                          {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={avatarUploading}
+                        className="absolute -bottom-1 -right-1 bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 transition-colors disabled:opacity-50"
+                      >
+                        <Camera size={14} />
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        className="hidden"
+                      />
                     </div>
-                    <div>
+                    <div className="text-center">
                       <p className="font-semibold text-gray-900">{user?.full_name}</p>
                       <p className="text-sm text-gray-500">{user?.email}</p>
                     </div>
+                    {avatarUploading && <p className="text-xs text-red-600">Téléchargement...</p>}
                   </div>
 
                   <div className="space-y-2">

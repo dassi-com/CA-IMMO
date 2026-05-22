@@ -12,7 +12,7 @@ const features = [
     description: 'A real estate agent can provide you with a clear breakdown of costs so that you can avoid surprise expenses when purchasing your dream home.',
     buttonText: 'Find a local agent',
     buttonLink: '/search',
-    image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80',
   },
   {
     icon: Key,

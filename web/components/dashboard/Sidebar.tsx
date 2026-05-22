@@ -50,7 +50,7 @@ const navigationItems: Record<string, { name: string; href: string; icon: React.
   ],
   admin: [
     { name: 'Dashboard', href: '/admin', icon: Home },
-    { name: 'Utilisateurs', href: '/admin/users', icon: Users },
+    { name: 'Agents', href: '/admin/agents', icon: Users },
     { name: 'Annonces', href: '/admin/listings', icon: FileText },
     { name: 'Paiements', href: '/admin/payments', icon: DollarSign },
     { name: 'Paramètres', href: '/settings', icon: Settings },

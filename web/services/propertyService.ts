@@ -63,6 +63,11 @@ export const propertyService = {
     const response = await api.get('/properties/my/listings');
     return response.data.data;
   },
+
+  getCitiesWithCounts: async (): Promise<{ city: string; country: string; count: number; image: string }[]> => {
+    const response = await api.get('/properties/cities');
+    return response.data.data;
+  },
 };
 
 export const getProperties = propertyService.getAll;

@@ -1,38 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Star, Phone, MessageCircle } from 'lucide-react';
-
-const agents = [
-  {
-    name: 'Marie Nkomo',
-    agency: 'Central Africa Realty',
-    rating: 4.8,
-    listings: 45,
-    phone: '+237 6 12 34 56 78',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
-  },
-  {
-    name: 'Jean-Paul Essono',
-    agency: 'Prime Properties Gabon',
-    rating: 4.9,
-    listings: 38,
-    phone: '+241 7 12 34 56 78',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
-  },
-  {
-    name: 'Aminata Diallo',
-    agency: 'Afro Homes',
-    rating: 4.7,
-    listings: 52,
-    phone: '+221 7 12 34 56 78',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
-  },
-];
+import { adminService } from '@/services/adminService';
+import { User } from '@/services/authService';
 
 export default function TrustedRealEstateAgents() {
+  const [agents, setAgents] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [callAlert, setCallAlert] = useState<{ show: boolean; phone: string }>({ show: false, phone: '' });
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await adminService.getFeaturedAgents();
+        setAgents(data.slice(0, 3));
+      } catch {
+        console.error('Erreur chargement agents');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const handleCall = (phone: string) => {
     setCallAlert({ show: true, phone });
@@ -43,6 +34,18 @@ export default function TrustedRealEstateAgents() {
     window.open(`https://wa.me/${phone.replace(/\s/g, '')}`, '_blank');
   };
 
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6 md:px-8 lg:px-12 text-center text-gray-400">
+          Chargement...
+        </div>
+      </section>
+    );
+  }
+
+  if (agents.length === 0) return null;
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-6 md:px-8 lg:px-12">
@@ -52,26 +55,32 @@ export default function TrustedRealEstateAgents() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {agents.map((agent) => (
-            <div key={agent.name} className="bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition">
+            <div key={agent.id} className="bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition">
               <div className="flex items-center gap-4">
                 <div className="relative w-16 h-16 flex-shrink-0">
-                  <Image src={agent.avatar} alt={agent.name} fill className="rounded-full object-cover" />
+                  {agent.avatar_url ? (
+                    <Image src={agent.avatar_url} alt={agent.full_name} fill className="rounded-full object-cover" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xl">
+                      {agent.full_name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900">{agent.name}</h3>
-                  <p className="text-gray-500 text-sm">{agent.agency}</p>
+                  <h3 className="text-lg font-bold text-gray-900">{agent.full_name}</h3>
+                  <p className="text-gray-500 text-sm">{agent.email}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                    <span className="font-medium text-sm">{agent.rating}</span>
+                    <span className="font-medium text-sm">Agent certifié</span>
                     <span className="text-gray-400 text-xs">•</span>
-                    <span className="text-gray-500 text-xs">{agent.listings} listings</span>
+                    <span className="text-gray-500 text-xs">{agent.phone || 'Contact disponible'}</span>
                   </div>
                 </div>
               </div>
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => handleCall(agent.phone)}
-                  className="flex-1 flex items-center justify-center gap-2 bg-primary-600 text-white py-2 rounded-lg text-sm hover:bg-primary-700 transition"
+                  className="flex-1 flex items-center justify-center gap-2 bg-red-600 text-white py-2 rounded-lg text-sm hover:bg-red-700 transition"
                 >
                   <Phone size={14} />
                   Call
@@ -89,7 +98,6 @@ export default function TrustedRealEstateAgents() {
         </div>
       </div>
 
-      {/* Call Alert Popup */}
       {callAlert.show && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-up">
           <p>Calling {callAlert.phone}...</p>

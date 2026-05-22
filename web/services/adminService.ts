@@ -8,6 +8,21 @@ export const adminService = {
     return response.data.data;
   },
 
+  getAgents: async (): Promise<User[]> => {
+    const response = await api.get('/users?role=OWNER');
+    return response.data.data;
+  },
+
+  getFeaturedAgents: async (): Promise<User[]> => {
+    const response = await api.get('/users/featured-agents');
+    return response.data.data;
+  },
+
+  toggleFeaturedAgent: async (userId: string): Promise<User> => {
+    const response = await api.patch(`/users/${userId}/feature`);
+    return response.data.data;
+  },
+
   suspendUser: async (userId: string): Promise<User> => {
     const response = await api.patch(`/users/${userId}/suspend`);
     return response.data.data;
