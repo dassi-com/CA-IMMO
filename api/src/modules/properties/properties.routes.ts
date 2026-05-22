@@ -78,6 +78,33 @@ router.get("/", validate(propertiesListValidator), listProperties);
 
 /**
  * @swagger
+ * /properties/pending:
+ *   get:
+ *     summary: Lister les annonces en attente (Admin)
+ *     tags: [Properties]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *     responses:
+ *       200:
+ *         description: Liste des annonces en attente
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+router.get(
+  "/pending",
+  authenticate,
+  authorize("ADMIN"),
+  validate(propertiesListValidator),
+  listPendingProperties
+);
+
+/**
+ * @swagger
  * /properties/{id}:
  *   get:
  *     summary: Détail d'une annonce
@@ -163,33 +190,6 @@ router.get(
   authorize("OWNER"),
   validate(propertiesListValidator),
   getMyProperties
-);
-
-/**
- * @swagger
- * /properties/pending:
- *   get:
- *     summary: Lister les annonces en attente (Admin)
- *     tags: [Properties]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
- *     responses:
- *       200:
- *         description: Liste des annonces en attente
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
- */
-router.get(
-  "/pending",
-  authenticate,
-  authorize("ADMIN"),
-  validate(propertiesListValidator),
-  listPendingProperties
 );
 
 /**
