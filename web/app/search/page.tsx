@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Filter, SlidersHorizontal, Grid3x3, List, ChevronDown, X } from 'lucide-react';
 import PropertyCard from '@/components/properties/PropertyCard';
@@ -9,7 +9,7 @@ import { Property } from '@/types/property';
 
 type SortOption = 'newest' | 'price_asc' | 'price_desc';
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
@@ -212,7 +212,7 @@ export default function SearchPage() {
           {isFilterOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
               <div className="absolute inset-0 bg-black/60" onClick={() => setIsFilterOpen(false)} />
-              <div className="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-xl p-6 overflow-y-auto">
+              <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[90vw] bg-white shadow-xl p-6 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-semibold text-gray-900">Filters</h3>
                   <button onClick={() => setIsFilterOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -257,7 +257,7 @@ export default function SearchPage() {
             </div>
           )}
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {filteredProperties.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-xl">
                 <p className="text-gray-500">No properties found matching your criteria.</p>
@@ -279,5 +279,24 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8 pt-24">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 w-1/4 mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-gray-200 rounded-xl h-96"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

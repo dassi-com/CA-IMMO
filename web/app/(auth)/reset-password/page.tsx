@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/services/api';
 import toast from 'react-hot-toast';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -134,5 +134,17 @@ export default function ResetPasswordPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="text-center">
+        <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      </div>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

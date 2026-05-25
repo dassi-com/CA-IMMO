@@ -1,71 +1,95 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { Home, Key, MapPin } from 'lucide-react';
+import { Search, Home, Shield, CheckCircle } from 'lucide-react';
 
 const features = [
   {
+    icon: Search,
+    title: 'Search Properties',
+    description: 'Browse through our extensive collection of properties with advanced filtering options.',
+  },
+  {
     icon: Home,
-    title: 'Buy a home',
-    subtitle: 'Buy a Property',
-    description: 'A real estate agent can provide you with a clear breakdown of costs so that you can avoid surprise expenses when purchasing your dream home.',
-    buttonText: 'Find a local agent',
-    buttonLink: '/search',
-    image: 'https://images.unsplash.com/photo-1560523159-4a9692d222f1?w=400&q=80',
+    title: 'Virtual Tours',
+    description: 'Explore properties from the comfort of your home with immersive virtual tours.',
   },
   {
-    icon: Key,
-    title: 'Rent a home',
-    subtitle: 'Rent a Home',
-    description: "We're creating a seamless online experience – from shopping on the largest rental network, to applying, to paying rent.",
-    buttonText: 'Find rentals',
-    buttonLink: '/search',
-    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80',
+    icon: Shield,
+    title: 'Secure Process',
+    description: 'End-to-end encrypted transactions with verified listings and trusted agents.',
   },
   {
-    icon: MapPin,
-    title: 'Relocate',
-    subtitle: 'Relocate to Central Africa',
-    description: 'Get comprehensive relocation support including property selection, legal assistance, and local integration services tailored for diaspora buyers.',
-    buttonText: 'Start your journey',
-    buttonLink: '/search',
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&q=80',
+    icon: CheckCircle,
+    title: 'Expert Support',
+    description: 'Dedicated real estate experts available 24/7 to guide you through every step.',
   },
 ];
 
 export default function ReadyToFindProperty() {
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
       <div className="container mx-auto px-6 md:px-8 lg:px-12">
-        <div className="text-center mb-10 max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900">Ready to Find Your Perfect Property?</h2>
-          <p className="text-gray-600 mt-2">
-            Whether you're looking to buy your dream home, rent a comfortable space, or relocate to Central Africa, we have the perfect solution for you.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {features.map((feature) => (
-            <div key={feature.title} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
-              <div className="relative h-56">
-                <Image src={feature.image} alt={feature.title} fill className="object-cover" />
+        <div className="flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto">
+          <div className="flex-1 text-center lg:text-left">
+            <h2 className="text-3xl sm:text-4xl font-bold leading-tight">
+              Ready to Find Your Perfect Property?
+            </h2>
+            <p className="text-red-100 mt-4 text-lg max-w-lg mx-auto lg:mx-0">
+              Join thousands of satisfied clients who found their dream property through ImmoME.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10 max-w-xl mx-auto lg:mx-0">
+              {features.map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={feature.title} className="flex gap-3 text-left">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                      <Icon size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white">{feature.title}</h4>
+                      <p className="text-red-100 text-sm mt-0.5">{feature.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center lg:justify-start">
+              <Link
+                href="/search"
+                className="inline-flex items-center justify-center gap-2 bg-white text-red-600 font-semibold px-8 py-3 rounded-lg hover:bg-red-50 transition"
+              >
+                <Search size={18} />
+                Get Started
+              </Link>
+              <Link
+                href="/post-property"
+                className="inline-flex items-center justify-center gap-2 border-2 border-white text-white font-semibold px-8 py-3 rounded-lg hover:bg-white/10 transition"
+              >
+                List Your Property
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex-1 w-full max-w-lg">
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80"
+                alt="Modern living room"
+                className="w-full rounded-2xl shadow-2xl"
+              />
+              <div className="absolute -bottom-4 -left-4 bg-white text-gray-900 rounded-xl p-4 shadow-lg hidden sm:block">
+                <p className="text-2xl font-bold text-red-600">500+</p>
+                <p className="text-sm text-gray-600">Properties Sold</p>
               </div>
-              <div className="p-6 text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="text-primary-600" size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">{feature.title}</h3>
-                <p className="text-gray-500 text-sm mb-2">{feature.subtitle}</p>
-                <p className="text-gray-600 text-sm mb-4">{feature.description}</p>
-                <Link
-                  href={feature.buttonLink}
-                  className="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition"
-                >
-                  {feature.buttonText}
-                </Link>
+              <div className="absolute -top-4 -right-4 bg-white text-gray-900 rounded-xl p-4 shadow-lg hidden sm:block">
+                <p className="text-2xl font-bold text-red-600">98%</p>
+                <p className="text-sm text-gray-600">Happy Clients</p>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
