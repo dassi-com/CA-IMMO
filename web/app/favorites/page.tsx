@@ -130,8 +130,8 @@ export default function FavoritesPage() {
       <div className="min-h-screen bg-gray-50 pt-20 pb-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center animate-pulse">
-              <Heart className="w-5 h-5 text-blue-500" />
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
+              <Heart className="w-5 h-5 text-red-500" />
             </div>
             <div>
               <div className="h-7 w-32 bg-gray-200 rounded animate-pulse"></div>
@@ -153,8 +153,8 @@ export default function FavoritesPage() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Header avec icône cœur */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <Heart className="w-5 h-5 text-blue-500" />
+          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+            <Heart className="w-5 h-5 text-red-500" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">My Favorites</h1>
@@ -168,7 +168,7 @@ export default function FavoritesPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
             >
               <option value="recent">Sort by: Recently Added</option>
               <option value="price-asc">Price: Low to High</option>
@@ -193,7 +193,7 @@ export default function FavoritesPage() {
             </div>
             <h2 className="text-xl font-semibold mb-2">No favorites yet</h2>
             <p className="text-gray-500 mb-6">Start saving properties you love</p>
-            <Link href="/search" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+            <Link href="/search" className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
               Browse Properties
             </Link>
           </div>
@@ -217,7 +217,7 @@ export default function FavoritesPage() {
                   <div className="p-4">
                     <div className="flex justify-between items-start">
                       <Link href={`/properties/${property.id}`}>
-                        <h3 className="font-semibold text-gray-900 hover:text-blue-500 line-clamp-1">
+                        <h3 className="font-semibold text-gray-900 hover:text-red-600 line-clamp-1">
                           {property.title}
                         </h3>
                       </Link>
@@ -241,7 +241,7 @@ export default function FavoritesPage() {
                     </div>
 
                     <div className="flex justify-between items-center mt-3">
-                      <span className="text-lg font-bold text-blue-600">
+                      <span className="text-lg font-bold text-red-600">
                         {formatPrice(property.price, property.currency)}
                       </span>
                       <button
@@ -249,7 +249,7 @@ export default function FavoritesPage() {
                           setSelectedProperty(property);
                           setShowAlertModal(true);
                         }}
-                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-500 transition"
+                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600 transition"
                       >
                         <Bell className="w-3 h-3" />
                         Alert
@@ -260,12 +260,12 @@ export default function FavoritesPage() {
               ))}
             </div>
 
-            {/* Banner avec fond bleu ciel transparent et icônes check */}
-            <div className="mt-10 bg-gradient-to-r from-sky-50/80 to-blue-50/80 backdrop-blur-sm rounded-2xl p-6 border border-sky-200 shadow-sm">
+            {/* Banner with features */}
+            <div className="mt-10 bg-gradient-to-r from-red-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 border border-red-200 shadow-sm">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <Heart className="w-5 h-5 text-sky-500" />
+                    <Heart className="w-5 h-5 text-red-500" />
                     <h3 className="font-semibold text-gray-800 text-lg">Never lose track of properties you love</h3>
                   </div>
                   <p className="text-gray-600 text-sm mb-3">
@@ -273,7 +273,6 @@ export default function FavoritesPage() {
                     notifications when prices change or when similar properties become available.
                   </p>
                   
-                  {/* Options avec icônes check */}
                   <div className="flex flex-wrap gap-6">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
@@ -296,7 +295,7 @@ export default function FavoritesPage() {
                   </div>
                 </div>
                 
-                <button className="bg-sky-500 text-white px-5 py-2.5 rounded-xl hover:bg-sky-600 transition shadow-sm whitespace-nowrap font-medium text-sm">
+                <button className="bg-red-600 text-white px-5 py-2.5 rounded-xl hover:bg-red-700 transition shadow-sm whitespace-nowrap font-medium text-sm">
                   Manage Alerts
                 </button>
               </div>
@@ -321,15 +320,15 @@ export default function FavoritesPage() {
               </p>
               <div className="space-y-3">
                 <label className="flex items-center gap-3 text-sm cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-sky-500 focus:ring-sky-400" defaultChecked />
+                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-400" defaultChecked />
                   <span className="text-gray-700">Price drop notification</span>
                 </label>
                 <label className="flex items-center gap-3 text-sm cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-sky-500 focus:ring-sky-400" />
+                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-400" />
                   <span className="text-gray-700">Similar properties in same area</span>
                 </label>
                 <label className="flex items-center gap-3 text-sm cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-sky-500 focus:ring-sky-400" />
+                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-400" />
                   <span className="text-gray-700">Weekly market updates</span>
                 </label>
               </div>
@@ -343,7 +342,7 @@ export default function FavoritesPage() {
               </button>
               <button 
                 onClick={() => setShowAlertModal(false)} 
-                className="flex-1 bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition"
+                className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
               >
                 Set Alert
               </button>
