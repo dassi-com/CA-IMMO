@@ -4,9 +4,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 const roleRouteMap: Record<string, string> = {
-  '/admin': 'ADMIN',
-  '/agent': 'OWNER',
-  '/tenant': 'TENANT',
+  '/dashboard/admin': 'ADMIN',
+  '/dashboard/agent': 'OWNER',
+  '/dashboard/tenant': 'TENANT',
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

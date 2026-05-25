@@ -12,6 +12,8 @@ export interface Inquiry {
   property?: {
     id: string;
     title: string;
+    city?: string;
+    neighborhood?: string;
   };
 }
 

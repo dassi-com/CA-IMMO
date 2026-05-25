@@ -3,23 +3,14 @@ import { User } from './authService';
 import { Property } from '@/types/property';
 
 export const adminService = {
+  // Gestion utilisateurs
   getAllUsers: async (): Promise<User[]> => {
     const response = await api.get('/users');
     return response.data.data;
   },
 
   getAgents: async (): Promise<User[]> => {
-    const response = await api.get('/users?role=OWNER');
-    return response.data.data;
-  },
-
-  getFeaturedAgents: async (): Promise<User[]> => {
-    const response = await api.get('/users/featured-agents');
-    return response.data.data;
-  },
-
-  toggleFeaturedAgent: async (userId: string): Promise<User> => {
-    const response = await api.patch(`/users/${userId}/feature`);
+    const response = await api.get('/users', { params: { role: 'OWNER' } });
     return response.data.data;
   },
 
@@ -28,15 +19,23 @@ export const adminService = {
     return response.data.data;
   },
 
+  unsuspendUser: async (userId: string): Promise<User> => {
+    const response = await api.patch(`/users/${userId}/unsuspend`);
+    return response.data.data;
+  },
+
   deleteUser: async (userId: string): Promise<void> => {
     await api.delete(`/users/${userId}`);
   },
 
+  // Gestion annonces
   getAllProperties: async (): Promise<Property[]> => {
-    const [approved, pending] = await Promise.all([
-      api.get('/properties?limit=100').then(r => r.data.data).catch(() => []),
-      api.get('/properties/pending').then(r => r.data.data).catch(() => []),
-    ]);
-    return [...approved, ...pending];
+    const response = await api.get('/properties/admin/all');
+    return response.data.data;
+  },
+
+  toggleFeaturedAgent: async (userId: string): Promise<User> => {
+    const response = await api.patch(`/users/${userId}/toggle-featured`);
+    return response.data.data;
   },
 };

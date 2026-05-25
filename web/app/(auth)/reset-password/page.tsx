@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -8,24 +7,7 @@ import { Lock, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/services/api';
 import toast from 'react-hot-toast';
 
-function LoadingFallback() {
-  return (
-    <div className="text-center">
-      <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-      <p className="text-gray-500">Chargement...</p>
-    </div>
-  );
-}
-
 export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={<LoadingFallback />}>
-      <ResetPasswordForm />
-    </Suspense>
-  );
-}
-
-function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -55,14 +37,9 @@ function ResetPasswordForm() {
       await api.post('/auth/reset-password', { token, password, email });
       setDone(true);
       toast.success('Mot de passe réinitialisé avec succès');
-    } catch (error: unknown) {
-      const err = error as { response?: { status?: number; data?: { message?: string } } };
-      const data = err?.response?.data;
-      if (err?.response?.status === 404) {
-        toast.error('Cette fonctionnalité n\'est pas encore disponible');
-      } else {
-        toast.error(data?.message || 'Erreur lors de la réinitialisation');
-      }
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Erreur lors de la réinitialisation';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

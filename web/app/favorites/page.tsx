@@ -37,7 +37,7 @@ type SortOption = "recent" | "price-asc" | "price-desc";
 
 export default function FavoritesPage() {
   const router = useRouter();
-  const { isAuthenticated, isLoading: isAuthLoading, isAdmin } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   const [favorites, setFavorites] = useState<FavoriteDisplay[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,35 +51,31 @@ export default function FavoritesPage() {
       router.replace('/login');
       return;
     }
-    if (!isAuthLoading && isAdmin) {
-      router.replace('/admin');
-      return;
-    }
     if (isAuthenticated) {
       loadFavorites();
     }
-  }, [isAuthenticated, isAuthLoading, isAdmin]);
+  }, [isAuthenticated, isAuthLoading]);
 
   const loadFavorites = async () => {
     setIsLoading(true);
     try {
       const favoriteProperties = await favoriteService.getFavorites();
       
-      const formattedFavorites: FavoriteDisplay[] = (favoriteProperties || []).map((prop: Property) => ({
+      // Convertir les propriétés au format d'affichage
+      const formattedFavorites: FavoriteDisplay[] = favoriteProperties.map((prop: Property) => ({
         id: prop.id,
         title: prop.title,
-        location: prop.neighborhood && prop.city ? `${prop.neighborhood}, ${prop.city}` : prop.city || '',
+        location: `${prop.neighborhood}, ${prop.city}`,
         price: prop.price,
         currency: prop.currency,
         area: prop.size_m2,
-        image: prop.images?.[0]?.image_url || '',
+        image: prop.images?.[0]?.image_url || '/placeholder.jpg',
         savedAt: new Date(prop.created_at),
       }));
       
       setFavorites(formattedFavorites);
     } catch (error) {
       console.error('Error loading favorites:', error);
-      setFavorites([]);
     } finally {
       setIsLoading(false);
     }

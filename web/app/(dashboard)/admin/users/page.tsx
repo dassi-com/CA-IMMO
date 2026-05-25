@@ -51,6 +51,16 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleUnsuspend = async (userId: string) => {
+    try {
+      await adminService.unsuspendUser(userId);
+      toast.success('Utilisateur réactivé');
+      loadUsers();
+    } catch {
+      toast.error("Erreur lors de la réactivation");
+    }
+  };
+
   const handleDeleteUser = async (userId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
     try {
@@ -141,7 +151,11 @@ export default function AdminUsersPage() {
                           <td className="px-6 py-4 text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString()}</td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
-                              <button onClick={() => handleSuspend(u.id)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Suspendre"><Shield size={18} /></button>
+                              {u.is_suspended ? (
+                                <button onClick={() => handleUnsuspend(u.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Réactiver"><Shield size={18} /></button>
+                              ) : (
+                                <button onClick={() => handleSuspend(u.id)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Suspendre"><Shield size={18} /></button>
+                              )}
                               <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer"><XCircle size={18} /></button>
                             </div>
                           </td>
@@ -173,7 +187,11 @@ export default function AdminUsersPage() {
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-400">{new Date(u.created_at).toLocaleDateString()}</span>
                         <div className="flex items-center gap-2">
-                          <button onClick={() => handleSuspend(u.id)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Shield size={18} /></button>
+                          {u.is_suspended ? (
+                            <button onClick={() => handleUnsuspend(u.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"><Shield size={18} /></button>
+                          ) : (
+                            <button onClick={() => handleSuspend(u.id)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Shield size={18} /></button>
+                          )}
                           <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"><XCircle size={18} /></button>
                         </div>
                       </div>

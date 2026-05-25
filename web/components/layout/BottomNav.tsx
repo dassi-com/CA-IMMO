@@ -75,13 +75,13 @@ export default function BottomNav() {
         )}
 
         <Link
-          href={isAuthenticated ? getDashboardLink() : '/register'}
+          href={isAuthenticated ? '/profile' : '/login'}
           className={`flex flex-col items-center py-1.5 px-3 rounded-lg transition ${
-            isActive(getDashboardLink()) ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
+            isActive('/profile') ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
           }`}
         >
           <User size={20} />
-          <span className={`text-xs mt-1 font-medium ${isActive(getDashboardLink()) ? 'text-red-600' : 'text-gray-500'}`}>Account</span>
+          <span className={`text-xs mt-1 font-medium ${isActive('/profile') ? 'text-red-600' : 'text-gray-500'}`}>Profile</span>
         </Link>
       </div>
     </div>

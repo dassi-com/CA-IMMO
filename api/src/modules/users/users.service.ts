@@ -208,6 +208,23 @@ export const suspendUserService = async (userId: string): Promise<UserResponseDt
   return mapUserToResponse(updatedUser);
 };
 
+export const unsuspendUserService = async (userId: string): Promise<UserResponseDto> => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { is_suspended: false },
+  });
+
+  return mapUserToResponse(updatedUser);
+};
+
 export const deleteUserService = async (userId: string): Promise<void> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },

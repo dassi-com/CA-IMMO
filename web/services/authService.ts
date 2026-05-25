@@ -11,39 +11,44 @@ export interface User {
   is_featured?: boolean;
   avatar_url?: string;
   created_at: string;
+  updated_at: string;
 }
 
-export interface AuthResponse {
+export interface LoginResponse {
+  user: User;
   accessToken: string;
   refreshToken: string;
 }
 
 export const authService = {
-  login: async (email: string, password: string, rememberMe?: boolean): Promise<AuthResponse> => {
+  // Connexion
+  login: async (email: string, password: string, rememberMe?: boolean): Promise<LoginResponse> => {
     const response = await api.post('/auth/login', { email, password, rememberMe });
-    const data = response.data.data;
-    if (data.accessToken) {
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+    
+    if (response.data.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
     }
-    return data;
+    
+    return response.data.data;
   },
 
+  // Inscription
   register: async (data: {
     full_name: string;
     email: string;
     phone: string;
     password: string;
-    confirm_password: string;
     role: 'TENANT' | 'OWNER';
-  }): Promise<AuthResponse> => {
+  }): Promise<LoginResponse> => {
     const response = await api.post('/auth/register', data);
-    const result = response.data.data;
-    if (result.accessToken) {
-      localStorage.setItem('accessToken', result.accessToken);
-      localStorage.setItem('refreshToken', result.refreshToken);
+    
+    if (response.data.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
     }
-    return result;
+    
+    return response.data.data;
   },
 
   // Déconnexion
@@ -68,27 +73,6 @@ export const authService = {
     }
   },
 
-  // Mettre à jour le profil
-  updateProfile: async (data: { full_name?: string; email?: string; phone?: string; avatar_url?: string }): Promise<User> => {
-    const response = await api.put('/auth/profile', data);
-    return response.data.data;
-  },
-
-  // Upload avatar
-  uploadAvatar: async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('avatar', file);
-    const response = await api.post('/auth/avatar', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return response.data.data.avatar_url;
-  },
-
-  // Changer le mot de passe
-  changePassword: async (data: { current_password: string; new_password: string; confirm_password: string }): Promise<void> => {
-    await api.put('/auth/password', data);
-  },
-
   // Rafraîchir le token
   refreshToken: async (): Promise<string | null> => {
     try {
@@ -99,5 +83,26 @@ export const authService = {
     } catch (error) {
       return null;
     }
+  },
+
+  // Mettre à jour le profil
+  updateProfile: async (data: { full_name: string; email: string; phone: string }): Promise<User> => {
+    const response = await api.put('/users/profile', data);
+    return response.data.data;
+  },
+
+  // Changer le mot de passe
+  changePassword: async (data: { current_password: string; new_password: string }): Promise<void> => {
+    await api.put('/users/profile/password', data);
+  },
+
+  // Uploader un avatar
+  uploadAvatar: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const response = await api.post('/users/profile/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.data.avatar_url;
   },
 };

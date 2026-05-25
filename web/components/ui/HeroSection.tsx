@@ -1,19 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 // @ts-ignore
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { Search, Mic, Home, Key, MapPin } from 'lucide-react';
 
 export default function HeroSection() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'buy' | 'rent' | 'relocate'>('buy');
   const [searchText, setSearchText] = useState('');
-  const [selectedPrice, setSelectedPrice] = useState('Any Price');
-  const [selectedType, setSelectedType] = useState('All Types');
   const [isClient, setIsClient] = useState(false);
 
+  // Configuration de la reconnaissance vocale
   const {
     transcript,
     listening,
@@ -34,37 +31,6 @@ export default function HeroSection() {
     SpeechRecognition.stopListening();
     if (transcript) {
       setSearchText(transcript);
-    }
-  };
-
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (searchText.trim()) {
-      params.set('city', searchText.trim());
-    }
-    if (selectedPrice && selectedPrice !== 'Any Price') {
-      const match = selectedPrice.match(/^(\d+)\s*-\s*(\d+)/);
-      if (match) {
-        params.set('priceMin', match[1].replace(/\D/g, ''));
-        params.set('priceMax', match[2].replace(/\D/g, ''));
-      }
-    }
-    if (selectedType && selectedType !== 'All Types') {
-      const typeMap: Record<string, string> = {
-        'House': 'MAISON', 'Apartments': 'MAISON', 'Apartment': 'MAISON',
-        'Land': 'TERRAIN', 'Commercial': 'LOCAL_COMMERCIAL',
-        'Studio': 'MAISON', 'Corporate Housing': 'MAISON',
-        'Serviced Apartment': 'MAISON', 'Family Home': 'MAISON',
-      };
-      const type = typeMap[selectedType] || selectedType.toUpperCase();
-      params.set('property_type', type);
-    }
-    router.push(`/search?${params.toString()}`);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
     }
   };
 
@@ -110,7 +76,7 @@ export default function HeroSection() {
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="flex justify-center space-x-4 p-5 border-b border-gray-100">
               <button
-                onClick={() => { setActiveTab('buy'); setSelectedPrice('Any Price'); setSelectedType('All Types'); }}
+                onClick={() => setActiveTab('buy')}
                 className={`flex items-center space-x-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeTab === 'buy'
                     ? 'bg-primary-600 text-white shadow-md'
@@ -121,7 +87,7 @@ export default function HeroSection() {
                 <span>Buy</span>
               </button>
               <button
-                onClick={() => { setActiveTab('rent'); setSelectedPrice('Any Price'); setSelectedType('All Types'); }}
+                onClick={() => setActiveTab('rent')}
                 className={`flex items-center space-x-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeTab === 'rent'
                     ? 'bg-primary-600 text-white shadow-md'
@@ -132,7 +98,7 @@ export default function HeroSection() {
                 <span>Rent</span>
               </button>
               <button
-                onClick={() => { setActiveTab('relocate'); setSelectedPrice('Any Price'); setSelectedType('All Types'); }}
+                onClick={() => setActiveTab('relocate')}
                 className={`flex items-center space-x-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeTab === 'relocate'
                     ? 'bg-primary-600 text-white shadow-md'
@@ -146,14 +112,13 @@ export default function HeroSection() {
 
             <div className="p-5">
               <div className="relative mb-4">
-                  <input
-                    type="text"
-                    value={listening && isClient ? transcript : searchText}
-                    onChange={(e) => !listening && setSearchText(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="City, neighborhood, or speak your search..."
-                    className="w-full p-3 pl-10 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
-                  />
+                <input
+                  type="text"
+                  value={listening && isClient ? transcript : searchText}
+                  onChange={(e) => !listening && setSearchText(e.target.value)}
+                  placeholder="City, neighborhood, or speak your search..."
+                  className="w-full p-3 pl-10 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                 
                 {/* Microphone fonctionnel - seulement côté client */}
@@ -176,31 +141,20 @@ export default function HeroSection() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <select
-                  value={selectedPrice}
-                  onChange={(e) => setSelectedPrice(e.target.value)}
-                  className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white"
-                >
+                <select className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white">
                   {priceOptions[activeTab].map((option) => (
                     <option key={option}>{option}</option>
                   ))}
                 </select>
 
-                <select
-                  value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
-                  className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white"
-                >
+                <select className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white">
                   {typeOptions[activeTab].map((option) => (
                     <option key={option}>{option}</option>
                   ))}
                 </select>
               </div>
 
-              <button
-                onClick={handleSearch}
-                className="w-full bg-primary-600 text-white py-3 rounded-lg text-sm font-medium hover:bg-primary-700 transition flex items-center justify-center space-x-2"
-              >
+              <button className="w-full bg-primary-600 text-white py-3 rounded-lg text-sm font-medium hover:bg-primary-700 transition flex items-center justify-center space-x-2">
                 <Search size={16} />
                 <span>Search Properties</span>
               </button>

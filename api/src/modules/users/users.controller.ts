@@ -9,6 +9,7 @@ import {
   listUsersService,
   getUserService,
   suspendUserService,
+  unsuspendUserService,
   deleteUserService,
 } from "./users.service";
 import {
@@ -61,6 +62,14 @@ export const suspendUser = asyncHandler(
     const id = req.params.id as string;
     const user = await suspendUserService(id);
     sendSuccess(res, user, "User suspended successfully");
+  }
+);
+
+export const unsuspendUser = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const id = req.params.id as string;
+    const user = await unsuspendUserService(id);
+    sendSuccess(res, user, "User unsuspended successfully");
   }
 );
 

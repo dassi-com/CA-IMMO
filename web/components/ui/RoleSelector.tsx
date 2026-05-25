@@ -23,7 +23,7 @@ export default function RoleSelector() {
     setIsOpen(false);
     
     // Rediriger vers le dashboard correspondant
-    router.push(`/${newRole}`);
+    router.push(`/dashboard/${newRole}`);
   };
 
   const getRoleIcon = () => {

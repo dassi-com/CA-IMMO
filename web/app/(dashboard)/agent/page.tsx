@@ -44,7 +44,6 @@ interface ListingRow {
   id: string;
   title: string;
   status: string;
-  property_type: string;
   views: number;
   contacts: number;
   date: string;
@@ -58,7 +57,21 @@ interface PendingRow {
   price: string;
 }
 
+const monthlyPerformance = [
+  { month: 'Sep', views: 180, contacts: 12 },
+  { month: 'Oct', views: 220, contacts: 18 },
+  { month: 'Nov', views: 195, contacts: 15 },
+  { month: 'Dec', views: 280, contacts: 25 },
+  { month: 'Jan', views: 245, contacts: 22 },
+  { month: 'Fév', views: 127, contacts: 11 },
+];
 
+const propertyTypes = [
+  { name: 'Villas', value: 8, color: '#DC2626' },
+  { name: 'Appartements', value: 10, color: '#EF4444' },
+  { name: 'Terrains', value: 4, color: '#F87171' },
+  { name: 'Commerces', value: 2, color: '#FCA5A5' },
+];
 
 export default function AgentDashboard() {
   const { user } = useAuth();
@@ -88,7 +101,6 @@ export default function AgentDashboard() {
         id: p.id,
         title: p.title,
         status: p.status,
-        property_type: p.property_type,
         views: 0,
         contacts: 0,
         date: new Date(p.created_at).toLocaleDateString(),
@@ -133,11 +145,11 @@ export default function AgentDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {userName}</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {userName} 📊</h1>
             <p className="text-gray-600 mt-2">Gérez vos propriétés et suivez vos performances</p>
           </motion.div>
 
-          <div id="dashboard" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Total annonces"
               value={totalListings}
@@ -176,47 +188,55 @@ export default function AgentDashboard() {
             />
           </div>
 
-          {(listings.length > 0 || inquiries.length > 0) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ChartCard title="Annonces par statut" icon={TrendingUp} delay={0.2}>
+            <ChartCard title="Performances mensuelles" icon={TrendingUp} delay={0.2}>
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}
-                    data={[
-                      { name: 'Approuvées', value: listings.filter(l => l.status === 'APPROVED').length, color: '#10B981' },
-                      { name: 'En attente', value: listings.filter(l => l.status === 'PENDING').length, color: '#F59E0B' },
-                      { name: 'Rejetées', value: listings.filter(l => l.status === 'REJECTED').length, color: '#EF4444' },
-                    ]}
-                    dataKey="value"
-                    label={({ name, percent }) => percent ? `${name} (${(percent * 100).toFixed(0)}%)` : name}>
-                    {[1,2,3].map((_, i) => <Cell key={i} fill={['#10B981','#F59E0B','#EF4444'][i]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
+                <BarChart data={monthlyPerformance}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="month" stroke="#6B7280" />
+                  <YAxis yAxisId="left" stroke="#6B7280" />
+                  <YAxis yAxisId="right" orientation="right" stroke="#6B7280" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                    }}
+                  />
+                  <Legend />
+                  <Bar yAxisId="left" dataKey="views" fill="#DC2626" name="Vues" />
+                  <Bar yAxisId="right" dataKey="contacts" fill="#FCA5A5" name="Contacts" />
+                </BarChart>
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Types de biens" icon={Building2} delay={0.3}>
+            <ChartCard title="Répartition des annonces" icon={Building2} delay={0.3}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5}
-                    data={(() => {
-                      const counts: Record<string, number> = {};
-                      listings.forEach(l => { counts[l.property_type] = (counts[l.property_type] || 0) + 1; });
-                      return Object.entries(counts).map(([type, count]) => ({ name: type, value: count, color: '#DC2626' }));
-                    })()}
+                  <Pie
+                    data={propertyTypes}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
                     dataKey="value"
-                    label={({ name, percent }) => percent ? `${name} (${(percent * 100).toFixed(0)}%)` : name}>
-                    {listings.map((_, i) => <Cell key={i} fill={['#DC2626','#EF4444','#F87171','#FCA5A5'][i % 4]} />)}
+                    label={({ name, percent }) => {
+                      const percentage = percent ? (percent * 100).toFixed(0) : '0';
+                      return `${name} (${percentage}%)`;
+                    }}
+                  >
+                    {propertyTypes.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
                   </Pie>
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
           </div>
-          )}
 
-          <div id="liste-annonces">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -261,9 +281,9 @@ export default function AgentDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap text-gray-600">{listing.contacts}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <Link href={`/properties/${listing.id}/edit`} className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors inline-block">
+                          <button className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
                             <Edit size={18} />
-                          </Link>
+                          </button>
                           <button onClick={() => handleDelete(listing.id)} className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
                             <Trash2 size={18} />
                           </button>
@@ -275,9 +295,7 @@ export default function AgentDashboard() {
               </table>
             </div>
           </motion.div>
-          </div>
 
-          <div id="messages">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -346,9 +364,7 @@ export default function AgentDashboard() {
               </div>
             </motion.div>
           </div>
-          </div>
 
-          <div id="statistiques">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -392,7 +408,6 @@ export default function AgentDashboard() {
                 </p>
               </div>
             </motion.div>
-          </div>
           </div>
         </div>
       </main>

@@ -24,6 +24,24 @@ export default function PostPropertyPage() {
   const { isAuthenticated, isLoading, isAgent } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.replace('/login');
+      } else if (!isAgent) {
+        router.replace('/');
+      }
+    }
+  }, [isLoading, isAuthenticated, isAgent, router]);
+
+  if (isLoading || !isAuthenticated || !isAgent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   const [photos, setPhotos] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [propertyId, setPropertyId] = useState<string | null>(null);
@@ -47,16 +65,6 @@ export default function PostPropertyPage() {
     'Brazzaville', 'Pointe-Noire',
     'Malabo', 'Bata'
   ];
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.replace('/login');
-      } else if (!isAgent) {
-        router.replace('/');
-      }
-    }
-  }, [isLoading, isAuthenticated, isAgent, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -119,7 +127,7 @@ export default function PostPropertyPage() {
       }
 
       toast.success('Annonce publiée avec succès ! En attente de validation.');
-      router.push('/agent');
+      router.push('/dashboard/agent');
     } catch (error: any) {
       const message = error?.response?.data?.message || "Erreur lors de la publication";
       toast.error(message);
@@ -132,7 +140,7 @@ export default function PostPropertyPage() {
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-6">
-          <Link href="/agent" className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-4">
+          <Link href="/dashboard/agent" className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-4">
             <ChevronLeft size={20} />
             <span>Back to Dashboard</span>
           </Link>
@@ -350,7 +358,7 @@ export default function PostPropertyPage() {
 
           <div className="flex gap-4 pt-4 border-t border-gray-200">
             <Link
-              href="/agent"
+              href="/dashboard/agent"
               className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
             >
               Cancel

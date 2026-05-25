@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Building2, User, Mail, Lock, Phone, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { Building2, User, Mail, Lock, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
@@ -14,83 +14,12 @@ export default function RegisterPage() {
     email: '',
     phone: '',
     password: '',
-    confirmPassword: '',
     role: 'TENANT' as 'TENANT' | 'OWNER',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Validation des champs
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    // Validation du nom
-    if (!formData.name.trim()) {
-      newErrors.name = 'Le nom complet est requis';
-    } else if (formData.name.length < 3) {
-      newErrors.name = 'Le nom doit contenir au moins 3 caractères';
-    } else if (formData.name.length > 100) {
-      newErrors.name = 'Le nom ne doit pas dépasser 100 caractères';
-    }
-
-    // Validation de l'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      newErrors.email = 'L\'email est requis';
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'L\'email n\'est pas valide';
-    }
-
-    // Validation du téléphone (obligatoire, format international exigé par le backend)
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Le téléphone est requis';
-    } else {
-      const phoneRegex = /^\+[\d\s\-\(\)\.]{7,20}$/;
-      if (!phoneRegex.test(formData.phone.trim())) {
-        newErrors.phone = 'Entrez un numéro valide avec indicatif (ex: +237691234567)';
-      }
-    }
-
-    // Validation du mot de passe
-    if (!formData.password) {
-      newErrors.password = 'Le mot de passe est requis';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Le mot de passe doit contenir au moins 8 caractères';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre';
-    }
-
-    // Validation de la confirmation du mot de passe
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'La confirmation du mot de passe est requise';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    // Effacer l'erreur du champ quand l'utilisateur commence à taper
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Valider le formulaire
-    if (!validateForm()) {
-      toast.error('Veuillez corriger les erreurs du formulaire');
-      return;
-    }
-
     setIsLoading(true);
     try {
       await authRegister({
@@ -98,51 +27,20 @@ export default function RegisterPage() {
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
-        confirm_password: formData.password,
         role: formData.role,
       });
-      toast.success('Compte créé avec succès! Redirection en cours...');
-      
-      // Attendre un peu avant de rediriger pour que le toast soit visible
-      setTimeout(() => {
-        if (formData.role === 'OWNER') {
-          router.push('/agent');
-        } else {
-          router.push('/');
-        }
-      }, 1500);
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } } };
-      const data = err?.response?.data;
-      const fieldMap: Record<string, string> = { full_name: 'name' };
-      if (data?.errors && Array.isArray(data.errors)) {
-        const fieldErrors: Record<string, string> = {};
-        data.errors.forEach((e) => {
-          const key = fieldMap[e.field] || e.field;
-          fieldErrors[key] = e.message;
-        });
-        setErrors(prev => ({ ...prev, ...fieldErrors }));
-        const allMessages = data.errors.map((e) => e.message).join(', ');
-        toast.error(allMessages);
+      toast.success('Compte créé avec succès');
+      if (formData.role === 'OWNER') {
+        router.push('/dashboard/agent');
       } else {
-        const msg = data?.message || "Erreur lors de l'inscription";
-        setErrors(prev => ({ ...prev, submit: msg }));
-        toast.error(msg);
+        router.push('/');
       }
-      console.error('Registration error:', error);
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Erreur lors de l'inscription";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const renderErrorMessage = (fieldName: string) => {
-    if (!errors[fieldName]) return null;
-    return (
-      <div className="flex items-center gap-2 mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-        <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-        <span className="text-sm text-red-600">{errors[fieldName]}</span>
-      </div>
-    );
   };
 
   return (
@@ -156,14 +54,6 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-          {/* Erreur d'enregistrement globale */}
-          {errors.submit && (
-            <div className="mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-              <span className="text-sm text-red-600">{errors.submit}</span>
-            </div>
-          )}
-
           {/* Role Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -204,17 +94,13 @@ export default function RegisterPage() {
             </label>
             <input
               id="name"
-              name="name"
               type="text"
               placeholder="Votre nom"
               value={formData.name}
-              onChange={handleChange}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              className={`w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                errors.name ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
-              }`}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
             />
-            {renderErrorMessage('name')}
           </div>
 
           {/* Email */}
@@ -228,18 +114,14 @@ export default function RegisterPage() {
               </div>
               <input
                 id="email"
-                name="email"
                 type="email"
                 placeholder="Votre email"
                 value={formData.email}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
-                className={`w-full pl-10 pr-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                  errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
-                }`}
+                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
               />
             </div>
-            {renderErrorMessage('email')}
           </div>
 
           {/* Phone */}
@@ -253,22 +135,18 @@ export default function RegisterPage() {
               </div>
               <input
                 id="phone"
-                name="phone"
                 type="tel"
-                placeholder="+237691234567"
+                placeholder="Votre téléphone"
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
-                className={`w-full pl-10 pr-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                  errors.phone ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
-                }`}
+                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
               />
             </div>
-            {renderErrorMessage('phone')}
           </div>
 
           {/* Password */}
-          <div className="mb-4">
+          <div className="mb-6">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Mot de passe
             </label>
@@ -278,57 +156,14 @@ export default function RegisterPage() {
               </div>
               <input
                 id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
+                type="password"
                 placeholder="Votre mot de passe"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
-                className={`w-full pl-10 pr-10 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                  errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
-                }`}
+                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition"
-              >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
             </div>
-            {renderErrorMessage('password')}
-          </div>
-
-          {/* Confirm Password */}
-          <div className="mb-6">
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-              Confirmer mot de passe
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirmer votre mot de passe"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                className={`w-full pl-10 pr-10 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                  errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-red-500'
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition"
-              >
-                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-            {renderErrorMessage('confirmPassword')}
           </div>
 
           <button

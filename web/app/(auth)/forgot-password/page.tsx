@@ -19,14 +19,9 @@ export default function ForgotPasswordPage() {
       await api.post('/auth/forgot-password', { email });
       setSent(true);
       toast.success('Email envoyé si le compte existe');
-    } catch (error: unknown) {
-      const err = error as { response?: { status?: number; data?: { message?: string } } };
-      const data = err?.response?.data;
-      if (err?.response?.status === 404) {
-        toast.error('Cette fonctionnalité n\'est pas encore disponible');
-      } else {
-        toast.error(data?.message || 'Erreur lors de la demande');
-      }
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Erreur lors de la demande';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
