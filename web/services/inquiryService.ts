@@ -5,16 +5,9 @@ export interface Inquiry {
   property_id: string;
   sender_id?: string;
   name: string;
-  email?: string;
   phone_number: string;
   message: string;
   created_at: string;
-  property?: {
-    id: string;
-    title: string;
-    city?: string;
-    neighborhood?: string;
-  };
 }
 
 export const inquiryService = {

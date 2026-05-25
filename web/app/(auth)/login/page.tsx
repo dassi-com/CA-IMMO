@@ -65,7 +65,6 @@ export default function LoginPage() {
       const role = response?.user?.role;
       if (role === 'ADMIN') router.push('/dashboard/admin');
       else if (role === 'OWNER') router.push('/dashboard/agent');
-      else if (role === 'TENANT') router.push('/dashboard/tenant');
       else router.push('/');
     } catch (error: any) {
       const message = error?.response?.data?.message || 'Erreur de connexion';

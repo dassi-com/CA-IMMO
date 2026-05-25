@@ -8,10 +8,6 @@ export interface User {
   role: 'ADMIN' | 'OWNER' | 'TENANT';
   is_verified: boolean;
   is_suspended: boolean;
-  is_featured?: boolean;
-  avatar_url?: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface LoginResponse {
@@ -83,26 +79,5 @@ export const authService = {
     } catch (error) {
       return null;
     }
-  },
-
-  // Mettre à jour le profil
-  updateProfile: async (data: { full_name: string; email: string; phone: string }): Promise<User> => {
-    const response = await api.put('/users/profile', data);
-    return response.data.data;
-  },
-
-  // Changer le mot de passe
-  changePassword: async (data: { current_password: string; new_password: string }): Promise<void> => {
-    await api.put('/users/profile/password', data);
-  },
-
-  // Uploader un avatar
-  uploadAvatar: async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('avatar', file);
-    const response = await api.post('/users/profile/avatar', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return response.data.data.avatar_url;
   },
 };

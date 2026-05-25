@@ -162,16 +162,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUnsuspend = async (userId: string) => {
-    try {
-      await adminService.unsuspendUser(userId);
-      toast.success('Utilisateur réactivé');
-      loadData();
-    } catch {
-      toast.error('Erreur lors de la réactivation');
-    }
-  };
-
   const handleDeleteUser = async (userId: string) => {
     try {
       await adminService.deleteUser(userId);
@@ -484,15 +474,9 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            {user.is_suspended ? (
-                              <button onClick={() => handleUnsuspend(user.id)} className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors" title="Réactiver">
-                                <Shield size={18} />
-                              </button>
-                            ) : (
-                              <button onClick={() => handleSuspend(user.id)} className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Suspendre">
-                                <Shield size={18} />
-                              </button>
-                            )}
+                            <button onClick={() => handleSuspend(user.id)} className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
+                              <Shield size={18} />
+                            </button>
                             <button onClick={() => handleDeleteUser(user.id)} className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
                               <XCircle size={18} />
                             </button>
