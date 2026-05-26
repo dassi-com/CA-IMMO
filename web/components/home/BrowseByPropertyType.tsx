@@ -50,10 +50,8 @@ export default function BrowseByPropertyType() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6 md:px-8 lg:px-12">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">Browse by Property Type</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 max-w-5xl mx-auto">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-white rounded-xl h-32 animate-pulse"></div>
-            ))}
+          <div className="flex justify-center items-center py-10">
+            <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
         </div>
       </section>

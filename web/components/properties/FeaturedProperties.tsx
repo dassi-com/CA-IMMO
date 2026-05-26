@@ -33,10 +33,8 @@ export default function FeaturedProperties() {
             <h2 className="text-3xl font-bold text-gray-900">Featured Properties</h2>
             <p className="text-gray-600 mt-2">Handpicked properties from trusted agents</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-xl h-96 animate-pulse"></div>
-            ))}
+          <div className="flex justify-center items-center py-20">
+            <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
         </div>
       </section>
