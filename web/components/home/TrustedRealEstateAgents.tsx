@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Star, Phone, Mail } from 'lucide-react';
+import Link from 'next/link';
+import { Star, Search } from 'lucide-react';
 
 interface Agent {
   id: string;
@@ -95,20 +96,13 @@ export default function TrustedRealEstateAgents() {
               <p className="text-sm text-gray-500 mt-2">
                 {agent.property_count} {agent.property_count > 1 ? 'properties' : 'property'}
               </p>
-              <div className="flex justify-center gap-3 mt-4">
-                <a
-                  href={`tel:${agent.phone}`}
-                  className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 transition"
-                >
-                  <Phone size={16} />
-                </a>
-                <a
-                  href={`mailto:${agent.email}`}
-                  className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 transition"
-                >
-                  <Mail size={16} />
-                </a>
-              </div>
+              <Link
+                href={`/search?city=${encodeURIComponent(agent.full_name.split(' ')[0])}`}
+                className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition"
+              >
+                <Search size={14} />
+                View Properties
+              </Link>
             </div>
           ))}
         </div>

@@ -1,38 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// @ts-ignore
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import { Search, Mic, Home, Key, MapPin } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, Home, Key, MapPin } from 'lucide-react';
 
 export default function HeroSection() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'buy' | 'rent' | 'relocate'>('buy');
   const [searchText, setSearchText] = useState('');
-  const [isClient, setIsClient] = useState(false);
-
-  // Configuration de la reconnaissance vocale
-  const {
-    transcript,
-    listening,
-    browserSupportsSpeechRecognition,
-    resetTranscript
-  } = useSpeechRecognition();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const startListening = () => {
-    resetTranscript();
-    SpeechRecognition.startListening({ continuous: false, language: 'fr-FR' });
-  };
-
-  const stopListening = () => {
-    SpeechRecognition.stopListening();
-    if (transcript) {
-      setSearchText(transcript);
-    }
-  };
+  const [selectedPrice, setSelectedPrice] = useState('');
+  const [selectedType, setSelectedType] = useState('');
 
   const priceOptions = {
     buy: ['Any Price', '0 - 50M XAF', '50M - 100M XAF', '100M - 200M XAF', '200M+ XAF'],
@@ -44,6 +21,19 @@ export default function HeroSection() {
     buy: ['All Types', 'House', 'Apartments', 'Land', 'Commercial'],
     rent: ['All Types', 'House', 'Apartment', 'Commercial', 'Studio'],
     relocate: ['All Types', 'Corporate Housing', 'Serviced Apartment', 'Family Home'],
+  };
+
+  useEffect(() => {
+    setSelectedPrice('');
+    setSelectedType('');
+  }, [activeTab]);
+
+  const handleSearch = () => {
+    router.push(`/search?city=${encodeURIComponent(searchText)}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSearch();
   };
 
   return (
@@ -114,47 +104,41 @@ export default function HeroSection() {
               <div className="relative mb-4">
                 <input
                   type="text"
-                  value={listening && isClient ? transcript : searchText}
-                  onChange={(e) => !listening && setSearchText(e.target.value)}
-                  placeholder="City, neighborhood, or speak your search..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="City, neighborhood..."
                   className="w-full p-3 pl-10 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                
-                {/* Microphone fonctionnel - seulement côté client */}
-                {isClient && (
-                  browserSupportsSpeechRecognition ? (
-                    <button
-                      onClick={listening ? stopListening : startListening}
-                      className={`absolute right-3 top-1/2 -translate-y-1/2 transition ${
-                        listening ? 'text-red-500 animate-pulse' : 'text-gray-400 hover:text-primary-600'
-                      }`}
-                    >
-                      <Mic size={16} />
-                    </button>
-                  ) : (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 cursor-not-allowed" title="Recherche vocale non supportée">
-                      <Mic size={16} />
-                    </div>
-                  )
-                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <select className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white">
+                <select
+                  value={selectedPrice}
+                  onChange={(e) => setSelectedPrice(e.target.value)}
+                  className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white"
+                >
                   {priceOptions[activeTab].map((option) => (
                     <option key={option}>{option}</option>
                   ))}
                 </select>
 
-                <select className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white">
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white"
+                >
                   {typeOptions[activeTab].map((option) => (
                     <option key={option}>{option}</option>
                   ))}
                 </select>
               </div>
 
-              <button className="w-full bg-primary-600 text-white py-3 rounded-lg text-sm font-medium hover:bg-primary-700 transition flex items-center justify-center space-x-2">
+              <button
+                onClick={handleSearch}
+                className="w-full bg-primary-600 text-white py-3 rounded-lg text-sm font-medium hover:bg-primary-700 transition flex items-center justify-center space-x-2"
+              >
                 <Search size={16} />
                 <span>Search Properties</span>
               </button>

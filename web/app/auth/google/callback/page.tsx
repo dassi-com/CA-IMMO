@@ -11,11 +11,16 @@ function CallbackHandler() {
   useEffect(() => {
     const accessToken = searchParams.get('accessToken');
     const refreshToken = searchParams.get('refreshToken');
+    const role = searchParams.get('role');
 
     if (accessToken && refreshToken) {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
-      router.push('/');
+
+      if (role === 'ADMIN') router.push('/dashboard/admin');
+      else if (role === 'OWNER') router.push('/dashboard/agent');
+      else if (role === 'TENANT') router.push('/dashboard/tenant');
+      else router.push('/');
     } else {
       setError('Authentication failed. No tokens received.');
     }

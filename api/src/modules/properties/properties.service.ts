@@ -67,8 +67,10 @@ export const createPropertyService = async (
 };
 
 export const listPropertiesService = async (query: PropertiesListQuery) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
+  const pageNum = parseInt(query.page ?? "1", 10);
+  const page = Math.max(1, isNaN(pageNum) ? 1 : pageNum);
+  const limitNum = parseInt(query.limit ?? "10", 10);
+  const limit = Math.min(100, Math.max(1, isNaN(limitNum) ? 10 : limitNum));
   const skip = (page - 1) * limit;
 
   // Construire les filtres
@@ -90,23 +92,27 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
   }
 
   if (query.price_min || query.price_max) {
-    const priceFilter: Prisma.FloatFilter = {};
+    const priceFilter: Prisma.DecimalFilter = {};
     if (query.price_min) {
-      priceFilter.gte = parseFloat(query.price_min);
+      const val = parseFloat(query.price_min);
+      if (!isNaN(val)) priceFilter.gte = val;
     }
     if (query.price_max) {
-      priceFilter.lte = parseFloat(query.price_max);
+      const val = parseFloat(query.price_max);
+      if (!isNaN(val)) priceFilter.lte = val;
     }
     where.price = priceFilter;
   }
 
   if (query.size_min || query.size_max) {
-    const sizeFilter: Prisma.FloatFilter = {};
+    const sizeFilter: { gte?: number; lte?: number } = {};
     if (query.size_min) {
-      sizeFilter.gte = parseFloat(query.size_min);
+      const val = parseFloat(query.size_min);
+      if (!isNaN(val)) sizeFilter.gte = val;
     }
     if (query.size_max) {
-      sizeFilter.lte = parseFloat(query.size_max);
+      const val = parseFloat(query.size_max);
+      if (!isNaN(val)) sizeFilter.lte = val;
     }
     where.size_m2 = sizeFilter;
   }
@@ -139,13 +145,32 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
   };
 };
 
-export const getPropertyService = async (propertyId: string) => {
+export const getPropertyService = async (propertyId: string, userId?: string) => {
+  const where: Prisma.PropertyWhereInput = { id: propertyId, is_deleted: false };
+
+  if (!userId) {
+    where.status = "APPROVED";
+  } else {
+    where.OR = [
+      { status: "APPROVED" },
+      { owner_id: userId },
+    ];
+  }
+
   const property = await prisma.property.findUnique({
     where: { id: propertyId, is_deleted: false },
     include: propertyInclude,
   });
 
   if (!property) {
+    throw new AppError("Property not found", 404);
+  }
+
+  if (!userId && property.status !== "APPROVED") {
+    throw new AppError("Property not found", 404);
+  }
+
+  if (userId && property.owner_id !== userId && property.status !== "APPROVED") {
     throw new AppError("Property not found", 404);
   }
 

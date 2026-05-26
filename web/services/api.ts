@@ -19,28 +19,54 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+let refreshPromise: Promise<any> | null = null;
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error?.config;
+    const status = error?.response?.status;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (!originalRequest) return Promise.reject(error);
+
+    // Empêcher les boucles infinies sur /auth/refresh
+    if (originalRequest.url?.includes('/auth/refresh')) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      window.location.href = '/login';
+      return Promise.reject(error);
+    }
+
+    if ((status === 401 || status === 403) && !originalRequest._retry) {
+      if (refreshPromise) {
+        await refreshPromise;
+        originalRequest.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
+        return api(originalRequest);
+      }
+
       originalRequest._retry = true;
-
-      try {
+      refreshPromise = (async () => {
         const refreshToken = localStorage.getItem('refreshToken');
         const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+        const accessToken = response?.data?.data?.accessToken;
+        const newRefreshToken = response?.data?.data?.refreshToken;
+        if (!accessToken) throw new Error('Invalid refresh response');
+        localStorage.setItem('accessToken', accessToken);
+        if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+        return accessToken;
+      })();
 
-        localStorage.setItem('accessToken', response.data.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.data.refreshToken);
-        originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
-
+      try {
+        const token = await refreshPromise;
+        originalRequest.headers.Authorization = `Bearer ${token}`;
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
+      } finally {
+        refreshPromise = null;
       }
     }
 

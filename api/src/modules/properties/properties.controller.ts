@@ -44,7 +44,7 @@ export const listProperties = asyncHandler(
 
 export const getProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const property = await getPropertyService(req.params.id as string);
+    const property = await getPropertyService(req.params.id as string, req.user?.id);
     sendSuccess(res, property, "Property fetched successfully");
   }
 );

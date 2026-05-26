@@ -35,6 +35,7 @@ export const authService = {
     email: string;
     phone: string;
     password: string;
+    confirm_password: string;
     role: 'TENANT' | 'OWNER';
   }): Promise<LoginResponse> => {
     const response = await api.post('/auth/register', data);
@@ -72,10 +73,13 @@ export const authService = {
   // Rafraîchir le token
   refreshToken: async (): Promise<string | null> => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      const response = await api.post('/auth/refresh', { refreshToken });
-      localStorage.setItem('accessToken', response.data.data.accessToken);
-      return response.data.data.accessToken;
+      const oldRefreshToken = localStorage.getItem('refreshToken');
+      if (!oldRefreshToken) return null;
+      const response = await api.post('/auth/refresh', { refreshToken: oldRefreshToken });
+      const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+      localStorage.setItem('accessToken', accessToken);
+      if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+      return accessToken;
     } catch (error) {
       return null;
     }

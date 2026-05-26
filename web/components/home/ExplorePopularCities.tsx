@@ -90,7 +90,7 @@ export default function ExplorePopularCities() {
           {cities.map((city) => (
             <Link
               key={city.name}
-              href={`/search?city=${city.slug}`}
+              href={`/search?city=${encodeURIComponent(city.name)}`}
               className="group relative rounded-xl overflow-hidden h-56 block"
             >
               <div
