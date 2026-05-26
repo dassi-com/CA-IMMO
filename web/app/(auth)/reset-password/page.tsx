@@ -1,7 +1,8 @@
+import { use } from 'react';
 import ResetPasswordForm from './ResetPasswordForm';
 
-export default async function ResetPasswordPage(props: { searchParams: Promise<{ token?: string; email?: string }> }) {
-  const searchParams = await props.searchParams;
+export default function ResetPasswordPage(props: { searchParams: Promise<{ token?: string; email?: string }> }) {
+  const searchParams = use(props.searchParams);
 
   return (
     <ResetPasswordForm

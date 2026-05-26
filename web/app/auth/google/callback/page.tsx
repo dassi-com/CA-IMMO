@@ -1,7 +1,8 @@
+import { use } from 'react';
 import CallbackHandler from './CallbackHandler';
 
-export default async function GoogleCallbackPage(props: { searchParams: Promise<{ accessToken?: string; refreshToken?: string; role?: string }> }) {
-  const searchParams = await props.searchParams;
+export default function GoogleCallbackPage(props: { searchParams: Promise<{ accessToken?: string; refreshToken?: string; role?: string }> }) {
+  const searchParams = use(props.searchParams);
 
   return (
     <CallbackHandler

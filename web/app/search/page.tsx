@@ -1,7 +1,8 @@
+import { use } from 'react';
 import SearchContent from './SearchContent';
 
-export default async function SearchPage(props: { searchParams: Promise<{ priceMin?: string; priceMax?: string; city?: string; property_type?: string }> }) {
-  const searchParams = await props.searchParams;
+export default function SearchPage(props: { searchParams: Promise<{ priceMin?: string; priceMax?: string; city?: string; property_type?: string }> }) {
+  const searchParams = use(props.searchParams);
 
   return (
     <SearchContent
