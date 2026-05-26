@@ -4,8 +4,6 @@ import ExplorePopularCities from '@/components/home/ExplorePopularCities';
 import ReadyToFindProperty from '@/components/home/ReadyToFindProperty';
 import BrowseByPropertyType from '@/components/home/BrowseByPropertyType';
 import TrustedRealEstateAgents from '@/components/home/TrustedRealEstateAgents';
-import MobileAppPreview from '@/components/home/MobileAppPreview';
-import TrustedPartners from '@/components/home/TrustedPartners';
 
 export default function HomePage() {
   return (
@@ -16,8 +14,6 @@ export default function HomePage() {
       <ReadyToFindProperty />
       <BrowseByPropertyType />
       <TrustedRealEstateAgents />
-      <MobileAppPreview />
-      <TrustedPartners />
     </>
   );
 }

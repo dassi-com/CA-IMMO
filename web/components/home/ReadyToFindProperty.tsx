@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Search, Home, Shield, CheckCircle } from 'lucide-react';
+import { propertyService } from '@/services/propertyService';
 
 const features = [
   {
@@ -27,6 +29,35 @@ const features = [
 ];
 
 export default function ReadyToFindProperty() {
+  const [propertyCount, setPropertyCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCount = async () => {
+      try {
+        const properties = await propertyService.getAll();
+        setPropertyCount(properties.length);
+      } catch {
+        setPropertyCount(500);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCount();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
+        <div className="container mx-auto px-6 md:px-8 lg:px-12">
+          <div className="flex justify-center items-center py-20">
+            <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
       <div className="container mx-auto px-6 md:px-8 lg:px-12">
@@ -81,8 +112,8 @@ export default function ReadyToFindProperty() {
                 className="w-full rounded-2xl shadow-2xl"
               />
               <div className="absolute -bottom-4 -left-4 bg-white text-gray-900 rounded-xl p-4 shadow-lg hidden sm:block">
-                <p className="text-2xl font-bold text-red-600">500+</p>
-                <p className="text-sm text-gray-600">Properties Sold</p>
+                <p className="text-2xl font-bold text-red-600">{propertyCount ?? 500}+</p>
+                <p className="text-sm text-gray-600">Properties Listed</p>
               </div>
               <div className="absolute -top-4 -right-4 bg-white text-gray-900 rounded-xl p-4 shadow-lg hidden sm:block">
                 <p className="text-2xl font-bold text-red-600">98%</p>
