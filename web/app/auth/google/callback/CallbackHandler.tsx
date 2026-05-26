@@ -1,13 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function CallbackHandler({ accessToken, refreshToken, role }: { accessToken: string | null; refreshToken: string | null; role: string | null }) {
+export default function CallbackHandler() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const accessToken = searchParams.get('accessToken');
+    const refreshToken = searchParams.get('refreshToken');
+    const role = searchParams.get('role');
+
     if (accessToken && refreshToken) {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
@@ -19,7 +24,7 @@ export default function CallbackHandler({ accessToken, refreshToken, role }: { a
     } else {
       setError('Authentication failed. No tokens received.');
     }
-  }, [accessToken, refreshToken, role, router]);
+  }, [searchParams, router]);
 
   if (error) {
     return (

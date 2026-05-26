@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Filter, Grid3x3, List, ChevronDown, X } from 'lucide-react';
 import PropertyCard from '@/components/properties/PropertyCard';
 import { getProperties } from '@/services/propertyService';
@@ -8,7 +9,8 @@ import { Property } from '@/types/property';
 
 type SortOption = 'newest' | 'price_asc' | 'price_desc';
 
-export default function SearchContent({ priceMin, priceMax, city, property_type }: { priceMin: string; priceMax: string; city: string; property_type: string }) {
+export default function SearchContent() {
+  const searchParams = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,10 +20,10 @@ export default function SearchContent({ priceMin, priceMax, city, property_type 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const [filters, setFilters] = useState({
-    priceMin: priceMin,
-    priceMax: priceMax,
-    city: city,
-    property_type: property_type,
+    priceMin: searchParams.get('priceMin') || '',
+    priceMax: searchParams.get('priceMax') || '',
+    city: searchParams.get('city') || '',
+    property_type: searchParams.get('property_type') || '',
   });
 
   const loadProperties = async () => {

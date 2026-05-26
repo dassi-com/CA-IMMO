@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/services/api';
 import toast from 'react-hot-toast';
 
-export default function ResetPasswordForm({ token, email }: { token: string | null; email: string | null }) {
+export default function ResetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+  const email = searchParams.get('email');
 
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
