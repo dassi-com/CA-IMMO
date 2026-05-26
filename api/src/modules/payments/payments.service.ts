@@ -34,7 +34,7 @@ const paymentInclude = {
       is_featured: true,
     },
   },
-};
+} as const;
 
 // Générer une référence de transaction unique
 const generateTxRef = (): string => {
@@ -47,7 +47,75 @@ export const initiatePaymentService = async (
   ownerId: string,
   dto: InitiatePaymentDto
 ) => {
-  // Vérifier que la propriété existe et appartient à l'owner
+  const paymentType = dto.type ?? "FEATURED";
+  const txRef = generateTxRef();
+
+  if (paymentType === "AGENT_FEATURE") {
+    // Vérifier que l'owner existe
+    const owner = await prisma.user.findUnique({
+      where: { id: ownerId },
+    });
+
+    if (!owner) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (owner.role !== "OWNER") {
+      throw new AppError("Only owners can be featured as agents", 400);
+    }
+
+    if (owner.is_featured) {
+      throw new AppError("Agent is already featured", 409);
+    }
+
+    const pendingPayment = await prisma.payment.findFirst({
+      where: {
+        owner_id: ownerId,
+        status: "PENDING",
+        type: "AGENT_FEATURE",
+      },
+    });
+
+    if (pendingPayment) {
+      throw new AppError("A payment is already pending for this agent feature", 409);
+    }
+
+    const payment = await prisma.payment.create({
+      data: {
+        owner_id: ownerId,
+        amount: dto.amount,
+        currency: dto.currency ?? "XOF",
+        status: "PENDING",
+        type: "AGENT_FEATURE",
+        flutterwave_ref: txRef,
+      },
+      include: paymentInclude,
+    });
+
+    const { payment_link } = await initiateFlutterwavePayment({
+      tx_ref: txRef,
+      amount: dto.amount,
+      currency: dto.currency ?? "XOF",
+      payment_options: "mobilemoney",
+      customer: {
+        email: owner.email,
+        phonenumber: dto.phone_number,
+        name: owner.full_name,
+      },
+      meta: {
+        owner_id: ownerId,
+        payment_db_id: payment.id,
+      },
+      customizations: {
+        title: "Mise en avant d'agent",
+        description: `Mise en avant de : ${owner.full_name}`,
+      },
+    });
+
+    return { payment, payment_link };
+  }
+
+  // FEATURED — mise en avant de propriété
   const property = await prisma.property.findUnique({
     where: { id: dto.property_id, is_deleted: false },
     include: {
@@ -84,7 +152,6 @@ export const initiatePaymentService = async (
     throw new AppError("Property is already featured", 409);
   }
 
-  // Vérifier qu'il n'y a pas un paiement PENDING en cours
   const pendingPayment = await prisma.payment.findFirst({
     where: {
       property_id: dto.property_id,
@@ -100,9 +167,6 @@ export const initiatePaymentService = async (
     );
   }
 
-  const txRef = generateTxRef();
-
-  // Créer le paiement en base (status PENDING)
   const payment = await prisma.payment.create({
     data: {
       owner_id: ownerId,
@@ -116,7 +180,6 @@ export const initiatePaymentService = async (
     include: paymentInclude,
   });
 
-  // Initier le paiement Flutterwave
   const { payment_link } = await initiateFlutterwavePayment({
     tx_ref: txRef,
     amount: dto.amount,
@@ -187,16 +250,30 @@ export const handleWebhookService = async (
     }
 
     // Tout est OK — confirmer le paiement et activer le featured
-    await prisma.$transaction([
+    const transactions: any[] = [
       prisma.payment.update({
         where: { id: payment.id },
         data: { status: "CONFIRMED" },
       }),
-      prisma.property.update({
-        where: { id: payment.property_id },
-        data: { is_featured: true },
-      }),
-    ]);
+    ];
+
+    if (payment.type === "AGENT_FEATURE") {
+      transactions.push(
+        prisma.user.update({
+          where: { id: payment.owner_id },
+          data: { is_featured: true },
+        })
+      );
+    } else if (payment.property_id) {
+      transactions.push(
+        prisma.property.update({
+          where: { id: payment.property_id },
+          data: { is_featured: true },
+        })
+      );
+    }
+
+    await prisma.$transaction(transactions);
   } else {
     // Paiement échoué
     await prisma.payment.update({
@@ -227,17 +304,31 @@ export const confirmPaymentManuallyService = async (
   }
 
   // Confirmer manuellement + activer featured
-  const [updatedPayment] = await prisma.$transaction([
+  const transactions: any[] = [
     prisma.payment.update({
       where: { id: paymentId },
       data: { status: "CONFIRMED" },
       include: paymentInclude,
     }),
-    prisma.property.update({
-      where: { id: payment.property_id },
-      data: { is_featured: true },
-    }),
-  ]);
+  ];
+
+  if (payment.type === "AGENT_FEATURE") {
+    transactions.push(
+      prisma.user.update({
+        where: { id: payment.owner_id },
+        data: { is_featured: true },
+      })
+    );
+  } else if (payment.property_id) {
+    transactions.push(
+      prisma.property.update({
+        where: { id: payment.property_id },
+        data: { is_featured: true },
+      })
+    );
+  }
+
+  const [updatedPayment] = await prisma.$transaction(transactions);
 
   return updatedPayment;
 };

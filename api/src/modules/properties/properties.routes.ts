@@ -12,7 +12,7 @@ import {
   updatePropertyStatus,
   featureProperty,
   listPendingProperties,
-  listAllProperties,
+  getPropertyStats,
 } from "./properties.controller";
 import {
   createPropertyValidator,
@@ -79,57 +79,6 @@ router.get("/", validate(propertiesListValidator), listProperties);
 
 /**
  * @swagger
- * /properties/my/listings:
- *   get:
- *     summary: Mes annonces — dashboard owner
- *     tags: [Properties]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
- *     responses:
- *       200:
- *         description: Liste de mes annonces
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
- */
-router.get(
-  "/my/listings",
-  authenticate,
-  authorize("OWNER"),
-  validate(propertiesListValidator),
-  getMyProperties
-);
-
-/**
- * @swagger
- * /properties/admin/all:
- *   get:
- *     summary: Toutes les annonces (Admin)
- *     tags: [Properties]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       200:
- *         description: Liste de toutes les annonces
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
- */
-router.get(
-  "/admin/all",
-  authenticate,
-  authorize("ADMIN"),
-  validate(propertiesListValidator),
-  listAllProperties
-);
-
-/**
- * @swagger
  * /properties/pending:
  *   get:
  *     summary: Lister les annonces en attente (Admin)
@@ -154,6 +103,18 @@ router.get(
   validate(propertiesListValidator),
   listPendingProperties
 );
+
+/**
+ * @swagger
+ * /properties/stats:
+ *   get:
+ *     summary: Statistiques des annonces (villes + types)
+ *     tags: [Properties]
+ *     responses:
+ *       200:
+ *         description: Statistiques récupérées
+ */
+router.get("/stats", getPropertyStats);
 
 /**
  * @swagger
@@ -215,6 +176,33 @@ router.post(
   authorize("OWNER"),
   validate(createPropertyValidator),
   createProperty
+);
+
+/**
+ * @swagger
+ * /properties/my/listings:
+ *   get:
+ *     summary: Mes annonces — dashboard owner
+ *     tags: [Properties]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *     responses:
+ *       200:
+ *         description: Liste de mes annonces
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+router.get(
+  "/my/listings",
+  authenticate,
+  authorize("OWNER"),
+  validate(propertiesListValidator),
+  getMyProperties
 );
 
 /**

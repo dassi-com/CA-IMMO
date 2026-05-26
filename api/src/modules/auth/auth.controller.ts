@@ -83,7 +83,7 @@ export const googleCallback = asyncHandler(
     const user = req.user as User;
     const result = await generateAuthTokensWithUser(user);
 
-    const redirectUrl = `${env.clientUrl}/auth/google/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}&role=${user.role}`;
+    const redirectUrl = `${env.clientUrl}/auth/google/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`;
     res.redirect(redirectUrl);
   }
 );

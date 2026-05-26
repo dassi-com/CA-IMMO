@@ -17,6 +17,7 @@ export interface UserResponseDto {
   role: string;
   is_verified: boolean;
   is_suspended: boolean;
+  is_featured: boolean;
   created_at: Date;
   updated_at: Date;
 }

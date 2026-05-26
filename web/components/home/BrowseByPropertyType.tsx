@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Home, Building2, Warehouse, Store, Mountain, ArrowRight } from 'lucide-react';
+import { propertyService } from '@/services/propertyService';
 
 interface TypeCount {
   type: string;
@@ -27,20 +28,14 @@ export default function BrowseByPropertyType() {
   useEffect(() => {
     const loadTypes = async () => {
       try {
-        const { propertyService } = await import('@/services/propertyService');
-        const properties = await propertyService.getAll();
-        const typeMap = new Map<string, number>();
-        properties.forEach((p) => {
-          typeMap.set(p.property_type, (typeMap.get(p.property_type) || 0) + 1);
-        });
-        const sorted = Array.from(typeMap.entries())
-          .sort((a, b) => b[1] - a[1])
-          .map(([type, count]) => {
-            const config = typeConfig[type];
-            return config ? { ...config, count } : null;
+        const stats = await propertyService.getStats();
+        const mapped = stats.propertyTypes
+          .map((t) => {
+            const config = typeConfig[t.type];
+            return config ? { ...config, count: t.count } : null;
           })
           .filter(Boolean) as TypeCount[];
-        setTypes(sorted);
+        setTypes(mapped);
       } catch (error) {
         console.error('Error loading property types:', error);
       } finally {

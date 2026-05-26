@@ -1,16 +1,12 @@
 import { Response, NextFunction } from "express";
-import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
-import { prisma } from "../utils/prisma";
+import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 import { AppError } from "./error.middleware";
 import { AuthenticatedRequest, AuthenticatedUser } from "../types";
+import { asyncHandler } from "../utils/asyncHandler";
 
-export const authenticate = async (
-  req: AuthenticatedRequest,
-  _res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
+export const authenticate = asyncHandler(
+  async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -18,26 +14,10 @@ export const authenticate = async (
     }
 
     const token = authHeader.split(" ")[1];
+
     const decoded = jwt.verify(token, env.jwtSecret) as AuthenticatedUser;
-
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, is_suspended: true },
-    });
-
-    if (!user || user.is_suspended) {
-      throw new AppError("Unauthorized", 401);
-    }
-
     req.user = decoded;
+
     next();
-  } catch (error) {
-    if (error instanceof TokenExpiredError) {
-      next(new AppError("Token expired", 401));
-    } else if (error instanceof JsonWebTokenError) {
-      next(new AppError("Invalid token", 401));
-    } else {
-      next(error);
-    }
   }
-};
+);

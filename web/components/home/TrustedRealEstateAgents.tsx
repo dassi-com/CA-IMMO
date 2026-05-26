@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Star, Search } from 'lucide-react';
+import { adminService } from '@/services/adminService';
 
 interface Agent {
   id: string;
   full_name: string;
   email: string;
-  phone: string;
-  property_count: number;
+  phone: string | null;
 }
 
 export default function TrustedRealEstateAgents() {
@@ -19,29 +19,8 @@ export default function TrustedRealEstateAgents() {
   useEffect(() => {
     const loadAgents = async () => {
       try {
-        const { propertyService } = await import('@/services/propertyService');
-        const properties = await propertyService.getAll();
-        const ownerMap = new Map<string, Agent>();
-        properties.forEach((p) => {
-          if (p.owner) {
-            const existing = ownerMap.get(p.owner.id);
-            if (existing) {
-              existing.property_count++;
-            } else {
-              ownerMap.set(p.owner.id, {
-                id: p.owner.id,
-                full_name: p.owner.full_name,
-                email: p.owner.email,
-                phone: p.owner.phone,
-                property_count: 1,
-              });
-            }
-          }
-        });
-        const sorted = Array.from(ownerMap.values())
-          .sort((a, b) => b.property_count - a.property_count)
-          .slice(0, 4);
-        setAgents(sorted);
+        const featuredAgents = await adminService.getFeaturedAgents();
+        setAgents(featuredAgents);
       } catch (error) {
         console.error('Error loading agents:', error);
       } finally {
@@ -93,11 +72,8 @@ export default function TrustedRealEstateAgents() {
                   <Star key={star} size={14} className="fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
-              <p className="text-sm text-gray-500 mt-2">
-                {agent.property_count} {agent.property_count > 1 ? 'properties' : 'property'}
-              </p>
               <Link
-                href={`/search?city=${encodeURIComponent(agent.full_name.split(' ')[0])}`}
+                href={`/search?owner=${encodeURIComponent(agent.id)}`}
                 className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition"
               >
                 <Search size={14} />

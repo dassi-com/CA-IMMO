@@ -9,14 +9,22 @@ import {
   listUsersService,
   getUserService,
   suspendUserService,
-  unsuspendUserService,
+  featureUserService,
   deleteUserService,
+  listFeaturedAgentsService,
 } from "./users.service";
 import {
   UpdateProfileDto,
   ChangePasswordDto,
   UsersListQuery,
 } from "./users.types";
+
+export const listFeaturedAgents = asyncHandler(
+  async (_req: AuthenticatedRequest, res: Response) => {
+    const agents = await listFeaturedAgentsService();
+    sendSuccess(res, agents, "Featured agents fetched successfully");
+  }
+);
 
 export const getProfile = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
@@ -65,11 +73,11 @@ export const suspendUser = asyncHandler(
   }
 );
 
-export const unsuspendUser = asyncHandler(
+export const featureUser = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const id = req.params.id as string;
-    const user = await unsuspendUserService(id);
-    sendSuccess(res, user, "User unsuspended successfully");
+    const user = await featureUserService(id);
+    sendSuccess(res, user, "User featured status toggled successfully");
   }
 );
 

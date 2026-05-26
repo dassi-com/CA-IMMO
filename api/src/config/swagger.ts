@@ -160,6 +160,7 @@ const options: swaggerJsdoc.Options = {
             },
             is_verified: { type: 'boolean', example: false },
             is_suspended: { type: 'boolean', example: false },
+            is_featured: { type: 'boolean', example: false },
             created_at: {
               type: 'string',
               format: 'date-time',
@@ -336,7 +337,7 @@ const options: swaggerJsdoc.Options = {
           properties: {
             id: { type: 'string', format: 'uuid' },
             owner_id: { type: 'string', format: 'uuid' },
-            property_id: { type: 'string', format: 'uuid' },
+            property_id: { type: 'string', format: 'uuid', nullable: true },
             amount: { type: 'number', example: 50000 },
             currency: { type: 'string', example: 'XOF' },
             status: {
@@ -346,7 +347,7 @@ const options: swaggerJsdoc.Options = {
             },
             type: {
               type: 'string',
-              enum: ['FEATURED', 'SUBSCRIPTION'],
+              enum: ['FEATURED', 'SUBSCRIPTION', 'AGENT_FEATURE'],
               example: 'FEATURED',
             },
             flutterwave_ref: {
@@ -359,12 +360,18 @@ const options: swaggerJsdoc.Options = {
         },
         InitiatePaymentDto: {
           type: 'object',
-          required: ['property_id', 'amount', 'phone_number'],
+          required: ['amount', 'phone_number'],
           properties: {
-            property_id: { type: 'string', format: 'uuid' },
+            property_id: { type: 'string', format: 'uuid', nullable: true },
             amount: { type: 'number', example: 50000 },
             currency: { type: 'string', example: 'XOF' },
             phone_number: { type: 'string', example: '+237612345678' },
+            type: {
+              type: 'string',
+              enum: ['FEATURED', 'AGENT_FEATURE'],
+              example: 'FEATURED',
+              description: "FEATURED pour une propriété, AGENT_FEATURE pour un agent",
+            },
           },
         },
         // ─── Favorites ─────────────────────────────────────────────────────

@@ -76,7 +76,7 @@ export default function ReadyToFindProperty() {
           <div className="flex-1 w-full max-w-lg">
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80"
+                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80"
                 alt="Modern living room"
                 className="w-full rounded-2xl shadow-2xl"
               />

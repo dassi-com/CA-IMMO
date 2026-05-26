@@ -1,8 +1,9 @@
 export interface InitiatePaymentDto {
-  property_id: string;
+  property_id?: string;
   amount: number;
   currency?: string;
   phone_number: string;
+  type?: "FEATURED" | "AGENT_FEATURE";
 }
 
 export interface FlutterwaveWebhookDto {

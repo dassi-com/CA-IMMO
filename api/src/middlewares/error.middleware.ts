@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { env } from "../config/env";
 
@@ -26,23 +25,6 @@ export const errorMiddleware = (
     res.status(err.statusCode).json({
       success: false,
       message: err.message,
-    });
-    return;
-  }
-
-  // JWT — tokens invalides ou expirés
-  if (err instanceof TokenExpiredError) {
-    res.status(401).json({
-      success: false,
-      message: "Token expired",
-    });
-    return;
-  }
-
-  if (err instanceof JsonWebTokenError) {
-    res.status(401).json({
-      success: false,
-      message: "Invalid token",
     });
     return;
   }

@@ -12,7 +12,7 @@ import {
   updatePropertyStatusService,
   featurePropertyService,
   listPendingPropertiesService,
-  listAllPropertiesService,
+  getPropertyStatsService,
 } from "./properties.service";
 import {
   CreatePropertyDto,
@@ -44,7 +44,7 @@ export const listProperties = asyncHandler(
 
 export const getProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const property = await getPropertyService(req.params.id as string, req.user?.id);
+    const property = await getPropertyService(req.params.id as string);
     sendSuccess(res, property, "Property fetched successfully");
   }
 );
@@ -96,6 +96,13 @@ export const featureProperty = asyncHandler(
   }
 );
 
+export const getPropertyStats = asyncHandler(
+  async (_req: AuthenticatedRequest, res: Response) => {
+    const stats = await getPropertyStatsService();
+    sendSuccess(res, stats, "Stats fetched successfully");
+  }
+);
+
 export const listPendingProperties = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const query = req.query as PropertiesListQuery;
@@ -105,19 +112,6 @@ export const listPendingProperties = asyncHandler(
       result.properties,
       result.meta,
       "Pending properties fetched successfully"
-    );
-  }
-);
-
-export const listAllProperties = asyncHandler(
-  async (req: AuthenticatedRequest, res: Response) => {
-    const query = req.query as PropertiesListQuery;
-    const result = await listAllPropertiesService(query);
-    sendPaginated(
-      res,
-      result.properties,
-      result.meta,
-      "All properties fetched successfully"
     );
   }
 );

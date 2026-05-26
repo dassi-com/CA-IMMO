@@ -67,10 +67,8 @@ export const createPropertyService = async (
 };
 
 export const listPropertiesService = async (query: PropertiesListQuery) => {
-  const pageNum = parseInt(query.page ?? "1", 10);
-  const page = Math.max(1, isNaN(pageNum) ? 1 : pageNum);
-  const limitNum = parseInt(query.limit ?? "10", 10);
-  const limit = Math.min(100, Math.max(1, isNaN(limitNum) ? 10 : limitNum));
+  const page = Math.max(1, parseInt(query.page ?? "1", 10));
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
   const skip = (page - 1) * limit;
 
   // Construire les filtres
@@ -92,27 +90,23 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
   }
 
   if (query.price_min || query.price_max) {
-    const priceFilter: Prisma.DecimalFilter = {};
+    const priceFilter: Prisma.FloatFilter = {};
     if (query.price_min) {
-      const val = parseFloat(query.price_min);
-      if (!isNaN(val)) priceFilter.gte = val;
+      priceFilter.gte = parseFloat(query.price_min);
     }
     if (query.price_max) {
-      const val = parseFloat(query.price_max);
-      if (!isNaN(val)) priceFilter.lte = val;
+      priceFilter.lte = parseFloat(query.price_max);
     }
     where.price = priceFilter;
   }
 
   if (query.size_min || query.size_max) {
-    const sizeFilter: { gte?: number; lte?: number } = {};
+    const sizeFilter: Prisma.FloatFilter = {};
     if (query.size_min) {
-      const val = parseFloat(query.size_min);
-      if (!isNaN(val)) sizeFilter.gte = val;
+      sizeFilter.gte = parseFloat(query.size_min);
     }
     if (query.size_max) {
-      const val = parseFloat(query.size_max);
-      if (!isNaN(val)) sizeFilter.lte = val;
+      sizeFilter.lte = parseFloat(query.size_max);
     }
     where.size_m2 = sizeFilter;
   }
@@ -145,32 +139,13 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
   };
 };
 
-export const getPropertyService = async (propertyId: string, userId?: string) => {
-  const where: Prisma.PropertyWhereInput = { id: propertyId, is_deleted: false };
-
-  if (!userId) {
-    where.status = "APPROVED";
-  } else {
-    where.OR = [
-      { status: "APPROVED" },
-      { owner_id: userId },
-    ];
-  }
-
+export const getPropertyService = async (propertyId: string) => {
   const property = await prisma.property.findUnique({
     where: { id: propertyId, is_deleted: false },
     include: propertyInclude,
   });
 
   if (!property) {
-    throw new AppError("Property not found", 404);
-  }
-
-  if (!userId && property.status !== "APPROVED") {
-    throw new AppError("Property not found", 404);
-  }
-
-  if (userId && property.owner_id !== userId && property.status !== "APPROVED") {
     throw new AppError("Property not found", 404);
   }
 
@@ -333,6 +308,37 @@ export const featurePropertyService = async (propertyId: string) => {
   return updatedProperty;
 };
 
+export const getPropertyStatsService = async () => {
+  const where = { is_deleted: false, status: "APPROVED" as const };
+
+  const [cityStats, typeStats] = await Promise.all([
+    prisma.property.groupBy({
+      by: ["city"],
+      where,
+      _count: { city: true },
+      orderBy: { _count: { city: "desc" } },
+      take: 6,
+    }),
+    prisma.property.groupBy({
+      by: ["property_type"],
+      where,
+      _count: { property_type: true },
+      orderBy: { _count: { property_type: "desc" } },
+    }),
+  ]);
+
+  return {
+    cities: cityStats.map((c) => ({
+      city: c.city,
+      count: c._count.city,
+    })),
+    propertyTypes: typeStats.map((t) => ({
+      type: t.property_type,
+      count: t._count.property_type,
+    })),
+  };
+};
+
 export const listPendingPropertiesService = async (query: PropertiesListQuery) => {
   const page = Math.max(1, parseInt(query.page ?? "1", 10));
   const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
@@ -347,44 +353,6 @@ export const listPendingPropertiesService = async (query: PropertiesListQuery) =
     where.city = { contains: query.city, mode: "insensitive" };
   }
 
-  if (query.property_type) {
-    where.property_type = query.property_type as PropertyType;
-  }
-
-  const [total, properties] = await Promise.all([
-    prisma.property.count({ where }),
-    prisma.property.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { created_at: "desc" },
-      include: propertyInclude,
-    }),
-  ]);
-
-  return {
-    properties,
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
-  };
-};
-
-export const listAllPropertiesService = async (query: PropertiesListQuery) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "50", 10)));
-  const skip = (page - 1) * limit;
-
-  const where: Prisma.PropertyWhereInput = {
-    is_deleted: false,
-  };
-
-  if (query.city) {
-    where.city = { contains: query.city, mode: "insensitive" };
-  }
   if (query.property_type) {
     where.property_type = query.property_type as PropertyType;
   }

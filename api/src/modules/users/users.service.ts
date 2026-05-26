@@ -21,12 +21,32 @@ const mapUserToResponse = (user: any): UserResponseDto => {
     role: user.role,
     is_verified: user.is_verified,
     is_suspended: user.is_suspended,
+    is_featured: user.is_featured,
     created_at: user.created_at,
     updated_at: user.updated_at,
   };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+export const listFeaturedAgentsService = async () => {
+  const agents = await prisma.user.findMany({
+    where: {
+      role: "OWNER",
+      is_featured: true,
+      is_suspended: false,
+    },
+    select: {
+      id: true,
+      full_name: true,
+      email: true,
+      phone: true,
+      is_featured: true,
+    },
+  });
+
+  return agents;
+};
 
 export const getProfileService = async (
   userId: string
@@ -208,7 +228,7 @@ export const suspendUserService = async (userId: string): Promise<UserResponseDt
   return mapUserToResponse(updatedUser);
 };
 
-export const unsuspendUserService = async (userId: string): Promise<UserResponseDto> => {
+export const featureUserService = async (userId: string): Promise<UserResponseDto> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
@@ -219,7 +239,7 @@ export const unsuspendUserService = async (userId: string): Promise<UserResponse
 
   const updatedUser = await prisma.user.update({
     where: { id: userId },
-    data: { is_suspended: false },
+    data: { is_featured: !user.is_featured },
   });
 
   return mapUserToResponse(updatedUser);

@@ -16,4 +16,9 @@ export const adminService = {
   deleteUser: async (userId: string): Promise<void> => {
     await api.delete(`/users/${userId}`);
   },
+
+  getFeaturedAgents: async (): Promise<User[]> => {
+    const response = await api.get('/users/featured-agents');
+    return response.data.data;
+  },
 };

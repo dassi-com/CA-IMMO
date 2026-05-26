@@ -9,8 +9,9 @@ import {
   listUsers,
   getUser,
   suspendUser,
-  unsuspendUser,
+  featureUser,
   deleteUser,
+  listFeaturedAgents,
 } from "./users.controller";
 import {
   updateProfileValidator,
@@ -103,6 +104,18 @@ router.put(
   validate(changePasswordValidator),
   changePassword
 );
+
+/**
+ * @swagger
+ * /users/featured-agents:
+ *   get:
+ *     summary: Lister les agents mis en avant (public)
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Liste des agents featured
+ */
+router.get("/featured-agents", listFeaturedAgents);
 
 /**
  * @swagger
@@ -213,9 +226,9 @@ router.patch(
 
 /**
  * @swagger
- * /users/{id}/unsuspend:
+ * /users/{id}/feature:
  *   patch:
- *     summary: Réactiver un utilisateur (Admin)
+ *     summary: Activer/désactiver la mise en avant d'un agent (Admin)
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
@@ -228,7 +241,7 @@ router.patch(
  *           format: uuid
  *     responses:
  *       200:
- *         description: Utilisateur réactivé avec succès
+ *         description: Statut de mise en avant modifié
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
@@ -237,11 +250,11 @@ router.patch(
  *         $ref: '#/components/responses/NotFound'
  */
 router.patch(
-  "/:id/unsuspend",
+  "/:id/feature",
   authenticate,
   authorize("ADMIN"),
   validate(getUserValidator),
-  unsuspendUser
+  featureUser
 );
 
 /**

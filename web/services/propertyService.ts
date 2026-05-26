@@ -63,6 +63,11 @@ export const propertyService = {
     const response = await api.get('/properties/my/listings');
     return response.data.data;
   },
+
+  getStats: async (): Promise<{ cities: { city: string; count: number }[]; propertyTypes: { type: string; count: number }[] }> => {
+    const response = await api.get('/properties/stats');
+    return response.data.data;
+  },
 };
 
 export const getProperties = propertyService.getAll;
