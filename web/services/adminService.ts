@@ -1,5 +1,6 @@
 import { api } from './api';
 import { User } from './authService';
+import { Property } from '@/types/property';
 
 export const adminService = {
   // Gestion utilisateurs
@@ -13,8 +14,28 @@ export const adminService = {
     return response.data.data;
   },
 
+  unsuspendUser: async (userId: string): Promise<User> => {
+    const response = await api.patch(`/users/${userId}/unsuspend`);
+    return response.data.data;
+  },
+
   deleteUser: async (userId: string): Promise<void> => {
     await api.delete(`/users/${userId}`);
+  },
+
+  getAllProperties: async (): Promise<Property[]> => {
+    const response = await api.get('/properties');
+    return response.data.data;
+  },
+
+  getAgents: async (): Promise<User[]> => {
+    const response = await api.get('/users?role=AGENT');
+    return response.data.data;
+  },
+
+  toggleFeaturedAgent: async (userId: string): Promise<User> => {
+    const response = await api.patch(`/users/${userId}/toggle-featured`);
+    return response.data.data;
   },
 
   getFeaturedAgents: async (): Promise<User[]> => {

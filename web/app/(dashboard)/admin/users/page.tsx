@@ -148,7 +148,7 @@ export default function AdminUsersPage() {
                               {u.is_suspended ? 'Suspendu' : 'Actif'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString()}</td>
+                          <td className="px-6 py-4 text-sm text-gray-500">{u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
                               {u.is_suspended ? (
@@ -185,7 +185,7 @@ export default function AdminUsersPage() {
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-400">{new Date(u.created_at).toLocaleDateString()}</span>
+                        <span className="text-gray-400">{u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</span>
                         <div className="flex items-center gap-2">
                           {u.is_suspended ? (
                             <button onClick={() => handleUnsuspend(u.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"><Shield size={18} /></button>
