@@ -14,6 +14,7 @@ export default function SearchContent() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -25,18 +26,21 @@ export default function SearchContent() {
     property_type: searchParams.get('property_type') || '',
   });
 
+  const loadProperties = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getProperties();
+      setProperties(data);
+      setFilteredProperties(data);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to load properties');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadProperties = async () => {
-      try {
-        const data = await getProperties();
-        setProperties(data);
-        setFilteredProperties(data);
-      } catch (error) {
-        console.error('Error loading properties:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadProperties();
   }, []);
 
@@ -50,15 +54,17 @@ export default function SearchContent() {
       result = result.filter(p => p.property_type === filters.property_type);
     }
     if (filters.priceMin) {
-      result = result.filter(p => p.price >= parseInt(filters.priceMin));
+      const min = parseInt(filters.priceMin);
+      if (!isNaN(min)) result = result.filter(p => p.price >= min);
     }
     if (filters.priceMax) {
-      result = result.filter(p => p.price <= parseInt(filters.priceMax));
+      const max = parseInt(filters.priceMax);
+      if (!isNaN(max)) result = result.filter(p => p.price <= max);
     }
 
     switch (sortBy) {
       case 'newest':
-        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        result.sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime());
         break;
       case 'price_asc':
         result.sort((a, b) => a.price - b.price);
@@ -78,6 +84,7 @@ export default function SearchContent() {
       city: '',
       property_type: '',
     });
+    setSortBy('newest');
   };
 
   if (loading) {
@@ -90,6 +97,19 @@ export default function SearchContent() {
               <div key={i} className="bg-gray-200 rounded-xl h-96"></div>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 pt-24">
+        <div className="text-center py-12 bg-white rounded-xl">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button onClick={loadProperties} className="text-red-600 hover:underline font-medium">
+            Try again
+          </button>
         </div>
       </div>
     );
@@ -212,7 +232,7 @@ export default function SearchContent() {
           {isFilterOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
               <div className="absolute inset-0 bg-black/60" onClick={() => setIsFilterOpen(false)} />
-              <div className="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-xl p-6 overflow-y-auto">
+              <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[90vw] bg-white shadow-xl p-6 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-semibold text-gray-900">Filters</h3>
                   <button onClick={() => setIsFilterOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -257,7 +277,7 @@ export default function SearchContent() {
             </div>
           )}
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {filteredProperties.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-xl">
                 <p className="text-gray-500">No properties found matching your criteria.</p>
