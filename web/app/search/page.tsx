@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import SearchContent from './SearchContent';
 
-export default function SearchPage() {
+export default async function SearchPage() {
+  await connection();
   return (
     <Suspense fallback={
       <div className="container mx-auto px-4 py-8 pt-24">

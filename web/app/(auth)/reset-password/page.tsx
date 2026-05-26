@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import ResetPasswordForm from './ResetPasswordForm';
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage() {
+  await connection();
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">

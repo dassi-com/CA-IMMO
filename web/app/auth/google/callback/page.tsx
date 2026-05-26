@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import CallbackHandler from './CallbackHandler';
 
-export default function GoogleCallbackPage() {
+export default async function GoogleCallbackPage() {
+  await connection();
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
