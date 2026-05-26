@@ -44,7 +44,7 @@ const navigationItems = {
     { name: 'Mes annonces', href: '/dashboard/agent/listings', icon: Building2 },
     { name: 'Messages', href: '/dashboard/agent/messages', icon: MessageSquare },
     { name: 'Statistiques', href: '/dashboard/agent/stats', icon: BarChart3 },
-    { name: 'Paramètres', href: '/profile', icon: Settings },
+    { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
   admin: [
     { name: 'Dashboard', href: '/dashboard/admin', icon: Home },
