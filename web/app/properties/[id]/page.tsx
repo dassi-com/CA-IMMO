@@ -18,6 +18,7 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [contactUnlocked, setContactUnlocked] = useState(false);
 
   useEffect(() => {
     const loadProperty = async () => {
@@ -42,7 +43,7 @@ export default function PropertyDetailPage() {
     if (!isAuthenticated) {
       setIsModalOpen(true);
     } else {
-      console.log('Contact unlocked');
+      setContactUnlocked(true);
     }
   };
 
@@ -209,8 +210,14 @@ export default function PropertyDetailPage() {
                       <span className="text-gray-600 text-sm">Phone</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-sm">{ownerPhone ? '••••••••' : 'N/A'}</span>
-                      <Lock size={14} className="text-gray-400" />
+                      <span className={`text-sm ${contactUnlocked ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
+                        {contactUnlocked ? ownerPhone : (ownerPhone ? '••••••••' : 'N/A')}
+                      </span>
+                      {contactUnlocked ? (
+                        <Unlock size={14} className="text-green-500" />
+                      ) : (
+                        <Lock size={14} className="text-gray-400" />
+                      )}
                     </div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
@@ -219,15 +226,23 @@ export default function PropertyDetailPage() {
                       <span className="text-gray-600 text-sm">Email</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-sm">••••••••</span>
-                      <Lock size={14} className="text-gray-400" />
+                      <span className={`text-sm ${contactUnlocked ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
+                        {contactUnlocked ? ownerEmail : '••••••••'}
+                      </span>
+                      {contactUnlocked ? (
+                        <Unlock size={14} className="text-green-500" />
+                      ) : (
+                        <Lock size={14} className="text-gray-400" />
+                      )}
                     </div>
                   </div>
                 </div>
 
-                <p className="text-center text-xs text-gray-400 mb-4">
-                  Sign in and pay 100 FCFA to unlock contact information
-                </p>
+                {!contactUnlocked && (
+                  <p className="text-center text-xs text-gray-400 mb-4">
+                    Sign in and pay 100 FCFA to unlock contact information
+                  </p>
+                )}
 
                 <div className="space-y-2">
                   <button
