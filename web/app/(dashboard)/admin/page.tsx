@@ -23,6 +23,7 @@ import {
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
+import { SkeletonTable } from '@/components/ui/Skeleton';
 import ChartCard, {
   LineChart,
   Line,
@@ -338,6 +339,9 @@ export default function AdminDashboard() {
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-800">Annonces à valider</h2>
             </div>
+            {loading ? (
+              <SkeletonTable rows={5} />
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
@@ -395,6 +399,7 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
             </div>
+            )}
           </motion.div>
 
           {/* Users Management and Payment Requests Grid */}
@@ -421,6 +426,9 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+              {loading ? (
+                <SkeletonTable rows={5} />
+              ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50">
@@ -487,6 +495,7 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+              )}
             </motion.div>
 
             {/* Payment Requests */}

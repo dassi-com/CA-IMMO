@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
+import { SkeletonTable } from '@/components/ui/Skeleton';
 import ChartCard, {
   BarChart,
   Bar,
@@ -246,6 +247,9 @@ export default function AgentDashboard() {
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-800">Dernières annonces</h2>
             </div>
+            {loading ? (
+              <SkeletonTable rows={5} />
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
@@ -294,6 +298,7 @@ export default function AgentDashboard() {
                 </tbody>
               </table>
             </div>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

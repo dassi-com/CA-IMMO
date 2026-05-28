@@ -114,9 +114,9 @@ export default function SettingsPage() {
   };
 
   const getDashboardLink = () => {
-    if (isAdmin) return '/admin';
-    if (isAgent) return '/agent';
-    return '/tenant';
+    if (isAdmin) return '/dashboard/admin';
+    if (isAgent) return '/dashboard/agent';
+    return '/dashboard/tenant';
   };
 
   return (

@@ -3,6 +3,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import BottomNav from '@/components/layout/BottomNav';
 import Footer from '@/components/layout/Footer';
+import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -25,6 +26,15 @@ export default function RootLayout({
           </main>
           <Footer />
           <BottomNav />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: { borderRadius: '12px', padding: '12px 16px' },
+              success: { iconTheme: { primary: '#16a34a', secondary: '#fff' } },
+              error: { iconTheme: { primary: '#dc2626', secondary: '#fff' } },
+            }}
+          />
         </AuthProvider>
       </body>
     </html>

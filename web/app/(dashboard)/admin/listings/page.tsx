@@ -16,6 +16,7 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
+import { SkeletonCard } from '@/components/ui/Skeleton';
 import { adminService } from '@/services/adminService';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
@@ -129,7 +130,7 @@ export default function AdminListingsPage() {
           </div>
 
           {loading ? (
-            <div className="text-center py-20 text-gray-400">Chargement...</div>
+            <SkeletonCard count={6} />
           ) : paginated.length === 0 ? (
             <div className="text-center py-20 text-gray-400">Aucune annonce trouvée</div>
           ) : (

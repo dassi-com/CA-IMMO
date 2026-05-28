@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
+import { SkeletonCards } from '@/components/ui/Skeleton';
 import { adminService } from '@/services/adminService';
 import { User } from '@/services/authService';
 import toast from 'react-hot-toast';
@@ -82,7 +83,7 @@ export default function AdminAgentsPage() {
           </motion.div>
 
           {loading ? (
-            <div className="text-center py-20 text-gray-400">Chargement...</div>
+            <SkeletonCards count={6} />
           ) : paginated.length === 0 ? (
             <div className="text-center py-20 text-gray-400">Aucun agent trouvé</div>
           ) : (

@@ -18,6 +18,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
+import { SkeletonCard } from '@/components/ui/Skeleton';
 import ChartCard, {
   LineChart,
   Line,
@@ -231,6 +232,9 @@ export default function TenantDashboard() {
                 Voir tout →
               </button>
             </div>
+            {loading ? (
+              <SkeletonCard count={4} />
+            ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {favoriteProperties.map((property, index) => (
                 <motion.div
@@ -262,6 +266,7 @@ export default function TenantDashboard() {
                 </motion.div>
               ))}
             </div>
+            )}
           </motion.div>
 
           {/* Visits and Alerts Grid */}

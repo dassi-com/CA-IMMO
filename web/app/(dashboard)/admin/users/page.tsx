@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
+import { SkeletonTable, SkeletonInline } from '@/components/ui/Skeleton';
 import { adminService } from '@/services/adminService';
 import { User } from '@/services/authService';
 import toast from 'react-hot-toast';
@@ -110,7 +111,10 @@ export default function AdminUsersPage() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg overflow-hidden">
             {loading ? (
-              <div className="p-12 text-center text-gray-400">Chargement...</div>
+              <>
+                <div className="hidden md:block"><SkeletonTable rows={8} /></div>
+                <div className="md:hidden"><SkeletonInline rows={8} /></div>
+              </>
             ) : paginated.length === 0 ? (
               <div className="p-12 text-center text-gray-400">Aucun utilisateur trouvé</div>
             ) : (

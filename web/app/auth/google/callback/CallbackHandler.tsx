@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { authService } from '@/services/authService';
 
 export default function CallbackHandler() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
 
@@ -17,23 +17,30 @@ export default function CallbackHandler() {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
-      if (role === 'ADMIN') router.push('/dashboard/admin');
-      else if (role === 'OWNER') router.push('/dashboard/agent');
-      else if (role === 'TENANT') router.push('/dashboard/tenant');
-      else router.push('/');
+      authService.getCurrentUser().then(() => {
+        if (role === 'ADMIN') window.location.href = '/dashboard/admin';
+        else if (role === 'OWNER') window.location.href = '/dashboard/agent';
+        else if (role === 'TENANT') window.location.href = '/dashboard/tenant';
+        else window.location.href = '/';
+      }).catch(() => {
+        if (role === 'ADMIN') window.location.href = '/dashboard/admin';
+        else if (role === 'OWNER') window.location.href = '/dashboard/agent';
+        else if (role === 'TENANT') window.location.href = '/dashboard/tenant';
+        else window.location.href = '/';
+      });
     } else {
       setError('Authentication failed. No tokens received.');
     }
-  }, [searchParams, router]);
+  }, [searchParams]);
 
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error}</p>
-          <button onClick={() => router.push('/login')} className="text-red-600 hover:underline">
+          <a href="/login" className="text-red-600 hover:underline inline-block">
             Back to login
-          </button>
+          </a>
         </div>
       </div>
     );
