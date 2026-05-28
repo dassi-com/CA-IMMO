@@ -20,21 +20,6 @@ import Link from 'next/link';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
 import { SkeletonTable } from '@/components/ui/Skeleton';
-import ChartCard, {
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-} from '@/components/dashboard/ChartCard';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import { inquiryService, Inquiry } from '@/services/inquiryService';
@@ -57,22 +42,6 @@ interface PendingRow {
   type: string;
   price: string;
 }
-
-const monthlyPerformance = [
-  { month: 'Sep', views: 180, contacts: 12 },
-  { month: 'Oct', views: 220, contacts: 18 },
-  { month: 'Nov', views: 195, contacts: 15 },
-  { month: 'Dec', views: 280, contacts: 25 },
-  { month: 'Jan', views: 245, contacts: 22 },
-  { month: 'Fév', views: 127, contacts: 11 },
-];
-
-const propertyTypes = [
-  { name: 'Villas', value: 8, color: '#DC2626' },
-  { name: 'Appartements', value: 10, color: '#EF4444' },
-  { name: 'Terrains', value: 4, color: '#F87171' },
-  { name: 'Commerces', value: 2, color: '#FCA5A5' },
-];
 
 export default function AgentDashboard() {
   const { user } = useAuth();
@@ -169,8 +138,6 @@ export default function AgentDashboard() {
               title="Total annonces"
               value={totalListings}
               icon={Building2}
-              trend={8}
-              trendLabel="total annonces"
               color="from-blue-500 to-cyan-500"
               delay={0.1}
             />
@@ -178,8 +145,6 @@ export default function AgentDashboard() {
               title="Annonces actives"
               value={activeListings}
               icon={CheckCircle}
-              trend={5}
-              trendLabel="annonces actives"
               color="from-green-500 to-emerald-500"
               delay={0.2}
             />
@@ -187,8 +152,6 @@ export default function AgentDashboard() {
               title="En attente"
               value={pendingCount}
               icon={Clock}
-              trend={-2}
-              trendLabel="en attente"
               color="from-yellow-500 to-orange-500"
               delay={0.3}
             />
@@ -196,62 +159,13 @@ export default function AgentDashboard() {
               title="Messages reçus"
               value={inquiries.length}
               icon={Eye}
-              trend={15}
-              trendLabel="total messages"
               color="from-purple-500 to-indigo-500"
               delay={0.4}
             />
           </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ChartCard title="Performances mensuelles" icon={TrendingUp} delay={0.2}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyPerformance}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" />
-                  <YAxis yAxisId="left" stroke="#6B7280" />
-                  <YAxis yAxisId="right" orientation="right" stroke="#6B7280" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                  <Legend />
-                  <Bar yAxisId="left" dataKey="views" fill="#DC2626" name="Vues" />
-                  <Bar yAxisId="right" dataKey="contacts" fill="#FCA5A5" name="Contacts" />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
 
-            <ChartCard title="Répartition des annonces" icon={Building2} delay={0.3}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={propertyTypes}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }) => {
-                      const percentage = percent ? (percent * 100).toFixed(0) : '0';
-                      return `${name} (${percentage}%)`;
-                    }}
-                  >
-                    {propertyTypes.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

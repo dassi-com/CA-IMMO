@@ -146,6 +146,7 @@ router.get(
 router.get(
   '/:id',
   authenticate,
+  authorize('ADMIN'),
   validate(featureRequestIdValidator),
   getFeatureRequest
 );

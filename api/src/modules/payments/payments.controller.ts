@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AuthenticatedRequest } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { sendSuccess, sendPaginated } from "../../utils/response";
+import { env } from "../../config/env";
 import {
   initiatePaymentService,
   handleWebhookService,
@@ -28,15 +29,19 @@ export const handleWebhook = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  // Répondre immédiatement à Flutterwave (bonne pratique webhook)
-  res.status(200).json({ status: "received" });
-
   try {
     const signature = req.headers["verif-hash"] as string;
+    if (signature !== env.flutterwave.secretHash) {
+      res.status(401).json({ status: "invalid_signature" });
+      return;
+    }
+
     const payload = req.body as FlutterwaveWebhookDto;
     await handleWebhookService(payload, signature);
+    res.status(200).json({ status: "received" });
   } catch (error) {
     console.error("Webhook processing error:", error);
+    res.status(500).json({ status: "error" });
   }
 };
 

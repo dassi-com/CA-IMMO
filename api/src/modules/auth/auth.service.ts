@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
 import { env } from "../../config/env";
+import { createAuditLog } from "../../utils/audit";
 import {
   RegisterDto,
   LoginDto,
@@ -13,7 +14,7 @@ import {
   AuthTokens,
   AuthTokensWithUser,
 } from "./auth.types";
-import { User } from "@prisma/client";
+import { User, AuditAction, Prisma } from "@prisma/client";
 import { Profile } from "passport-google-oauth20";
 import { sanitizeText } from "../../utils/sanitize";
 import { sendPasswordResetEmail } from "../../utils/mail";
@@ -22,6 +23,8 @@ const SALT_ROUNDS = 12;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN_MS = 7 * 24 * 60 * 60 * 1000;
 const RESET_TOKEN_EXPIRES_IN_MS = 60 * 60 * 1000;
+const MAX_FAILED_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
 const generateAccessToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, env.jwtSecret, {
@@ -152,12 +155,20 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithU
   return generateAuthTokensWithUser(user);
 };
 
+const FAKE_HASH = "$2a$12$0000000000000000000000000000000000000000000000000000000000";
+
 export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> => {
   const user = await prisma.user.findUnique({
     where: { email: dto.email },
   });
 
-  if (!user) {
+  const passwordHash = user?.password ?? FAKE_HASH;
+
+  // Toujours exécuter bcrypt.compare même si l'utilisateur n'existe pas,
+  // pour éviter l'énumération par timing
+  const isPasswordValid = await bcrypt.compare(dto.password, passwordHash);
+
+  if (!user || !user.password) {
     throw new AppError("Invalid email or password", 401);
   }
 
@@ -165,14 +176,48 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
     throw new AppError("Your account has been suspended", 403);
   }
 
-  if (!user.password) {
+  // Vérifier si le compte est verrouillé
+  if (user.locked_until && user.locked_until > new Date()) {
+    throw new AppError(
+      "Account temporarily locked due to too many failed attempts. Please try again later.",
+      429
+    );
+  }
+
+  // Vérifier si l'email a été vérifié
+  if (!user.is_verified && user.password) {
+    throw new AppError(
+      "Please verify your email address before logging in",
+      403
+    );
+  }
+
+  if (!isPasswordValid) {
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { failed_login_attempts: { increment: 1 } },
+      select: { failed_login_attempts: true },
+    });
+
+    if (updatedUser.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { locked_until: new Date(Date.now() + LOCKOUT_DURATION_MS) },
+      });
+    }
+
     throw new AppError("Invalid email or password", 401);
   }
 
-  const isPasswordValid = await bcrypt.compare(dto.password, user.password);
-
-  if (!isPasswordValid) {
-    throw new AppError("Invalid email or password", 401);
+  // Réinitialiser le compteur d'échecs en cas de succès
+  if (user.failed_login_attempts > 0) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failed_login_attempts: 0,
+        locked_until: null,
+      },
+    });
   }
 
   return generateAuthTokensWithUser(user);
@@ -199,7 +244,21 @@ export const refreshTokenService = async (
     throw new AppError("Your account has been suspended", 403);
   }
 
-  await prisma.refreshToken.delete({ where: { token } });
+  // Atomic token reuse detection : updateMany permet de n'utiliser le token que s'il ne l'a pas déjà été
+  const result = await prisma.refreshToken.updateMany({
+    where: { token, used: false },
+    data: { used: true },
+  });
+
+  if (result.count === 0) {
+    await prisma.refreshToken.deleteMany({
+      where: { user_id: storedToken.user_id },
+    });
+    throw new AppError(
+      "Refresh token reuse detected. All sessions have been invalidated for security.",
+      401
+    );
+  }
 
   return generateAuthTokensWithUser(storedToken.user);
 };
@@ -213,7 +272,10 @@ export const logoutService = async (token: string): Promise<void> => {
     throw new AppError("Invalid refresh token", 401);
   }
 
-  await prisma.refreshToken.delete({ where: { token } });
+  await prisma.refreshToken.update({
+    where: { token },
+    data: { used: true },
+  });
 };
 
 export const getMeService = async (
@@ -237,6 +299,8 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
   });
 
   if (!user || !user.password) {
+    // Dummy bcrypt pour éviter l'énumération par timing
+    await bcrypt.compare(dto.email, FAKE_HASH);
     return;
   }
 
@@ -251,7 +315,7 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
     },
   });
 
-  const resetUrl = `${env.clientUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
+  const resetUrl = `${env.clientUrl}/reset-password#token=${resetToken}`;
 
   await sendPasswordResetEmail(user.email, resetUrl);
 };
@@ -262,6 +326,8 @@ export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void>
   });
 
   if (!user || !user.reset_token || !user.reset_token_expires) {
+    // Dummy bcrypt pour éviter l'énumération par timing
+    await bcrypt.compare(dto.token, FAKE_HASH);
     throw new AppError("Invalid or expired reset token", 400);
   }
 

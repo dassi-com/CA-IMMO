@@ -62,7 +62,7 @@ export const uploadImagesService = async (
   // Vérifier que la propriété existe et appartient à l'owner
   const property = await prisma.property.findUnique({
     where: { id: propertyId, is_deleted: false },
-    include: { _count: { select: { images: true } } },
+    select: { owner_id: true },
   });
 
   if (!property) {
@@ -76,15 +76,6 @@ export const uploadImagesService = async (
     );
   }
 
-  // Vérifier la limite de 10 images
-  const currentCount = property._count.images;
-  if (currentCount + files.length > MAX_IMAGES_PER_PROPERTY) {
-    throw new AppError(
-      `Cannot upload ${files.length} image(s). Property already has ${currentCount} image(s). Maximum allowed is ${MAX_IMAGES_PER_PROPERTY}`,
-      400
-    );
-  }
-
   // Uploader toutes les images en parallèle sur Cloudinary
   const uploadPromises = files.map((file) =>
     uploadToCloudinary(file.buffer, `${CLOUDINARY_FOLDER}/${propertyId}`)
@@ -92,21 +83,34 @@ export const uploadImagesService = async (
 
   const uploadedResults = await Promise.all(uploadPromises);
 
-  // Sauvegarder en base avec l'ordre correct
-  const imagesData = uploadedResults.map((result, index) => ({
-    property_id: propertyId,
-    image_url: result.secure_url,
-    order: currentCount + index,
-  }));
+  // Sauvegarder en base avec l'ordre correct — dans une transaction pour éviter
+  // les races conditions sur le compteur d'images
+  const createdImages = await prisma.$transaction(async (tx) => {
+    const currentCount = await tx.propertyImage.count({
+      where: { property_id: propertyId },
+    });
 
-  await prisma.propertyImage.createMany({
-    data: imagesData,
-  });
+    if (currentCount + files.length > MAX_IMAGES_PER_PROPERTY) {
+      throw new AppError(
+        `Cannot upload ${files.length} image(s). Property already has ${currentCount} image(s). Maximum allowed is ${MAX_IMAGES_PER_PROPERTY}`,
+        400
+      );
+    }
 
-  // Retourner les images créées
-  const createdImages = await prisma.propertyImage.findMany({
-    where: { property_id: propertyId },
-    orderBy: { order: "asc" },
+    const imagesData = uploadedResults.map((result, index) => ({
+      property_id: propertyId,
+      image_url: result.secure_url,
+      order: currentCount + index,
+    }));
+
+    await tx.propertyImage.createMany({
+      data: imagesData,
+    });
+
+    return tx.propertyImage.findMany({
+      where: { property_id: propertyId },
+      orderBy: { order: "asc" },
+    });
   });
 
   return createdImages.map((img) => ({
@@ -155,20 +159,20 @@ export const deleteImageService = async (
     where: { id: imageId },
   });
 
-  // Réordonner les images restantes
+  // Réordonner les images restantes dans une transaction
   const remainingImages = await prisma.propertyImage.findMany({
     where: { property_id: propertyId },
     orderBy: { order: "asc" },
   });
 
-  const reorderPromises = remainingImages.map((img, index) =>
-    prisma.propertyImage.update({
-      where: { id: img.id },
-      data: { order: index },
-    })
+  await prisma.$transaction(
+    remainingImages.map((img, index) =>
+      prisma.propertyImage.update({
+        where: { id: img.id },
+        data: { order: index },
+      })
+    )
   );
-
-  await Promise.all(reorderPromises);
 };
 
 export const reorderImagesService = async (

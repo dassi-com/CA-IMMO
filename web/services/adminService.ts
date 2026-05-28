@@ -29,12 +29,12 @@ export const adminService = {
   },
 
   getAgents: async (): Promise<User[]> => {
-    const response = await api.get('/users?role=AGENT');
+    const response = await api.get('/users?role=OWNER');
     return response.data.data;
   },
 
   toggleFeaturedAgent: async (userId: string): Promise<User> => {
-    const response = await api.patch(`/users/${userId}/toggle-featured`);
+    const response = await api.patch(`/users/${userId}/feature`);
     return response.data.data;
   },
 

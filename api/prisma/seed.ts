@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +16,8 @@ async function main() {
     return;
   }
 
-  const hashedPassword = await bcrypt.hash("Admin@12345", 12);
+  const adminPassword = process.env.ADMIN_PASSWORD || crypto.randomBytes(16).toString("hex");
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
 
   await prisma.user.create({
     data: {
@@ -28,7 +30,14 @@ async function main() {
     },
   });
 
-  console.log("Super admin created successfully.");
+  console.log(`Super admin created successfully.`);
+  console.log(`Email: ${adminEmail}`);
+  console.log(`Password: ${adminPassword}`);
+  console.log(`Set ADMIN_PASSWORD env var to use a custom password.`);
+
+  if (!process.env.ADMIN_PASSWORD) {
+    console.warn(`WARNING: Generated random admin password. Set ADMIN_PASSWORD env var for reproducibility.`);
+  }
 }
 
 main()

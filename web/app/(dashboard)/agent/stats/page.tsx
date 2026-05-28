@@ -83,10 +83,10 @@ export default function AgentStatsPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatsCard title="Total annonces" value={listings.length} icon={Building2} trend={0} trendLabel="annonces" color="from-blue-500 to-cyan-500" delay={0.1} />
-            <StatsCard title="Annonces actives" value={approved} icon={CheckCircle} trend={0} trendLabel="approuvées" color="from-green-500 to-emerald-500" delay={0.2} />
-            <StatsCard title="En attente" value={pending} icon={Clock} trend={0} trendLabel="en attente" color="from-yellow-500 to-orange-500" delay={0.3} />
-            <StatsCard title="Messages reçus" value={inquiries.length} icon={MessageSquare} trend={0} trendLabel="messages" color="from-purple-500 to-indigo-500" delay={0.4} />
+            <StatsCard title="Total annonces" value={listings.length} icon={Building2} color="from-blue-500 to-cyan-500" delay={0.1} />
+            <StatsCard title="Annonces actives" value={approved} icon={CheckCircle} color="from-green-500 to-emerald-500" delay={0.2} />
+            <StatsCard title="En attente" value={pending} icon={Clock} color="from-yellow-500 to-orange-500" delay={0.3} />
+            <StatsCard title="Messages reçus" value={inquiries.length} icon={MessageSquare} color="from-purple-500 to-indigo-500" delay={0.4} />
           </div>
 
           {loading ? (

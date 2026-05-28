@@ -152,6 +152,18 @@ export const propertiesListValidator: ValidationChain[] = [
     .isInt({ min: 1, max: 100 })
     .withMessage("Limit must be between 1 and 100"),
 
+  query("city")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("City must be between 1 and 100 characters"),
+
+  query("neighborhood")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Neighborhood must be between 1 and 100 characters"),
+
   query("price_min")
     .optional()
     .isFloat({ min: 0 })

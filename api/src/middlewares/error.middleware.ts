@@ -39,10 +39,26 @@ export const errorMiddleware = (
       return;
     }
 
+    if (err.code === "P2023") {
+      res.status(400).json({
+        success: false,
+        message: "Invalid ID format.",
+      });
+      return;
+    }
+
     if (err.code === "P2025") {
       res.status(404).json({
         success: false,
         message: "Record not found.",
+      });
+      return;
+    }
+
+    if (err.code === "P2003") {
+      res.status(400).json({
+        success: false,
+        message: "Referenced record does not exist.",
       });
       return;
     }

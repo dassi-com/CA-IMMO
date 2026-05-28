@@ -1,6 +1,9 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, AuditAction } from '@prisma/client';
 import { prisma } from '../../utils/prisma';
 import { AppError } from '../../middlewares/error.middleware';
+import { sanitizeText, sanitizeOptional } from '../../utils/sanitize';
+import { parsePagination } from '../../utils/pagination';
+import { createAuditLog } from '../../utils/audit';
 import {
   CreateFeatureRequestDto,
   FeatureRequestResponseDto,
@@ -72,6 +75,11 @@ export const createFeatureRequestService = async (
       throw new AppError('Only owners can be featured as agents', 400);
     }
 
+    // M6: Un OWNER ne peut demander que sa propre mise en avant
+    if (dto.target_id !== requesterId) {
+      throw new AppError('You can only request feature for yourself', 403);
+    }
+
     // Vérifier qu'il n'existe pas déjà une demande PENDING pour cet agent
     const existingRequest = await prisma.featureRequest.findFirst({
       where: {
@@ -94,7 +102,7 @@ export const createFeatureRequestService = async (
         target: 'AGENT',
         target_id: dto.target_id,
         agent_id: dto.target_id,
-        reason: dto.reason,
+        reason: sanitizeOptional(dto.reason),
       },
       include: featureRequestInclude,
     });
@@ -144,7 +152,7 @@ export const createFeatureRequestService = async (
         target: 'PROPERTY',
         target_id: dto.target_id,
         property_id: dto.target_id,
-        reason: dto.reason,
+        reason: sanitizeOptional(dto.reason),
       },
       include: featureRequestInclude,
     });
@@ -167,9 +175,7 @@ export const getMyFeatureRequestsService = async (
     totalPages: number;
   };
 }> => {
-  const page = Math.max(1, parseInt(query.page ?? '1', 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? '10', 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.FeatureRequestWhereInput = {
     requester_id: userId,
@@ -216,9 +222,7 @@ export const getPendingFeatureRequestsService = async (
     totalPages: number;
   };
 }> => {
-  const page = Math.max(1, parseInt(query.page ?? '1', 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? '10', 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.FeatureRequestWhereInput = {
     status: 'PENDING',
@@ -284,49 +288,40 @@ export const approveFeatureRequestService = async (
     );
   }
 
-  // Approuver la demande et mettre en avant l'agent ou la propriété
-  if (request.target === 'AGENT' && request.agent_id) {
-    await prisma.featureRequest.update({
-      where: { id: requestId },
+  // Mise à jour atomique : on vérifie que le statut est encore PENDING
+  const updatedRequest = await prisma.$transaction(async (tx) => {
+    const updated = await tx.featureRequest.update({
+      where: { id: requestId, status: 'PENDING' },
       data: {
         status: 'APPROVED',
         reviewed_by: adminId,
         reviewed_at: new Date(),
       },
+      include: featureRequestInclude,
     });
 
-    // Mettre en avant l'agent
-    await prisma.user.update({
-      where: { id: request.agent_id },
-      data: { is_featured: true },
-    });
-  } else if (request.target === 'PROPERTY' && request.property_id) {
-    await prisma.featureRequest.update({
-      where: { id: requestId },
-      data: {
-        status: 'APPROVED',
-        reviewed_by: adminId,
-        reviewed_at: new Date(),
-      },
-    });
+    if (request.target === 'AGENT' && request.agent_id) {
+      await tx.user.update({
+        where: { id: request.agent_id },
+        data: { is_featured: true },
+      });
+    } else if (request.target === 'PROPERTY' && request.property_id) {
+      await tx.property.update({
+        where: { id: request.property_id },
+        data: { is_featured: true },
+      });
+    }
 
-    // Mettre en avant la propriété
-    await prisma.property.update({
-      where: { id: request.property_id },
-      data: { is_featured: true },
-    });
-  } else {
-    throw new AppError('Invalid request configuration', 400);
-  }
-
-  const updatedRequest = await prisma.featureRequest.findUnique({
-    where: { id: requestId },
-    include: featureRequestInclude,
+    return updated;
   });
 
-  if (!updatedRequest) {
-    throw new AppError('Feature request not found after update', 500);
-  }
+  await createAuditLog({
+    userId: adminId,
+    action: AuditAction.FEATURE_REQUEST_APPROVED,
+    targetId: requestId,
+    targetType: "FEATURE_REQUEST",
+    details: `Target: ${request.target}, ID: ${request.target_id}`,
+  });
 
   return mapRequestToResponse(updatedRequest);
 };
@@ -351,15 +346,24 @@ export const rejectFeatureRequestService = async (
     );
   }
 
+  // Mise à jour atomique avec vérification du statut
   const updatedRequest = await prisma.featureRequest.update({
-    where: { id: requestId },
+    where: { id: requestId, status: 'PENDING' },
     data: {
       status: 'REJECTED',
       reviewed_by: adminId,
       reviewed_at: new Date(),
-      rejection_reason: rejectionReason,
+      rejection_reason: sanitizeOptional(rejectionReason),
     },
     include: featureRequestInclude,
+  });
+
+  await createAuditLog({
+    userId: adminId,
+    action: AuditAction.FEATURE_REQUEST_REJECTED,
+    targetId: requestId,
+    targetType: "FEATURE_REQUEST",
+    details: `Target: ${request.target}, ID: ${request.target_id}`,
   });
 
   return mapRequestToResponse(updatedRequest);

@@ -12,7 +12,6 @@ import {
   updatePropertyStatus,
   featureProperty,
   listPendingProperties,
-  getPropertyStats,
 } from "./properties.controller";
 import {
   createPropertyValidator,
@@ -103,18 +102,6 @@ router.get(
   validate(propertiesListValidator),
   listPendingProperties
 );
-
-/**
- * @swagger
- * /properties/stats:
- *   get:
- *     summary: Statistiques des annonces (villes + types)
- *     tags: [Properties]
- *     responses:
- *       200:
- *         description: Statistiques récupérées
- */
-router.get("/stats", getPropertyStats);
 
 /**
  * @swagger
