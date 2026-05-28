@@ -33,9 +33,9 @@ export default function RegisterPage() {
       });
       toast.success('Compte créé avec succès');
       if (formData.role === 'OWNER') {
-        router.push('/dashboard/agent');
+        router.push('/agent');
       } else {
-        router.push('/');
+        router.push('/tenant');
       }
     } catch (error: any) {
       const message = error?.response?.data?.message || "Erreur lors de l'inscription";

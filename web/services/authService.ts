@@ -8,6 +8,9 @@ export interface User {
   role: 'ADMIN' | 'OWNER' | 'TENANT';
   is_verified: boolean;
   is_suspended: boolean;
+  is_featured?: boolean;
+  avatar_url?: string;
+  created_at?: string;
 }
 
 export interface LoginResponse {
@@ -35,6 +38,7 @@ export const authService = {
     email: string;
     phone: string;
     password: string;
+    confirm_password: string;
     role: 'TENANT' | 'OWNER';
   }): Promise<LoginResponse> => {
     const response = await api.post('/auth/register', data);
@@ -69,13 +73,37 @@ export const authService = {
     }
   },
 
+  // Mettre à jour le profil
+  updateProfile: async (data: { full_name: string; email: string; phone: string }): Promise<User> => {
+    const response = await api.put('/auth/profile', data);
+    return response.data.data;
+  },
+
+  // Changer le mot de passe
+  changePassword: async (data: { current_password: string; new_password: string; confirm_password: string }): Promise<void> => {
+    await api.put('/auth/password', data);
+  },
+
+  // Uploader un avatar
+  uploadAvatar: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const response = await api.post('/auth/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.data;
+  },
+
   // Rafraîchir le token
   refreshToken: async (): Promise<string | null> => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      const response = await api.post('/auth/refresh', { refreshToken });
-      localStorage.setItem('accessToken', response.data.data.accessToken);
-      return response.data.data.accessToken;
+      const oldRefreshToken = localStorage.getItem('refreshToken');
+      if (!oldRefreshToken) return null;
+      const response = await api.post('/auth/refresh', { refreshToken: oldRefreshToken });
+      const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+      localStorage.setItem('accessToken', accessToken);
+      if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+      return accessToken;
     } catch (error) {
       return null;
     }

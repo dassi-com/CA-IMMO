@@ -63,8 +63,9 @@ export default function LoginPage() {
       const response = await authLogin(formData.email, formData.password, formData.rememberMe);
       toast.success('Connexion réussie');
       const role = response?.user?.role;
-      if (role === 'ADMIN') router.push('/dashboard/admin');
-      else if (role === 'OWNER') router.push('/dashboard/agent');
+      if (role === 'ADMIN') router.push('/admin');
+      else if (role === 'OWNER') router.push('/agent');
+      else if (role === 'TENANT') router.push('/tenant');
       else router.push('/');
     } catch (error: any) {
       const message = error?.response?.data?.message || 'Erreur de connexion';

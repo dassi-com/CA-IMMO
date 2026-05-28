@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import PropertyCard from './PropertyCard';
+import { FeaturedPropertiesSkeleton } from '@/components/ui/Skeleton';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 
@@ -33,11 +34,7 @@ export default function FeaturedProperties() {
             <h2 className="text-3xl font-bold text-gray-900">Featured Properties</h2>
             <p className="text-gray-600 mt-2">Handpicked properties from trusted agents</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-xl h-96 animate-pulse"></div>
-            ))}
-          </div>
+          <FeaturedPropertiesSkeleton />
         </div>
       </section>
     );

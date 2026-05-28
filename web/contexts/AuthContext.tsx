@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return response;
   };
 
-  const register = async (data: { full_name: string; email: string; phone: string; password: string; role: 'TENANT' | 'OWNER' }) => {
+  const register = async (data: { full_name: string; email: string; phone: string; password: string; confirm_password: string; role: 'TENANT' | 'OWNER' }) => {
     const response = await authService.register(data);
     if (response.user) setUser(response.user);
   };
@@ -69,9 +69,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const getDashboardLink = useCallback(() => {
     if (!user) return '/login';
     switch (user.role) {
-      case 'ADMIN': return '/dashboard/admin';
-      case 'OWNER': return '/dashboard/agent';
-      case 'TENANT': return '/dashboard/tenant';
+      case 'ADMIN': return '/admin';      // ✅ corrigé
+      case 'OWNER': return '/agent';      // ✅ corrigé
+      case 'TENANT': return '/tenant';    // ✅ corrigé
       default: return '/login';
     }
   }, [user]);

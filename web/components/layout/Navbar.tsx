@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, User, LogIn } from 'lucide-react';
+import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -74,16 +74,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {isAuthenticated ? (
-              <Link
-                href="/profile"
-                className={`p-1.5 rounded-full transition ${
-                  pathname === '/profile' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                }`}
-              >
-                <User size={20} />
-              </Link>
-            ) : (
+            {!isAuthenticated && (
               <Link
                 href="/login"
                 className="flex items-center space-x-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition"
@@ -107,16 +98,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {isAuthenticated ? (
-              <Link
-                href="/profile"
-                className={`p-1.5 rounded-full transition ${
-                  pathname === '/profile' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600'
-                }`}
-              >
-                <User size={20} />
-              </Link>
-            ) : (
+            {!isAuthenticated && (
               <Link
                 href="/login"
                 className="p-1.5 rounded-full text-gray-600 hover:text-red-600 transition"

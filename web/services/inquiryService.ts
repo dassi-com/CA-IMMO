@@ -1,13 +1,16 @@
 import { api } from './api';
+import { Property } from '@/types/property';
 
 export interface Inquiry {
   id: string;
   property_id: string;
   sender_id?: string;
   name: string;
+  email?: string;
   phone_number: string;
   message: string;
   created_at: string;
+  property?: Property;
 }
 
 export const inquiryService = {

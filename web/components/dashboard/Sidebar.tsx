@@ -33,25 +33,25 @@ interface SidebarProps {
 
 const navigationItems = {
   tenant: [
-    { name: 'Dashboard', href: '/dashboard/tenant', icon: Home },
+    { name: 'Dashboard', href: '/tenant', icon: Home },
     { name: 'Mes favoris', href: '/favorites', icon: Heart },
-    { name: 'Visites', href: '/dashboard/tenant/visits', icon: Calendar },
-    { name: 'Messages', href: '/dashboard/tenant/messages', icon: MessageSquare },
-    { name: 'Alertes', href: '/dashboard/tenant/alerts', icon: Bell },
+    { name: 'Visites', href: '/tenant/visits', icon: Calendar },
+    { name: 'Messages', href: '/tenant/messages', icon: MessageSquare },
+    { name: 'Alertes', href: '/tenant/alerts', icon: Bell },
   ],
   agent: [
-    { name: 'Dashboard', href: '/dashboard/agent', icon: Home },
-    { name: 'Mes annonces', href: '/dashboard/agent/listings', icon: Building2 },
-    { name: 'Messages', href: '/dashboard/agent/messages', icon: MessageSquare },
-    { name: 'Statistiques', href: '/dashboard/agent/stats', icon: BarChart3 },
-    { name: 'Paramètres', href: '/profile', icon: Settings },
+    { name: 'Dashboard', href: '/agent', icon: Home },
+    { name: 'Mes annonces', href: '/agent/listings', icon: Building2 },
+    { name: 'Messages', href: '/agent/messages', icon: MessageSquare },
+    { name: 'Statistiques', href: '/agent/stats', icon: BarChart3 },
+    { name: 'Paramètres', href: '/settings', icon: Settings },
   ],
   admin: [
-    { name: 'Dashboard', href: '/dashboard/admin', icon: Home },
-    { name: 'Utilisateurs', href: '/dashboard/admin/users', icon: Users },
-    { name: 'Annonces', href: '/dashboard/admin/listings', icon: FileText },
-    { name: 'Paiements', href: '/dashboard/admin/payments', icon: DollarSign },
-    { name: 'Paramètres', href: '/dashboard/admin/settings', icon: Settings },
+    { name: 'Dashboard', href: '/admin', icon: Home },
+    { name: 'Utilisateurs', href: '/admin/users', icon: Users },
+    { name: 'Annonces', href: '/admin/listings', icon: FileText },
+    { name: 'Paiements', href: '/admin/payments', icon: DollarSign },
+    { name: 'Paramètres', href: '/admin/settings', icon: Settings },
   ],
 };
 

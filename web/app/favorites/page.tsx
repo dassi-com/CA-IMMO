@@ -21,6 +21,7 @@ import {
 import { favoriteService } from '@/services/favoriteService';
 import { Property } from '@/types/property';
 import { useAuth } from '@/contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 interface FavoriteDisplay {
   id: string;
@@ -85,8 +86,9 @@ export default function FavoritesPage() {
     try {
       await favoriteService.removeFromFavorites(id);
       setFavorites(prev => prev.filter(p => p.id !== id));
+      toast.success('Propriété retirée des favoris');
     } catch (error) {
-      console.error('Error removing favorite:', error);
+      toast.error('Erreur lors du retrait des favoris');
     }
   };
 

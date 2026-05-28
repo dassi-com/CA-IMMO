@@ -16,26 +16,30 @@ export default function PropertyDetailPage() {
   const { isAuthenticated } = useAuth();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contactUnlocked, setContactUnlocked] = useState(false);
 
-  useEffect(() => {
-    const loadProperty = async () => {
-      if (!id) return;
-      try {
-        const data = await getPropertyById(id as string);
-        if (!data) {
-          router.push('/404');
-          return;
-        }
-        setProperty(data);
-      } catch (error) {
-        console.error('Error loading property:', error);
-      } finally {
-        setLoading(false);
+  const loadProperty = async () => {
+    if (!id) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getPropertyById(id as string);
+      if (!data) {
+        router.push('/404');
+        return;
       }
-    };
+      setProperty(data);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to load property');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadProperty();
   }, [id, router]);
 

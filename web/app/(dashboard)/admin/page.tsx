@@ -18,28 +18,11 @@ import {
   Mail,
   Phone,
   Calendar,
-  AlertCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
 import StatsCard from '@/components/dashboard/StatsCard';
-import ChartCard, {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,  // ← Cell importé ici
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from '@/components/dashboard/ChartCard';
+import { SkeletonTable } from '@/components/ui/Skeleton';
 import { adminService } from '@/services/adminService';
 import { User } from '@/services/authService';
 import { propertyService } from '@/services/propertyService';
@@ -66,14 +49,6 @@ interface PaymentRequest {
   reference: string;
 }
 
-interface SystemAlert {
-  id: string;
-  type: string;
-  message: string;
-  date: string;
-  priority: string;
-}
-
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,10 +58,6 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [pendingListings, setPendingListings] = useState<PendingListing[]>([]);
   const [paymentRequests, setPaymentRequests] = useState<PaymentRequest[]>([]);
-  const [systemAlerts] = useState<SystemAlert[]>([
-    { id: 'a1', type: 'warning', message: 'Plus de 10 annonces en attente depuis plus de 48h', date: new Date().toISOString().split('T')[0], priority: 'high' },
-    { id: 'a2', type: 'info', message: 'Bienvenue sur le tableau de bord administrateur', date: new Date().toISOString().split('T')[0], priority: 'medium' },
-  ]);
 
   useEffect(() => {
     loadData();
@@ -178,30 +149,6 @@ export default function AdminDashboard() {
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const userRegistrations = [
-    { month: 'Sep', tenants: 12, agents: 3, admins: 0 },
-    { month: 'Oct', tenants: 18, agents: 5, admins: 0 },
-    { month: 'Nov', tenants: 15, agents: 4, admins: 0 },
-    { month: 'Dec', tenants: 25, agents: 7, admins: 1 },
-    { month: 'Jan', tenants: 20, agents: 6, admins: 0 },
-    { month: 'Fév', tenants: 14, agents: 4, admins: 0 },
-  ];
-
-  const listingsByStatus = [
-    { status: 'APPROVED', count: 280, color: '#10B981' },
-    { status: 'PENDING', count: 45, color: '#F59E0B' },
-    { status: 'REJECTED', count: 12, color: '#EF4444' },
-    { status: 'FEATURED', count: 5, color: '#8B5CF6' },
-  ];
-
-  const topCities = [
-    { city: 'Yaoundé', count: 145, percentage: 42 },
-    { city: 'Douala', count: 128, percentage: 37 },
-    { city: 'Bafoussam', count: 32, percentage: 9 },
-    { city: 'Garoua', count: 21, percentage: 6 },
-    { city: 'Maroua', count: 16, percentage: 5 },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Sidebar role="admin" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
@@ -219,13 +166,25 @@ export default function AdminDashboard() {
           </motion.div>
 
           {/* Stats Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gray-200 rounded-xl" />
+                    <div className="w-16 h-4 bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-8 bg-gray-200 rounded w-1/2 mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Utilisateurs"
               value={stats.totalUsers}
               icon={Users}
-              trend={12}
-              trendLabel="vs mois dernier"
               color="from-blue-500 to-cyan-500"
               delay={0.1}
             />
@@ -233,8 +192,6 @@ export default function AdminDashboard() {
               title="Annonces totales"
               value={stats.totalListings}
               icon={Building2}
-              trend={8}
-              trendLabel="vs mois dernier"
               color="from-green-500 to-emerald-500"
               delay={0.2}
             />
@@ -242,8 +199,6 @@ export default function AdminDashboard() {
               title="En attente"
               value={stats.pendingListings}
               icon={Clock}
-              trend={-3}
-              trendLabel="vs mois dernier"
               color="from-yellow-500 to-orange-500"
               delay={0.3}
             />
@@ -251,82 +206,13 @@ export default function AdminDashboard() {
               title="Revenus"
               value={stats.totalRevenue ? `${(stats.totalRevenue / 1000000).toFixed(1)}M FCFA` : '0 FCFA'}
               icon={DollarSign}
-              trend={25}
-              trendLabel="vs mois dernier"
               color="from-purple-500 to-indigo-500"
               delay={0.4}
             />
           </div>
+          )}
 
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ChartCard title="Nouvelles inscriptions" icon={TrendingUp} delay={0.2}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={userRegistrations}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" />
-                  <YAxis stroke="#6B7280" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                    }}
-                  />
-                  <Legend />
-                  <Area type="monotone" dataKey="tenants" stackId="1" fill="#DC2626" stroke="#DC2626" name="Locataires" />
-                  <Area type="monotone" dataKey="agents" stackId="1" fill="#FCA5A5" stroke="#FCA5A5" name="Agents" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </ChartCard>
 
-            <ChartCard title="Annonces par statut" icon={Building2} delay={0.3}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={listingsByStatus}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="status" stroke="#6B7280" />
-                  <YAxis stroke="#6B7280" />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#DC2626" radius={[8, 8, 0, 0]}>
-                    {listingsByStatus.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          </div>
-
-          {/* Top Cities Chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-lg p-6 mb-8"
-          >
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Top villes par nombre d'annonces</h3>
-            <div className="space-y-4">
-              {topCities.map((city, index) => (
-                <div key={index}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-gray-700">{city.city}</span>
-                    <span className="text-gray-600 font-medium">
-                      {city.count} annonces ({city.percentage}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${city.percentage}%` }}
-                      transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                      className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
 
           {/* Pending Listings Table */}
           <motion.div
@@ -338,6 +224,9 @@ export default function AdminDashboard() {
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-800">Annonces à valider</h2>
             </div>
+            {loading ? (
+              <SkeletonTable rows={5} />
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
@@ -395,6 +284,7 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
             </div>
+            )}
           </motion.div>
 
           {/* Users Management and Payment Requests Grid */}
@@ -421,6 +311,9 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+              {loading ? (
+                <SkeletonTable rows={5} />
+              ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50">
@@ -487,6 +380,7 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+              )}
             </motion.div>
 
             {/* Payment Requests */}
@@ -533,42 +427,7 @@ export default function AdminDashboard() {
             </motion.div>
           </div>
 
-          {/* System Alerts */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="bg-white rounded-2xl shadow-lg p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-red-600" />
-              <h2 className="text-xl font-bold text-gray-800">Alertes système</h2>
-            </div>
-            <div className="space-y-3">
-              {systemAlerts.map((alert) => (
-                <div
-                  key={alert.id}
-                  className={`p-4 rounded-xl border-l-4 ${
-                    alert.priority === 'high'
-                      ? 'border-red-500 bg-red-50'
-                      : alert.priority === 'medium'
-                      ? 'border-yellow-500 bg-yellow-50'
-                      : 'border-green-500 bg-green-50'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-gray-800">{alert.message}</p>
-                      <p className="text-sm text-gray-500 mt-1">{alert.date}</p>
-                    </div>
-                    <button className="text-gray-400 hover:text-gray-600">
-                      <MoreVertical size={18} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+
         </div>
       </main>
     </div>
