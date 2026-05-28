@@ -150,6 +150,20 @@ export default function AgentDashboard() {
             <p className="text-gray-600 mt-2">Gérez vos propriétés et suivez vos performances</p>
           </motion.div>
 
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gray-200 rounded-xl" />
+                    <div className="w-16 h-4 bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-8 bg-gray-200 rounded w-1/2 mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               title="Total annonces"
@@ -188,6 +202,7 @@ export default function AgentDashboard() {
               delay={0.4}
             />
           </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <ChartCard title="Performances mensuelles" icon={TrendingUp} delay={0.2}>

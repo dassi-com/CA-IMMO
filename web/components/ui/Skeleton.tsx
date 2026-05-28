@@ -85,9 +85,9 @@ export function FeaturedPropertiesSkeleton() {
 
 export function CitiesSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+    <div className="flex gap-6 overflow-hidden">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="rounded-xl overflow-hidden h-56 animate-pulse">
+        <div key={i} className="rounded-xl overflow-hidden h-64 min-w-[280px] flex-shrink-0 animate-pulse">
           <div className="w-full h-full bg-gray-200" />
         </div>
       ))}
