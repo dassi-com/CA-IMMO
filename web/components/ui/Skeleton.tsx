@@ -97,12 +97,14 @@ export function CitiesSkeleton() {
 
 export function PropertyTypesSkeleton() {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 max-w-5xl mx-auto">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 animate-pulse">
-          <div className="w-14 h-14 bg-gray-200 rounded-xl mx-auto mb-4" />
-          <div className="h-4 bg-gray-200 rounded w-2/3 mx-auto mb-2" />
-          <div className="h-3 bg-gray-200 rounded w-1/3 mx-auto" />
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="bg-white rounded-xl overflow-hidden border border-gray-100 animate-pulse">
+          <div className="h-32 bg-gray-200" />
+          <div className="p-3 space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-2/3 mx-auto" />
+            <div className="h-3 bg-gray-200 rounded w-1/3 mx-auto" />
+          </div>
         </div>
       ))}
     </div>

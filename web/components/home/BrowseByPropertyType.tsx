@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Home, Building2, Map, Store, ArrowRight, type LucideIcon } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
 import { PropertyTypesSkeleton } from '@/components/ui/Skeleton';
 import { propertyService } from '@/services/propertyService';
 
@@ -10,15 +11,14 @@ interface TypeItem {
   key: string;
   label: string;
   backendKey: string | null;
-  icon: LucideIcon;
-  color: string;
+  image: string;
 }
 
 const types: TypeItem[] = [
-  { key: 'houses', label: 'Houses', backendKey: 'MAISON', icon: Home, color: 'bg-red-100 text-red-600' },
-  { key: 'apartments', label: 'Apartments', backendKey: null, icon: Building2, color: 'bg-blue-100 text-blue-600' },
-  { key: 'land', label: 'Land Plots', backendKey: 'TERRAIN', icon: Map, color: 'bg-amber-100 text-amber-600' },
-  { key: 'commercial', label: 'Commercial', backendKey: 'LOCAL_COMMERCIAL', icon: Store, color: 'bg-purple-100 text-purple-600' },
+  { key: 'houses', label: 'Houses', backendKey: 'MAISON', image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=80' },
+  { key: 'apartments', label: 'Apartments', backendKey: null, image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&q=80' },
+  { key: 'land', label: 'Land Plots', backendKey: 'TERRAIN', image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80' },
+  { key: 'commercial', label: 'Commercial', backendKey: 'LOCAL_COMMERCIAL', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80' },
 ];
 
 export default function BrowseByPropertyType() {
@@ -73,21 +73,28 @@ export default function BrowseByPropertyType() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {types.map((item) => {
-            const Icon = item.icon;
             const count = item.backendKey ? (counts[item.backendKey] ?? 0) : 0;
             return (
               <Link
                 key={item.key}
                 href="/search"
-                className="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow border border-gray-100 group"
+                className="group bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow border border-gray-100"
               >
-                <div className={`w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110 ${item.color}`}>
-                  <Icon size={28} />
+                <div className="h-32 relative overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.label}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </div>
-                <h3 className="font-semibold text-gray-900">{item.label}</h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {count.toLocaleString()} {count > 1 ? 'listings' : 'listing'}
-                </p>
+                <div className="p-3 text-center">
+                  <h3 className="font-semibold text-gray-900 text-sm">{item.label}</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {count.toLocaleString()} {count > 1 ? 'listings' : 'listing'}
+                  </p>
+                </div>
               </Link>
             );
           })}

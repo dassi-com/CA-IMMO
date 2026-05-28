@@ -20,15 +20,26 @@ const cityImages: Record<string, string> = {
   'Daloa': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
 };
 
+const defaultCities: CityCount[] = [
+  { city: 'Abidjan', count: 234 },
+  { city: 'Bouaké', count: 156 },
+  { city: 'Yamoussoukro', count: 89 },
+  { city: 'San Pedro', count: 67 },
+  { city: 'Korhogo', count: 45 },
+  { city: 'Daloa', count: 34 },
+];
+
 export default function ExplorePopularCities() {
-  const [cities, setCities] = useState<CityCount[]>([]);
+  const [cities, setCities] = useState<CityCount[]>(defaultCities);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCities = async () => {
       try {
         const stats = await propertyService.getStats();
-        setCities(stats.cities);
+        if (stats.cities && stats.cities.length > 0) {
+          setCities(stats.cities);
+        }
       } catch (error) {
         console.error('Error loading cities:', error);
       } finally {
@@ -48,8 +59,6 @@ export default function ExplorePopularCities() {
       </section>
     );
   }
-
-  if (cities.length === 0) return null;
 
   return (
     <section className="py-16">
