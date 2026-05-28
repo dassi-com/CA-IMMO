@@ -59,7 +59,7 @@ export const createInquiryService = async (
       property_id: propertyId,
       sender_id: senderId ?? null,
       name: sanitizeText(dto.name),
-      phone_number: dto.phone_number,
+      phone_number: sanitizeText(dto.phone_number),
       message: sanitizeText(dto.message),
     },
     include: inquiryInclude,

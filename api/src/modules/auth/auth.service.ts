@@ -190,6 +190,17 @@ export const refreshTokenService = async (
     throw new AppError("Invalid refresh token", 401);
   }
 
+  // H6: Token reuse detection — un token déjà utilisé indique un vol
+  if (storedToken.used) {
+    await prisma.refreshToken.deleteMany({
+      where: { user_id: storedToken.user_id },
+    });
+    throw new AppError(
+      "Refresh token reuse detected. All sessions have been invalidated for security.",
+      401
+    );
+  }
+
   if (storedToken.expires_at < new Date()) {
     await prisma.refreshToken.delete({ where: { token } });
     throw new AppError("Refresh token expired, please login again", 401);
@@ -199,7 +210,11 @@ export const refreshTokenService = async (
     throw new AppError("Your account has been suspended", 403);
   }
 
-  await prisma.refreshToken.delete({ where: { token } });
+  // Marquer comme utilisé (au lieu de supprimer) pour détecter les rejeux
+  await prisma.refreshToken.update({
+    where: { token },
+    data: { used: true },
+  });
 
   return generateAuthTokensWithUser(storedToken.user);
 };
@@ -213,7 +228,10 @@ export const logoutService = async (token: string): Promise<void> => {
     throw new AppError("Invalid refresh token", 401);
   }
 
-  await prisma.refreshToken.delete({ where: { token } });
+  await prisma.refreshToken.update({
+    where: { token },
+    data: { used: true },
+  });
 };
 
 export const getMeService = async (
@@ -251,7 +269,7 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
     },
   });
 
-  const resetUrl = `${env.clientUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
+  const resetUrl = `${env.clientUrl}/reset-password#token=${resetToken}`;
 
   await sendPasswordResetEmail(user.email, resetUrl);
 };

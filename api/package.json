@@ -24,6 +24,7 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",
     "compression": "^1.8.1",
+    "connect-timeout": "^1.9.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -41,11 +42,13 @@
     "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "xss": "^1.0.15",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.8.1",
+    "@types/connect-timeout": "^1.9.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/express-validator": "^2.20.33",

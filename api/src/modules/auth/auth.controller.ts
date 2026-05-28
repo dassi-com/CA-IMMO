@@ -83,7 +83,9 @@ export const googleCallback = asyncHandler(
     const user = req.user as User;
     const result = await generateAuthTokensWithUser(user);
 
-    const redirectUrl = `${env.clientUrl}/auth/google/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`;
+    // Utilisation du fragment hash (#) pour éviter que les tokens
+    // ne soient loggés par les serveurs intermédiaires ou fuient via Referer
+    const redirectUrl = `${env.clientUrl}/auth/google/callback#accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`;
     res.redirect(redirectUrl);
   }
 );

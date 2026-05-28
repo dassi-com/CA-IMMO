@@ -4,10 +4,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
+import timeout from 'connect-timeout';
 import swaggerUi from 'swagger-ui-express';
 import { validateEnv, env } from './config/env';
 import { errorMiddleware } from './middlewares/error.middleware';
-import { createApiLimiter, createAuthLimiter } from './middlewares/rateLimit.middleware';
+import { createApiLimiter, createAuthLimiter, createPasswordResetLimiter } from './middlewares/rateLimit.middleware';
 import { swaggerSpec } from './config/swagger';
 import './config/passport';
 import authRouter from './modules/auth/auth.routes';
@@ -24,7 +25,29 @@ validateEnv();
 const app: Application = express();
 
 // ─── Security ─────────────────────────────────
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  strictTransportSecurity: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+}));
+
+app.disable('x-powered-by');
+
 const corsOrigin = env.clientUrl;
 if (!corsOrigin && process.env.NODE_ENV === 'production') {
   console.warn('CLIENT_URL is not set. CORS will be restrictive.');
@@ -37,37 +60,42 @@ app.use(
 );
 
 // ─── Rate Limiting ────────────────────────────
-// Per-user pour les requêtes authentifiées, IP-based pour les anonymes
-// Un utilisateur qui dépasse la limite est bloqué individuellement sans affecter les autres
 const apiLimiter = createApiLimiter();
 app.use('/api', apiLimiter);
 
-// Auth endpoints : limite stricte IP-based contre le brute-force
 const authLimiter = createAuthLimiter();
 app.use('/api/v1/auth/login', authLimiter);
 app.use('/api/v1/auth/register', authLimiter);
 app.use('/api/v1/auth/refresh', authLimiter);
+
+const passwordResetLimiter = createPasswordResetLimiter();
+app.use('/api/v1/auth/forgot-password', passwordResetLimiter);
 
 // ─── Parsing & Compression ────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(compression());
 
+// ─── Timeout ──────────────────────────────────
+app.use(timeout('30s'));
+
 // ─── Logging ──────────────────────────────────
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // ─── Swagger ──────────────────────────────────
-app.use(
-  '/api/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customSiteTitle: 'Immo Platform API Docs',
-    customCss: '.swagger-ui .topbar { display: none }',
-    swaggerOptions: {
-      persistAuthorization: true, // garde le token JWT entre les requêtes
-    },
-  })
-);
+if (env.nodeEnv !== 'production') {
+  app.use(
+    '/api/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      customSiteTitle: 'Immo Platform API Docs',
+      customCss: '.swagger-ui .topbar { display: none }',
+      swaggerOptions: {
+        persistAuthorization: true,
+      },
+    })
+  );
+}
 
 // ─── Health Check ─────────────────────────────
 app.get('/health', (_req: Request, res: Response) => {

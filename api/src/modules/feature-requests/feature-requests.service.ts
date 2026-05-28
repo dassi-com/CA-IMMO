@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../utils/prisma';
 import { AppError } from '../../middlewares/error.middleware';
+import { sanitizeText, sanitizeOptional } from '../../utils/sanitize';
 import {
   CreateFeatureRequestDto,
   FeatureRequestResponseDto,
@@ -72,6 +73,11 @@ export const createFeatureRequestService = async (
       throw new AppError('Only owners can be featured as agents', 400);
     }
 
+    // M6: Un OWNER ne peut demander que sa propre mise en avant
+    if (dto.target_id !== requesterId) {
+      throw new AppError('You can only request feature for yourself', 403);
+    }
+
     // Vérifier qu'il n'existe pas déjà une demande PENDING pour cet agent
     const existingRequest = await prisma.featureRequest.findFirst({
       where: {
@@ -94,7 +100,7 @@ export const createFeatureRequestService = async (
         target: 'AGENT',
         target_id: dto.target_id,
         agent_id: dto.target_id,
-        reason: dto.reason,
+        reason: sanitizeOptional(dto.reason),
       },
       include: featureRequestInclude,
     });
@@ -144,7 +150,7 @@ export const createFeatureRequestService = async (
         target: 'PROPERTY',
         target_id: dto.target_id,
         property_id: dto.target_id,
-        reason: dto.reason,
+        reason: sanitizeOptional(dto.reason),
       },
       include: featureRequestInclude,
     });
@@ -357,7 +363,7 @@ export const rejectFeatureRequestService = async (
       status: 'REJECTED',
       reviewed_by: adminId,
       reviewed_at: new Date(),
-      rejection_reason: rejectionReason,
+      rejection_reason: sanitizeOptional(rejectionReason),
     },
     include: featureRequestInclude,
   });

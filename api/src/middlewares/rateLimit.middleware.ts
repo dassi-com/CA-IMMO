@@ -50,3 +50,17 @@ export const createAuthLimiter = () =>
     keyGenerator: (req: Request) =>
       req.ip ?? req.socket.remoteAddress ?? 'unknown',
   });
+
+export const createPasswordResetLimiter = () =>
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 3,
+    message: {
+      success: false,
+      message: 'Too many password reset requests, please try again later.',
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request) =>
+      req.ip ?? req.socket.remoteAddress ?? 'unknown',
+  });
