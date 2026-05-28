@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Star, Search } from 'lucide-react';
+import { AgentsSkeleton } from '@/components/ui/Skeleton';
 import { adminService } from '@/services/adminService';
 
 interface Agent {
@@ -35,9 +36,7 @@ export default function TrustedRealEstateAgents() {
       <section className="py-16">
         <div className="container mx-auto px-6 md:px-8 lg:px-12">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">Trusted Real Estate Agents</h2>
-          <div className="flex justify-center items-center py-10">
-            <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-          </div>
+          <AgentsSkeleton />
         </div>
       </section>
     );

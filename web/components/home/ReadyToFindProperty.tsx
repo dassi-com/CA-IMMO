@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Search, Home, Shield, CheckCircle } from 'lucide-react';
+import { ReadyToFindSkeleton } from '@/components/ui/Skeleton';
 import { propertyService } from '@/services/propertyService';
 
 const features = [
@@ -50,9 +51,7 @@ export default function ReadyToFindProperty() {
     return (
       <section className="py-16 bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
         <div className="container mx-auto px-6 md:px-8 lg:px-12">
-          <div className="flex justify-center items-center py-20">
-            <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-          </div>
+          <ReadyToFindSkeleton />
         </div>
       </section>
     );

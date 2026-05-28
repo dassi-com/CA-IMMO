@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MapPin, ArrowRight } from 'lucide-react';
+import { CitiesSkeleton } from '@/components/ui/Skeleton';
 import { propertyService } from '@/services/propertyService';
 
 interface CityCount {
@@ -42,9 +43,7 @@ export default function ExplorePopularCities() {
       <section className="py-16">
         <div className="container mx-auto px-6 md:px-8 lg:px-12">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">Explore Popular Cities</h2>
-          <div className="flex justify-center items-center py-10">
-            <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-          </div>
+          <CitiesSkeleton />
         </div>
       </section>
     );
