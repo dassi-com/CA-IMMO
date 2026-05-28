@@ -2,38 +2,45 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Home, Building, Map, Store, ArrowRight, type LucideIcon } from 'lucide-react';
+import { Home, Building2, Map, Store, ArrowRight, type LucideIcon } from 'lucide-react';
 import { PropertyTypesSkeleton } from '@/components/ui/Skeleton';
 import { propertyService } from '@/services/propertyService';
 
-const typeConfig: Record<string, { label: string; icon: LucideIcon; color: string }> = {
-  MAISON: { label: 'Houses', icon: Home, color: 'bg-red-100 text-red-600' },
-  BUREAU: { label: 'Offices', icon: Building, color: 'bg-blue-100 text-blue-600' },
-  ENTREPOT: { label: 'Warehouses', icon: Building, color: 'bg-green-100 text-green-600' },
-  LOCAL_COMMERCIAL: { label: 'Commercial', icon: Store, color: 'bg-purple-100 text-purple-600' },
-  TERRAIN: { label: 'Land Plots', icon: Map, color: 'bg-amber-100 text-amber-600' },
-};
+interface TypeItem {
+  key: string;
+  label: string;
+  backendKey: string | null;
+  icon: LucideIcon;
+  color: string;
+}
+
+const types: TypeItem[] = [
+  { key: 'houses', label: 'Houses', backendKey: 'MAISON', icon: Home, color: 'bg-red-100 text-red-600' },
+  { key: 'apartments', label: 'Apartments', backendKey: null, icon: Building2, color: 'bg-blue-100 text-blue-600' },
+  { key: 'land', label: 'Land Plots', backendKey: 'TERRAIN', icon: Map, color: 'bg-amber-100 text-amber-600' },
+  { key: 'commercial', label: 'Commercial', backendKey: 'LOCAL_COMMERCIAL', icon: Store, color: 'bg-purple-100 text-purple-600' },
+];
 
 export default function BrowseByPropertyType() {
-  const [typeCounts, setTypeCounts] = useState<Record<string, number>>({});
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadTypes = async () => {
+    const loadData = async () => {
       try {
         const stats = await propertyService.getStats();
-        const counts: Record<string, number> = {};
+        const map: Record<string, number> = {};
         stats.propertyTypes.forEach((t) => {
-          counts[t.type] = t.count;
+          map[t.type] = t.count;
         });
-        setTypeCounts(counts);
+        setCounts(map);
       } catch (error) {
         console.error('Error loading property types:', error);
       } finally {
         setLoading(false);
       }
     };
-    loadTypes();
+    loadData();
   }, []);
 
   if (loading) {
@@ -46,14 +53,6 @@ export default function BrowseByPropertyType() {
       </section>
     );
   }
-
-  const entries = Object.entries(typeConfig).map(([key, config]) => ({
-    type: key,
-    ...config,
-    count: typeCounts[key] ?? 0,
-  }));
-
-  if (entries.every((e) => e.count === 0)) return null;
 
   return (
     <section className="py-16 bg-gray-50">
@@ -72,13 +71,14 @@ export default function BrowseByPropertyType() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 max-w-5xl mx-auto">
-          {entries.map((item) => {
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          {types.map((item) => {
             const Icon = item.icon;
+            const count = item.backendKey ? (counts[item.backendKey] ?? 0) : 0;
             return (
               <Link
-                key={item.type}
-                href={`/search?property_type=${item.type}`}
+                key={item.key}
+                href="/search"
                 className="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow border border-gray-100 group"
               >
                 <div className={`w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110 ${item.color}`}>
@@ -86,7 +86,7 @@ export default function BrowseByPropertyType() {
                 </div>
                 <h3 className="font-semibold text-gray-900">{item.label}</h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {item.count.toLocaleString()} {item.count > 1 ? 'listings' : 'listing'}
+                  {count.toLocaleString()} {count > 1 ? 'listings' : 'listing'}
                 </p>
               </Link>
             );

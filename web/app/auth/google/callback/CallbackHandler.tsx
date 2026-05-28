@@ -18,14 +18,14 @@ export default function CallbackHandler() {
       localStorage.setItem('refreshToken', refreshToken);
 
       authService.getCurrentUser().then(() => {
-        if (role === 'ADMIN') window.location.href = '/dashboard/admin';
-        else if (role === 'OWNER') window.location.href = '/dashboard/agent';
-        else if (role === 'TENANT') window.location.href = '/dashboard/tenant';
+        if (role === 'ADMIN') window.location.href = '/admin';
+        else if (role === 'OWNER') window.location.href = '/agent';
+        else if (role === 'TENANT') window.location.href = '/tenant';
         else window.location.href = '/';
       }).catch(() => {
-        if (role === 'ADMIN') window.location.href = '/dashboard/admin';
-        else if (role === 'OWNER') window.location.href = '/dashboard/agent';
-        else if (role === 'TENANT') window.location.href = '/dashboard/tenant';
+        if (role === 'ADMIN') window.location.href = '/admin';
+        else if (role === 'OWNER') window.location.href = '/agent';
+        else if (role === 'TENANT') window.location.href = '/tenant';
         else window.location.href = '/';
       });
     } else {
