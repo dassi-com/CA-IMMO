@@ -384,6 +384,29 @@ const options: swaggerJsdoc.Options = {
       },
       // ─── Reusable responses ──────────────────────────────────────────────
       responses: {
+        TooManyRequests: {
+          description: 'Trop de requêtes — limite de taux dépassée (429). Chaque utilisateur authentifié a son propre compteur ; les utilisateurs non authentifiés sont limités par IP. La limite se réinitialise après 15 minutes.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+              example: { success: false, message: 'Too many requests, please try again later.' },
+            },
+          },
+          headers: {
+            'RateLimit-Limit': {
+              schema: { type: 'integer' },
+              description: 'Nombre maximum de requêtes autorisées dans la fenêtre',
+            },
+            'RateLimit-Remaining': {
+              schema: { type: 'integer' },
+              description: 'Requêtes restantes dans la fenêtre actuelle',
+            },
+            'RateLimit-Reset': {
+              schema: { type: 'integer' },
+              description: 'Timestamp UNIX de réinitialisation du compteur',
+            },
+          },
+        },
         Unauthorized: {
           description: 'Token manquant ou invalide',
           content: {

@@ -4,10 +4,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
-import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import { validateEnv, env } from './config/env';
 import { errorMiddleware } from './middlewares/error.middleware';
+import { createApiLimiter, createAuthLimiter } from './middlewares/rateLimit.middleware';
 import { swaggerSpec } from './config/swagger';
 import './config/passport';
 import authRouter from './modules/auth/auth.routes';
@@ -37,29 +37,13 @@ app.use(
 );
 
 // ─── Rate Limiting ────────────────────────────
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: {
-    success: false,
-    message: 'Too many requests, please try again later.',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use('/api', limiter);
+// Per-user pour les requêtes authentifiées, IP-based pour les anonymes
+// Un utilisateur qui dépasse la limite est bloqué individuellement sans affecter les autres
+const apiLimiter = createApiLimiter();
+app.use('/api', apiLimiter);
 
-// Auth endpoints : limite stricte contre le brute-force
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: {
-    success: false,
-    message: 'Too many authentication attempts, please try again later.',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// Auth endpoints : limite stricte IP-based contre le brute-force
+const authLimiter = createAuthLimiter();
 app.use('/api/v1/auth/login', authLimiter);
 app.use('/api/v1/auth/register', authLimiter);
 app.use('/api/v1/auth/refresh', authLimiter);
