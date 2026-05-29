@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
 import { env } from "../../config/env";
+import { createAuditLog } from "../../utils/audit";
 import {
   RegisterDto,
   LoginDto,
@@ -13,7 +14,7 @@ import {
   AuthTokens,
   AuthTokensWithUser,
 } from "./auth.types";
-import { User } from "@prisma/client";
+import { User, AuditAction, Prisma } from "@prisma/client";
 import { Profile } from "passport-google-oauth20";
 import { sanitizeText } from "../../utils/sanitize";
 import { sendPasswordResetEmail } from "../../utils/mail";
@@ -22,6 +23,8 @@ const SALT_ROUNDS = 12;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN_MS = 7 * 24 * 60 * 60 * 1000;
 const RESET_TOKEN_EXPIRES_IN_MS = 60 * 60 * 1000;
+const MAX_FAILED_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
 const generateAccessToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, env.jwtSecret, {
@@ -165,6 +168,22 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
     throw new AppError("Your account has been suspended", 403);
   }
 
+  // Vérifier si le compte est verrouillé
+  if (user.locked_until && user.locked_until > new Date()) {
+    throw new AppError(
+      "Account temporarily locked due to too many failed attempts. Please try again later.",
+      429
+    );
+  }
+
+  // Vérifier si l'email a été vérifié
+  if (!user.is_verified && user.password) {
+    throw new AppError(
+      "Please verify your email address before logging in",
+      403
+    );
+  }
+
   if (!user.password) {
     throw new AppError("Invalid email or password", 401);
   }
@@ -172,7 +191,31 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
   const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
   if (!isPasswordValid) {
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { failed_login_attempts: { increment: 1 } },
+      select: { failed_login_attempts: true },
+    });
+
+    if (updatedUser.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { locked_until: new Date(Date.now() + LOCKOUT_DURATION_MS) },
+      });
+    }
+
     throw new AppError("Invalid email or password", 401);
+  }
+
+  // Réinitialiser le compteur d'échecs en cas de succès
+  if (user.failed_login_attempts > 0) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failed_login_attempts: 0,
+        locked_until: null,
+      },
+    });
   }
 
   return generateAuthTokensWithUser(user);

@@ -46,6 +46,14 @@ export const errorMiddleware = (
       });
       return;
     }
+
+    if (err.code === "P2003") {
+      res.status(409).json({
+        success: false,
+        message: "This record is referenced by other data and cannot be deleted.",
+      });
+      return;
+    }
   }
 
   // Erreur inconnue

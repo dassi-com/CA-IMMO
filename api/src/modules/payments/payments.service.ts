@@ -7,6 +7,7 @@ import {
   verifyFlutterwaveTransaction,
 } from "../../config/flutterwave";
 import crypto from "node:crypto";
+import { parsePagination } from "../../utils/pagination";
 import {
   InitiatePaymentDto,
   FlutterwaveWebhookDto,
@@ -68,28 +69,30 @@ export const initiatePaymentService = async (
       throw new AppError("Agent is already featured", 409);
     }
 
-    const pendingPayment = await prisma.payment.findFirst({
-      where: {
-        owner_id: ownerId,
-        status: "PENDING",
-        type: "AGENT_FEATURE",
-      },
-    });
+    const payment = await prisma.$transaction(async (tx) => {
+      const pendingPayment = await tx.payment.findFirst({
+        where: {
+          owner_id: ownerId,
+          status: "PENDING",
+          type: "AGENT_FEATURE",
+        },
+      });
 
-    if (pendingPayment) {
-      throw new AppError("A payment is already pending for this agent feature", 409);
-    }
+      if (pendingPayment) {
+        throw new AppError("A payment is already pending for this agent feature", 409);
+      }
 
-    const payment = await prisma.payment.create({
-      data: {
-        owner_id: ownerId,
-        amount: dto.amount,
-        currency: dto.currency ?? "XOF",
-        status: "PENDING",
-        type: "AGENT_FEATURE",
-        flutterwave_ref: txRef,
-      },
-      include: paymentInclude,
+      return tx.payment.create({
+        data: {
+          owner_id: ownerId,
+          amount: dto.amount,
+          currency: dto.currency ?? "XOF",
+          status: "PENDING",
+          type: "AGENT_FEATURE",
+          flutterwave_ref: txRef,
+        },
+        include: paymentInclude,
+      });
     });
 
     const { payment_link } = await initiateFlutterwavePayment({
@@ -152,32 +155,34 @@ export const initiatePaymentService = async (
     throw new AppError("Property is already featured", 409);
   }
 
-  const pendingPayment = await prisma.payment.findFirst({
-    where: {
-      property_id: dto.property_id,
-      owner_id: ownerId,
-      status: "PENDING",
-    },
-  });
+  const payment = await prisma.$transaction(async (tx) => {
+    const pendingPayment = await tx.payment.findFirst({
+      where: {
+        property_id: dto.property_id,
+        owner_id: ownerId,
+        status: "PENDING",
+      },
+    });
 
-  if (pendingPayment) {
-    throw new AppError(
-      "A payment is already pending for this property",
-      409
-    );
-  }
+    if (pendingPayment) {
+      throw new AppError(
+        "A payment is already pending for this property",
+        409
+      );
+    }
 
-  const payment = await prisma.payment.create({
-    data: {
-      owner_id: ownerId,
-      property_id: dto.property_id,
-      amount: dto.amount,
-      currency: dto.currency ?? "XOF",
-      status: "PENDING",
-      type: "FEATURED",
-      flutterwave_ref: txRef,
-    },
-    include: paymentInclude,
+    return tx.payment.create({
+      data: {
+        owner_id: ownerId,
+        property_id: dto.property_id,
+        amount: dto.amount,
+        currency: dto.currency ?? "XOF",
+        status: "PENDING",
+        type: "FEATURED",
+        flutterwave_ref: txRef,
+      },
+      include: paymentInclude,
+    });
   });
 
   const { payment_link } = await initiateFlutterwavePayment({
@@ -250,7 +255,7 @@ export const handleWebhookService = async (
     }
 
     // Tout est OK — confirmer le paiement et activer le featured
-    const transactions: any[] = [
+    const transactions: Prisma.PrismaPromise<unknown>[] = [
       prisma.payment.update({
         where: { id: payment.id },
         data: { status: "CONFIRMED" },
@@ -304,31 +309,27 @@ export const confirmPaymentManuallyService = async (
   }
 
   // Confirmer manuellement + activer featured
-  const transactions: any[] = [
-    prisma.payment.update({
+  const [updatedPayment] = await prisma.$transaction(async (tx) => {
+    const updated = await tx.payment.update({
       where: { id: paymentId },
       data: { status: "CONFIRMED" },
       include: paymentInclude,
-    }),
-  ];
+    });
 
-  if (payment.type === "AGENT_FEATURE") {
-    transactions.push(
-      prisma.user.update({
+    if (payment.type === "AGENT_FEATURE") {
+      await tx.user.update({
         where: { id: payment.owner_id },
         data: { is_featured: true },
-      })
-    );
-  } else if (payment.property_id) {
-    transactions.push(
-      prisma.property.update({
+      });
+    } else if (payment.property_id) {
+      await tx.property.update({
         where: { id: payment.property_id },
         data: { is_featured: true },
-      })
-    );
-  }
+      });
+    }
 
-  const [updatedPayment] = await prisma.$transaction(transactions);
+    return [updated];
+  });
 
   return updatedPayment;
 };
@@ -337,9 +338,7 @@ export const getMyPaymentsService = async (
   ownerId: string,
   query: PaymentsListQuery
 ) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.PaymentWhereInput = {
     owner_id: ownerId,
@@ -376,9 +375,7 @@ export const getMyPaymentsService = async (
 };
 
 export const listPaymentsService = async (query: PaymentsListQuery) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.PaymentWhereInput = {};
 

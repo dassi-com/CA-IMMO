@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
 import { sanitizeText } from "../../utils/sanitize";
+import { parsePagination } from "../../utils/pagination";
 import {
   CreateInquiryDto,
   InquiriesListQuery,
@@ -72,9 +73,7 @@ export const getMyInquiriesService = async (
   ownerId: string,
   query: InquiriesListQuery
 ) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   // Récupérer uniquement les demandes sur les annonces de l'owner
   const where: Prisma.InquiryWhereInput = {
@@ -136,9 +135,7 @@ export const getInquiryService = async (
 };
 
 export const listInquiriesService = async (query: InquiriesListQuery) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.InquiryWhereInput = {};
 

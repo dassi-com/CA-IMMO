@@ -64,3 +64,17 @@ export const createPasswordResetLimiter = () =>
     keyGenerator: (req: Request) =>
       req.ip ?? req.socket.remoteAddress ?? 'unknown',
   });
+
+export const createInquiryLimiter = () =>
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: {
+      success: false,
+      message: 'Too many inquiries, please try again later.',
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request) =>
+      req.ip ?? req.socket.remoteAddress ?? 'unknown',
+  });

@@ -3,6 +3,7 @@ import { AuthenticatedRequest } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { sendSuccess } from "../../utils/response";
 import { env } from "../../config/env";
+import { setAuthCookies, clearAuthCookies } from "../../utils/cookies";
 import {
   registerService,
   loginService,
@@ -21,6 +22,7 @@ export const register = asyncHandler(
     const dto = req.body as RegisterDto;
     const result = await registerService(dto);
 
+    setAuthCookies(res, result.accessToken, result.refreshToken);
     sendSuccess(res, result, "Account created successfully", 201);
   }
 );
@@ -30,6 +32,7 @@ export const login = asyncHandler(
     const dto = req.body as LoginDto;
     const result = await loginService(dto);
 
+    setAuthCookies(res, result.accessToken, result.refreshToken);
     sendSuccess(res, result, "Login successful");
   }
 );
@@ -39,6 +42,7 @@ export const refresh = asyncHandler(
     const { refreshToken } = req.body as { refreshToken: string };
     const result = await refreshTokenService(refreshToken);
 
+    setAuthCookies(res, result.accessToken, result.refreshToken);
     sendSuccess(res, result, "Token refreshed successfully");
   }
 );
@@ -48,6 +52,7 @@ export const logout = asyncHandler(
     const { refreshToken } = req.body as { refreshToken: string };
     await logoutService(refreshToken);
 
+    clearAuthCookies(res);
     sendSuccess(res, null, "Logged out successfully");
   }
 );

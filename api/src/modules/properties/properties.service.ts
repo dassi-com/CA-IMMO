@@ -1,7 +1,9 @@
-import { Prisma, PropertyStatus, PropertyType } from "@prisma/client";
+import { Prisma, PropertyStatus, PropertyType, AuditAction } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
 import { sanitizeText } from "../../utils/sanitize";
+import { parsePagination } from "../../utils/pagination";
+import { createAuditLog } from "../../utils/audit";
 import {
   CreatePropertyDto,
   UpdatePropertyDto,
@@ -67,9 +69,7 @@ export const createPropertyService = async (
 };
 
 export const listPropertiesService = async (query: PropertiesListQuery) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   // Construire les filtres
   const where: Prisma.PropertyWhereInput = {
@@ -226,9 +226,7 @@ export const getMyPropertiesService = async (
   ownerId: string,
   query: PropertiesListQuery
 ) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.PropertyWhereInput = {
     owner_id: ownerId,
@@ -279,6 +277,13 @@ export const updatePropertyStatusService = async (
     include: propertyInclude,
   });
 
+  await createAuditLog({
+    action: dto.status === "APPROVED" ? AuditAction.PROPERTY_APPROVED : AuditAction.PROPERTY_REJECTED,
+    targetId: propertyId,
+    targetType: "PROPERTY",
+    details: `Status changed from ${property.status} to ${dto.status}`,
+  });
+
   return updatedProperty;
 };
 
@@ -305,13 +310,17 @@ export const featurePropertyService = async (propertyId: string) => {
     include: propertyInclude,
   });
 
+  await createAuditLog({
+    action: AuditAction.PROPERTY_FEATURED,
+    targetId: propertyId,
+    targetType: "PROPERTY",
+  });
+
   return updatedProperty;
 };
 
 export const listPendingPropertiesService = async (query: PropertiesListQuery) => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.PropertyWhereInput = {
     is_deleted: false,

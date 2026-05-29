@@ -1,7 +1,10 @@
+import { Prisma, AuditAction, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../utils/prisma";
 import { AppError } from "../../middlewares/error.middleware";
 import { sanitizeText, sanitizeOptional } from "../../utils/sanitize";
+import { parsePagination } from "../../utils/pagination";
+import { createAuditLog } from "../../utils/audit";
 import {
   UpdateProfileDto,
   ChangePasswordDto,
@@ -11,8 +14,7 @@ import {
 
 const SALT_ROUNDS = 12;
 
-// Mapper Prisma User → DTO (exclure password)
-const mapUserToResponse = (user: any): UserResponseDto => {
+const mapUserToResponse = (user: Prisma.UserGetPayload<{}>): UserResponseDto => {
   return {
     id: user.id,
     full_name: user.full_name,
@@ -126,6 +128,12 @@ export const changePasswordService = async (
       where: { user_id: userId },
     }),
   ]);
+
+  await createAuditLog({
+    action: AuditAction.PASSWORD_CHANGED,
+    targetId: userId,
+    targetType: "USER",
+  });
 };
 
 export const listUsersService = async (
@@ -139,15 +147,12 @@ export const listUsersService = async (
     totalPages: number;
   };
 }> => {
-  const page = Math.max(1, parseInt(query.page ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
-  // Construire les filtres
-  const where: any = {};
+  const where: Prisma.UserWhereInput = {};
 
   if (query.role) {
-    where.role = query.role;
+    where.role = query.role as Role;
   }
 
   if (query.is_suspended === "true") {
@@ -206,6 +211,12 @@ export const suspendUserService = async (userId: string): Promise<UserResponseDt
     data: { is_suspended: true },
   });
 
+  await createAuditLog({
+    action: AuditAction.USER_SUSPENDED,
+    targetId: userId,
+    targetType: "USER",
+  });
+
   return mapUserToResponse(updatedUser);
 };
 
@@ -223,6 +234,13 @@ export const featureUserService = async (userId: string): Promise<UserResponseDt
     data: { is_featured: !user.is_featured },
   });
 
+  await createAuditLog({
+    action: AuditAction.USER_FEATURED,
+    targetId: userId,
+    targetType: "USER",
+    details: `is_featured set to ${!user.is_featured}`,
+  });
+
   return mapUserToResponse(updatedUser);
 };
 
@@ -236,13 +254,24 @@ export const deleteUserService = async (userId: string): Promise<void> => {
   }
 
   // Soft delete — marquer l'utilisateur comme suspendu
-  // Et nettoyer ses données sensibles
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      is_suspended: true,
-      email: `deleted_${userId}@deleted.local`,
-      phone: `deleted_${userId}`,
-    },
+  // Et nettoyer ses données sensibles + invalider ses sessions
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: userId },
+      data: {
+        is_suspended: true,
+        email: `deleted_${userId}@deleted.local`,
+        phone: `deleted_${userId}`,
+      },
+    }),
+    prisma.refreshToken.deleteMany({
+      where: { user_id: userId },
+    }),
+  ]);
+
+  await createAuditLog({
+    action: AuditAction.USER_DELETED,
+    targetId: userId,
+    targetType: "USER",
   });
 };

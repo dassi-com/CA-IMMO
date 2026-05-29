@@ -68,6 +68,8 @@ model User {
   is_verified        Boolean   @default(false)
   is_suspended       Boolean   @default(false)
   is_featured        Boolean   @default(false)
+  failed_login_attempts Int   @default(0)
+  locked_until         DateTime?
   reset_token        String?   @unique
   reset_token_expires DateTime?
   created_at         DateTime  @default(now())
@@ -82,6 +84,7 @@ model User {
   featureRequests FeatureRequest[] @relation("requester")
   reviewedRequests FeatureRequest[] @relation("reviewer")
   agentFeatureRequests FeatureRequest[] @relation("agentFeatures")
+  audit_logs   AuditLog[]
 
   @@index([email])
   @@map("users")
@@ -170,6 +173,7 @@ model Payment {
   property         Property?     @relation(fields: [property_id], references: [id])
 
   @@index([property_id])
+  @@index([owner_id])
   @@index([flutterwave_ref])
   @@map("payments")
 }
@@ -246,4 +250,37 @@ model FeatureRequest {
   @@index([property_id])
   @@index([agent_id])
   @@map("feature_requests")
+}
+
+enum AuditAction {
+  USER_SUSPENDED
+  USER_UNSUSPENDED
+  USER_DELETED
+  USER_FEATURED
+  PROPERTY_APPROVED
+  PROPERTY_REJECTED
+  PROPERTY_FEATURED
+  PAYMENT_CONFIRMED
+  FEATURE_REQUEST_APPROVED
+  FEATURE_REQUEST_REJECTED
+  PASSWORD_CHANGED
+  PROFILE_UPDATED
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  user_id    String?
+  action     AuditAction
+  target_id  String?
+  target_type String?
+  details    String?
+  ip_address String?
+  created_at DateTime    @default(now())
+
+  user       User?       @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([action])
+  @@index([created_at])
+  @@map("audit_logs")
 }

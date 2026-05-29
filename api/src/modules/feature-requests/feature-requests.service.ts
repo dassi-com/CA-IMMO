@@ -1,7 +1,9 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, AuditAction } from '@prisma/client';
 import { prisma } from '../../utils/prisma';
 import { AppError } from '../../middlewares/error.middleware';
 import { sanitizeText, sanitizeOptional } from '../../utils/sanitize';
+import { parsePagination } from '../../utils/pagination';
+import { createAuditLog } from '../../utils/audit';
 import {
   CreateFeatureRequestDto,
   FeatureRequestResponseDto,
@@ -173,9 +175,7 @@ export const getMyFeatureRequestsService = async (
     totalPages: number;
   };
 }> => {
-  const page = Math.max(1, parseInt(query.page ?? '1', 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? '10', 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.FeatureRequestWhereInput = {
     requester_id: userId,
@@ -222,9 +222,7 @@ export const getPendingFeatureRequestsService = async (
     totalPages: number;
   };
 }> => {
-  const page = Math.max(1, parseInt(query.page ?? '1', 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? '10', 10)));
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
 
   const where: Prisma.FeatureRequestWhereInput = {
     status: 'PENDING',
@@ -334,6 +332,13 @@ export const approveFeatureRequestService = async (
     throw new AppError('Feature request not found after update', 500);
   }
 
+  await createAuditLog({
+    action: AuditAction.FEATURE_REQUEST_APPROVED,
+    targetId: requestId,
+    targetType: "FEATURE_REQUEST",
+    details: `Target: ${request.target}, ID: ${request.target_id}`,
+  });
+
   return mapRequestToResponse(updatedRequest);
 };
 
@@ -366,6 +371,13 @@ export const rejectFeatureRequestService = async (
       rejection_reason: sanitizeOptional(rejectionReason),
     },
     include: featureRequestInclude,
+  });
+
+  await createAuditLog({
+    action: AuditAction.FEATURE_REQUEST_REJECTED,
+    targetId: requestId,
+    targetType: "FEATURE_REQUEST",
+    details: `Target: ${request.target}, ID: ${request.target_id}`,
   });
 
   return mapRequestToResponse(updatedRequest);

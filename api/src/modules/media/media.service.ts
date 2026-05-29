@@ -155,20 +155,20 @@ export const deleteImageService = async (
     where: { id: imageId },
   });
 
-  // Réordonner les images restantes
+  // Réordonner les images restantes dans une transaction
   const remainingImages = await prisma.propertyImage.findMany({
     where: { property_id: propertyId },
     orderBy: { order: "asc" },
   });
 
-  const reorderPromises = remainingImages.map((img, index) =>
-    prisma.propertyImage.update({
-      where: { id: img.id },
-      data: { order: index },
-    })
+  await prisma.$transaction(
+    remainingImages.map((img, index) =>
+      prisma.propertyImage.update({
+        where: { id: img.id },
+        data: { order: index },
+      })
+    )
   );
-
-  await Promise.all(reorderPromises);
 };
 
 export const reorderImagesService = async (

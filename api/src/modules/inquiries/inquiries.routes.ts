@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { authorize } from "../../middlewares/role.middleware";
 import { validate } from "../../middlewares/validate.middleware";
+import { createInquiryLimiter } from "../../middlewares/rateLimit.middleware";
 import {
   createInquiry,
   getMyInquiries,
@@ -47,6 +48,7 @@ const router = Router();
  */
 router.post(
   "/:propertyId",
+  createInquiryLimiter(),
   validate([...propertyIdParamValidator, ...createInquiryValidator]),
   createInquiry
 );
