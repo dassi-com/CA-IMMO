@@ -77,7 +77,7 @@ export default function BrowseByPropertyType() {
             return (
               <Link
                 key={item.key}
-                href="/search"
+                href={item.backendKey ? `/search?property_type=${item.backendKey}` : '/search'}
                 className="group bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow border border-gray-100"
               >
                 <div className="h-32 relative overflow-hidden">

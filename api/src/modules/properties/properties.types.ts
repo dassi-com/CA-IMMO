@@ -41,4 +41,5 @@ export interface PropertiesListQuery {
   size_min?: string;
   size_max?: string;
   sort?: "price_asc" | "price_desc" | "newest";
+  is_featured?: string;
 }

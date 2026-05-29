@@ -12,6 +12,7 @@ import {
   unsuspendUser,
   featureUser,
   deleteUser,
+  listFeaturedAgents,
 } from "./users.controller";
 import {
   updateProfileValidator,
@@ -145,6 +146,18 @@ router.get(
   validate(usersListValidator),
   listUsers
 );
+
+/**
+ * @swagger
+ * /users/featured-agents:
+ *   get:
+ *     summary: Liste des agents mis en avant (public)
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Liste des agents en vedette
+ */
+router.get("/featured-agents", listFeaturedAgents);
 
 /**
  * @swagger

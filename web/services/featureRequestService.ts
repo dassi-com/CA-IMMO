@@ -31,6 +31,11 @@ export interface FeatureRequestResponse {
 }
 
 export const featureRequestService = {
+  create: async (data: { target: 'AGENT' | 'PROPERTY'; target_id: string; reason?: string }): Promise<FeatureRequestResponse> => {
+    const response = await api.post('/feature-requests', data);
+    return response.data.data;
+  },
+
   getPending: async (target?: 'AGENT' | 'PROPERTY'): Promise<{ requests: FeatureRequestResponse[]; meta: any }> => {
     const params = new URLSearchParams();
     if (target) params.set('target', target);

@@ -12,6 +12,7 @@ import {
   unsuspendUserService,
   featureUserService,
   deleteUserService,
+  listFeaturedAgentsService,
 } from "./users.service";
 import {
   UpdateProfileDto,
@@ -79,6 +80,13 @@ export const featureUser = asyncHandler(
     const id = req.params.id as string;
     const user = await featureUserService(id, req.user!.id);
     sendSuccess(res, user, "User featured status toggled successfully");
+  }
+);
+
+export const listFeaturedAgents = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const agents = await listFeaturedAgentsService();
+    sendSuccess(res, agents, "Featured agents fetched successfully");
   }
 );
 

@@ -111,6 +111,10 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
     where.size_m2 = sizeFilter;
   }
 
+  if (query.is_featured === "true") {
+    where.is_featured = true;
+  }
+
   // Featured en haut, puis tri demandé
   const orderBy: Prisma.PropertyOrderByWithRelationInput[] = [
     { is_featured: "desc" },
@@ -317,6 +321,31 @@ export const featurePropertyService = async (propertyId: string) => {
   });
 
   return updatedProperty;
+};
+
+export const getPropertiesStatsService = async () => {
+  const properties = await prisma.property.findMany({
+    where: { is_deleted: false, status: "APPROVED" },
+    select: { city: true, property_type: true },
+  });
+
+  const cityCounts: Record<string, number> = {};
+  const typeCounts: Record<string, number> = {};
+
+  properties.forEach((p) => {
+    cityCounts[p.city] = (cityCounts[p.city] || 0) + 1;
+    typeCounts[p.property_type] = (typeCounts[p.property_type] || 0) + 1;
+  });
+
+  const cities = Object.entries(cityCounts)
+    .map(([city, count]) => ({ city, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const propertyTypes = Object.entries(typeCounts)
+    .map(([type, count]) => ({ type, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return { cities, propertyTypes };
 };
 
 export const listPendingPropertiesService = async (query: PropertiesListQuery) => {

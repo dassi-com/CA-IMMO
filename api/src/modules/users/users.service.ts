@@ -308,6 +308,20 @@ export const featureUserService = async (userId: string, actorId: string): Promi
   return mapUserToResponse(updatedUser);
 };
 
+export const listFeaturedAgentsService = async (): Promise<UserResponseDto[]> => {
+  const agents = await prisma.user.findMany({
+    where: {
+      role: "OWNER",
+      is_featured: true,
+      is_suspended: false,
+    },
+    select: PUBLIC_USER_FIELDS,
+    orderBy: { updated_at: "desc" },
+  });
+
+  return agents.map(mapUserToResponse);
+};
+
 export const deleteUserService = async (userId: string, actorId: string): Promise<void> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },

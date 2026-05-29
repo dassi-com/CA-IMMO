@@ -14,6 +14,7 @@ import {
   Star,
   DollarSign,
   Calendar,
+  Send,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -23,6 +24,7 @@ import { SkeletonTable } from '@/components/ui/Skeleton';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import { inquiryService, Inquiry } from '@/services/inquiryService';
+import { featureRequestService } from '@/services/featureRequestService';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -30,8 +32,6 @@ interface ListingRow {
   id: string;
   title: string;
   status: string;
-  views: number;
-  contacts: number;
   date: string;
 }
 
@@ -71,8 +71,6 @@ export default function AgentDashboard() {
         id: p.id,
         title: p.title,
         status: p.status,
-        views: 0,
-        contacts: 0,
         date: new Date(p.created_at).toLocaleDateString(),
       })));
 
@@ -102,6 +100,15 @@ export default function AgentDashboard() {
     }
   };
 
+  const handleRequestFeatured = async () => {
+    try {
+      await featureRequestService.create({ target: 'AGENT', target_id: user!.id });
+      toast.success('Demande de mise en avant envoyée avec succes');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Erreur lors de la demande');
+    }
+  };
+
   const userName = user?.full_name || 'Agent';
 
   return (
@@ -115,8 +122,27 @@ export default function AgentDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {userName} 📊</h1>
-            <p className="text-gray-600 mt-2">Gérez vos propriétés et suivez vos performances</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">Bonjour, {userName}</h1>
+                <p className="text-gray-600 mt-2">Gerer vos proprietes et suivre vos performances</p>
+              </div>
+              {!user?.is_featured && (
+                <button
+                  onClick={handleRequestFeatured}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl text-sm font-medium hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg"
+                >
+                  <Star size={16} />
+                  Demander la mise en avant
+                </button>
+              )}
+              {user?.is_featured && (
+                <div className="flex items-center gap-2 px-4 py-2.5 bg-yellow-50 text-yellow-700 rounded-xl text-sm font-medium">
+                  <Star size={16} className="fill-yellow-400 text-yellow-400" />
+                  Agent en avant
+                </div>
+              )}
+            </div>
           </motion.div>
 
           {loading ? (
@@ -185,8 +211,6 @@ export default function AgentDashboard() {
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vues</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacts</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -210,8 +234,6 @@ export default function AgentDashboard() {
                           {listing.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-600">{listing.views}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-600">{listing.contacts}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
