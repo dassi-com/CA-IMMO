@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 
 const getUserIdFromToken = (req: Request): string | null => {
@@ -17,11 +17,14 @@ const getUserIdFromToken = (req: Request): string | null => {
   return null;
 };
 
+const getIp = (req: Request): string =>
+  ipKeyGenerator(req.ip ?? req.socket.remoteAddress ?? 'unknown');
+
 const keyGenerator = (req: Request): string => {
   const userId = getUserIdFromToken(req);
   if (userId) return `user:${userId}`;
 
-  return req.ip ?? req.socket.remoteAddress ?? 'unknown';
+  return getIp(req);
 };
 
 export const createApiLimiter = () =>
@@ -47,8 +50,7 @@ export const createAuthLimiter = () =>
     },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req: Request) =>
-      req.ip ?? req.socket.remoteAddress ?? 'unknown',
+    keyGenerator: (req: Request) => getIp(req),
   });
 
 export const createPasswordResetLimiter = () =>
@@ -61,8 +63,7 @@ export const createPasswordResetLimiter = () =>
     },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req: Request) =>
-      req.ip ?? req.socket.remoteAddress ?? 'unknown',
+    keyGenerator: (req: Request) => getIp(req),
   });
 
 export const createInquiryLimiter = () =>
@@ -75,6 +76,5 @@ export const createInquiryLimiter = () =>
     },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req: Request) =>
-      req.ip ?? req.socket.remoteAddress ?? 'unknown',
+    keyGenerator: (req: Request) => getIp(req),
   });
