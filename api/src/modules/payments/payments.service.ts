@@ -14,6 +14,16 @@ import {
   PaymentsListQuery,
 } from "./payments.types";
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const AGENT_FEATURE_PRICE = 5000;
+const PROPERTY_FEATURE_PRICE = 3000;
+
+const PRICES: Record<string, number> = {
+  AGENT_FEATURE: AGENT_FEATURE_PRICE,
+  FEATURED: PROPERTY_FEATURE_PRICE,
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const paymentInclude = {
@@ -50,6 +60,11 @@ export const initiatePaymentService = async (
 ) => {
   const paymentType = dto.type ?? "FEATURED";
   const txRef = generateTxRef();
+
+  const expectedPrice = PRICES[paymentType];
+  if (Math.round(dto.amount) !== expectedPrice) {
+    throw new AppError(`Invalid amount: expected ${expectedPrice} ${dto.currency ?? "XOF"}`, 400);
+  }
 
   if (paymentType === "AGENT_FEATURE") {
     // Vérifier que l'owner existe
@@ -216,8 +231,10 @@ export const handleWebhookService = async (
   payload: FlutterwaveWebhookDto,
   signature: string
 ): Promise<void> => {
-  // Vérifier la signature du webhook (verif-hash est un hash partagé configuré dans le dashboard Flutterwave)
-  if (signature !== env.flutterwave.secretHash) {
+  // Vérifier la signature du webhook (timing-safe comparison)
+  const sigBuffer = Buffer.from(signature);
+  const secretBuffer = Buffer.from(env.flutterwave.secretHash);
+  if (sigBuffer.length !== secretBuffer.length || !crypto.timingSafeEqual(sigBuffer, secretBuffer)) {
     throw new AppError("Invalid webhook signature", 401);
   }
 
@@ -226,6 +243,19 @@ export const handleWebhookService = async (
   }
 
   const { tx_ref, status } = payload.data;
+
+  if (status !== "successful") {
+    return; // Ignorer les événements non réussis
+  }
+
+  // Vérifier la transaction côté Flutterwave
+  const verified = await verifyFlutterwaveTransaction(
+    String(payload.data.id)
+  );
+
+  if (verified.status !== "successful") {
+    return;
+  }
 
   // Trouver le paiement correspondant
   const payment = await prisma.payment.findUnique({
@@ -236,56 +266,40 @@ export const handleWebhookService = async (
     throw new AppError("Payment not found", 404);
   }
 
-  if (payment.status !== "PENDING") {
-    return; // Déjà traité — idempotence
-  }
-
-  if (status === "successful") {
-    // Vérifier la transaction côté Flutterwave
-    const verified = await verifyFlutterwaveTransaction(
-      String(payload.data.id)
-    );
-
-    if (verified.status !== "successful") {
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: { status: "FAILED" },
-      });
-      return;
-    }
-
-    // Tout est OK — confirmer le paiement et activer le featured
-    const transactions: Prisma.PrismaPromise<unknown>[] = [
-      prisma.payment.update({
-        where: { id: payment.id },
-        data: { status: "CONFIRMED" },
-      }),
-    ];
-
-    if (payment.type === "AGENT_FEATURE") {
-      transactions.push(
-        prisma.user.update({
-          where: { id: payment.owner_id },
-          data: { is_featured: true },
-        })
-      );
-    } else if (payment.property_id) {
-      transactions.push(
-        prisma.property.update({
-          where: { id: payment.property_id },
-          data: { is_featured: true },
-        })
-      );
-    }
-
-    await prisma.$transaction(transactions);
-  } else {
-    // Paiement échoué
+  // Vérifier le montant retourné par Flutterwave
+  const verifiedAmount = Number(verified.amount);
+  const paymentAmount = Number(payment.amount);
+  if (Math.round(verifiedAmount) !== Math.round(paymentAmount)) {
     await prisma.payment.update({
       where: { id: payment.id },
       data: { status: "FAILED" },
     });
+    return;
   }
+
+  // Mise à jour atomique : on ne confirme que si le statut est encore PENDING
+  await prisma.$transaction(async (tx) => {
+    const updated = await tx.payment.updateMany({
+      where: { id: payment.id, status: "PENDING" },
+      data: { status: "CONFIRMED" },
+    });
+
+    if (updated.count === 0) {
+      return; // Déjà traité — idempotence
+    }
+
+    if (payment.type === "AGENT_FEATURE") {
+      await tx.user.update({
+        where: { id: payment.owner_id },
+        data: { is_featured: true },
+      });
+    } else if (payment.property_id) {
+      await tx.property.update({
+        where: { id: payment.property_id },
+        data: { is_featured: true },
+      });
+    }
+  });
 };
 
 export const confirmPaymentManuallyService = async (
@@ -300,12 +314,8 @@ export const confirmPaymentManuallyService = async (
     throw new AppError("Payment not found", 404);
   }
 
-  if (payment.status === "CONFIRMED") {
-    throw new AppError("Payment is already confirmed", 409);
-  }
-
-  if (payment.status === "FAILED") {
-    throw new AppError("Cannot confirm a failed payment", 400);
+  if (payment.status !== "PENDING") {
+    throw new AppError("Payment is not in pending status", 400);
   }
 
   // Confirmer manuellement + activer featured

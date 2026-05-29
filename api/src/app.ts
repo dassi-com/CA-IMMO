@@ -78,6 +78,10 @@ app.use(compression());
 
 // ─── Timeout ──────────────────────────────────
 app.use(timeout('30s'));
+app.use((req, res, next) => {
+  if ((req as any).timedout) return;
+  next();
+});
 
 // ─── Logging ──────────────────────────────────
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));

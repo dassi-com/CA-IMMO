@@ -14,7 +14,22 @@ import {
 
 const SALT_ROUNDS = 12;
 
-const mapUserToResponse = (user: Prisma.UserGetPayload<{}>): UserResponseDto => {
+const PUBLIC_USER_FIELDS = {
+  id: true,
+  full_name: true,
+  email: true,
+  phone: true,
+  role: true,
+  is_verified: true,
+  is_suspended: true,
+  is_featured: true,
+  created_at: true,
+  updated_at: true,
+} as const;
+
+type PublicUser = Pick<Prisma.UserGetPayload<{}>, keyof typeof PUBLIC_USER_FIELDS>;
+
+const mapUserToResponse = (user: PublicUser): UserResponseDto => {
   return {
     id: user.id,
     full_name: user.full_name,
@@ -36,6 +51,7 @@ export const getProfileService = async (
 ): Promise<UserResponseDto> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: PUBLIC_USER_FIELDS,
   });
 
   if (!user) {
@@ -52,6 +68,7 @@ export const updateProfileService = async (
   // Vérifier que l'utilisateur existe
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: PUBLIC_USER_FIELDS,
   });
 
   if (!user) {
@@ -76,6 +93,13 @@ export const updateProfileService = async (
       full_name: sanitizeOptional(dto.full_name) ?? user.full_name,
       phone: dto.phone ?? user.phone,
     },
+    select: PUBLIC_USER_FIELDS,
+  });
+
+  await createAuditLog({
+    action: AuditAction.PROFILE_UPDATED,
+    targetId: userId,
+    targetType: "USER",
   });
 
   return mapUserToResponse(updatedUser);
@@ -130,6 +154,7 @@ export const changePasswordService = async (
   ]);
 
   await createAuditLog({
+    userId,
     action: AuditAction.PASSWORD_CHANGED,
     targetId: userId,
     targetType: "USER",
@@ -169,6 +194,7 @@ export const listUsersService = async (
       skip,
       take: limit,
       orderBy: { created_at: "desc" },
+      select: PUBLIC_USER_FIELDS,
     }),
   ]);
 
@@ -188,6 +214,7 @@ export const listUsersService = async (
 export const getUserService = async (userId: string): Promise<UserResponseDto> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: PUBLIC_USER_FIELDS,
   });
 
   if (!user) {
@@ -197,9 +224,10 @@ export const getUserService = async (userId: string): Promise<UserResponseDto> =
   return mapUserToResponse(user);
 };
 
-export const suspendUserService = async (userId: string): Promise<UserResponseDto> => {
+export const suspendUserService = async (userId: string, actorId: string): Promise<UserResponseDto> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: PUBLIC_USER_FIELDS,
   });
 
   if (!user) {
@@ -209,9 +237,11 @@ export const suspendUserService = async (userId: string): Promise<UserResponseDt
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: { is_suspended: true },
+    select: PUBLIC_USER_FIELDS,
   });
 
   await createAuditLog({
+    userId: actorId,
     action: AuditAction.USER_SUSPENDED,
     targetId: userId,
     targetType: "USER",
@@ -220,9 +250,41 @@ export const suspendUserService = async (userId: string): Promise<UserResponseDt
   return mapUserToResponse(updatedUser);
 };
 
-export const featureUserService = async (userId: string): Promise<UserResponseDto> => {
+export const unsuspendUserService = async (userId: string, actorId: string): Promise<UserResponseDto> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: PUBLIC_USER_FIELDS,
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  if (!user.is_suspended) {
+    throw new AppError("User is not suspended", 400);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { is_suspended: false },
+    select: PUBLIC_USER_FIELDS,
+  });
+
+  await createAuditLog({
+    userId: actorId,
+    action: AuditAction.USER_SUSPENDED,
+    targetId: userId,
+    targetType: "USER",
+    details: "Unsuspended",
+  });
+
+  return mapUserToResponse(updatedUser);
+};
+
+export const featureUserService = async (userId: string, actorId: string): Promise<UserResponseDto> => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: PUBLIC_USER_FIELDS,
   });
 
   if (!user) {
@@ -232,9 +294,11 @@ export const featureUserService = async (userId: string): Promise<UserResponseDt
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: { is_featured: !user.is_featured },
+    select: PUBLIC_USER_FIELDS,
   });
 
   await createAuditLog({
+    userId: actorId,
     action: AuditAction.USER_FEATURED,
     targetId: userId,
     targetType: "USER",
@@ -244,13 +308,18 @@ export const featureUserService = async (userId: string): Promise<UserResponseDt
   return mapUserToResponse(updatedUser);
 };
 
-export const deleteUserService = async (userId: string): Promise<void> => {
+export const deleteUserService = async (userId: string, actorId: string): Promise<void> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: { id: true, is_suspended: true, email: true },
   });
 
   if (!user) {
     throw new AppError("User not found", 404);
+  }
+
+  if (user.is_suspended && user.email.startsWith("deleted_")) {
+    throw new AppError("User is already deleted", 400);
   }
 
   // Soft delete — marquer l'utilisateur comme suspendu
@@ -270,6 +339,7 @@ export const deleteUserService = async (userId: string): Promise<void> => {
   ]);
 
   await createAuditLog({
+    userId: actorId,
     action: AuditAction.USER_DELETED,
     targetId: userId,
     targetType: "USER",

@@ -9,6 +9,7 @@ import {
   listUsers,
   getUser,
   suspendUser,
+  unsuspendUser,
   featureUser,
   deleteUser,
 } from "./users.controller";
@@ -209,6 +210,39 @@ router.patch(
   authorize("ADMIN"),
   validate(getUserValidator),
   suspendUser
+);
+
+/**
+ * @swagger
+ * /users/{id}/unsuspend:
+ *   patch:
+ *     summary: Réactiver un utilisateur suspendu (Admin)
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Utilisateur réactivé avec succès
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.patch(
+  "/:id/unsuspend",
+  authenticate,
+  authorize("ADMIN"),
+  validate(getUserValidator),
+  unsuspendUser
 );
 
 /**

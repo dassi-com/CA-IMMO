@@ -141,7 +141,7 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
 
 export const getPropertyService = async (propertyId: string) => {
   const property = await prisma.property.findUnique({
-    where: { id: propertyId, is_deleted: false },
+    where: { id: propertyId, is_deleted: false, status: "APPROVED" },
     include: propertyInclude,
   });
 

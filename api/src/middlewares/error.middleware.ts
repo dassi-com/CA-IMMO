@@ -39,6 +39,14 @@ export const errorMiddleware = (
       return;
     }
 
+    if (err.code === "P2023") {
+      res.status(400).json({
+        success: false,
+        message: "Invalid ID format.",
+      });
+      return;
+    }
+
     if (err.code === "P2025") {
       res.status(404).json({
         success: false,
@@ -48,9 +56,9 @@ export const errorMiddleware = (
     }
 
     if (err.code === "P2003") {
-      res.status(409).json({
+      res.status(400).json({
         success: false,
-        message: "This record is referenced by other data and cannot be deleted.",
+        message: "Referenced record does not exist.",
       });
       return;
     }

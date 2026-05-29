@@ -16,7 +16,13 @@ export const authenticate = asyncHandler(
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, env.jwtSecret) as AuthenticatedUser;
+    const payload = jwt.verify(token, env.jwtSecret, { algorithms: ["HS256"] });
+
+    if (typeof payload === "string" || !payload.id || !payload.role) {
+      throw new AppError("Invalid token payload", 401);
+    }
+
+    const decoded = payload as AuthenticatedUser;
 
     // Vérifier que l'utilisateur existe et n'est pas suspendu
     const user = await prisma.user.findUnique({

@@ -155,12 +155,20 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithU
   return generateAuthTokensWithUser(user);
 };
 
+const FAKE_HASH = "$2a$12$0000000000000000000000000000000000000000000000000000000000";
+
 export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> => {
   const user = await prisma.user.findUnique({
     where: { email: dto.email },
   });
 
-  if (!user) {
+  const passwordHash = user?.password ?? FAKE_HASH;
+
+  // Toujours exécuter bcrypt.compare même si l'utilisateur n'existe pas,
+  // pour éviter l'énumération par timing
+  const isPasswordValid = await bcrypt.compare(dto.password, passwordHash);
+
+  if (!user || !user.password) {
     throw new AppError("Invalid email or password", 401);
   }
 
@@ -183,12 +191,6 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
       403
     );
   }
-
-  if (!user.password) {
-    throw new AppError("Invalid email or password", 401);
-  }
-
-  const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
   if (!isPasswordValid) {
     const updatedUser = await prisma.user.update({
@@ -233,17 +235,6 @@ export const refreshTokenService = async (
     throw new AppError("Invalid refresh token", 401);
   }
 
-  // H6: Token reuse detection — un token déjà utilisé indique un vol
-  if (storedToken.used) {
-    await prisma.refreshToken.deleteMany({
-      where: { user_id: storedToken.user_id },
-    });
-    throw new AppError(
-      "Refresh token reuse detected. All sessions have been invalidated for security.",
-      401
-    );
-  }
-
   if (storedToken.expires_at < new Date()) {
     await prisma.refreshToken.delete({ where: { token } });
     throw new AppError("Refresh token expired, please login again", 401);
@@ -253,11 +244,21 @@ export const refreshTokenService = async (
     throw new AppError("Your account has been suspended", 403);
   }
 
-  // Marquer comme utilisé (au lieu de supprimer) pour détecter les rejeux
-  await prisma.refreshToken.update({
-    where: { token },
+  // Atomic token reuse detection : updateMany permet de n'utiliser le token que s'il ne l'a pas déjà été
+  const result = await prisma.refreshToken.updateMany({
+    where: { token, used: false },
     data: { used: true },
   });
+
+  if (result.count === 0) {
+    await prisma.refreshToken.deleteMany({
+      where: { user_id: storedToken.user_id },
+    });
+    throw new AppError(
+      "Refresh token reuse detected. All sessions have been invalidated for security.",
+      401
+    );
+  }
 
   return generateAuthTokensWithUser(storedToken.user);
 };
@@ -298,6 +299,8 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
   });
 
   if (!user || !user.password) {
+    // Dummy bcrypt pour éviter l'énumération par timing
+    await bcrypt.compare(dto.email, FAKE_HASH);
     return;
   }
 
@@ -323,6 +326,8 @@ export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void>
   });
 
   if (!user || !user.reset_token || !user.reset_token_expires) {
+    // Dummy bcrypt pour éviter l'énumération par timing
+    await bcrypt.compare(dto.token, FAKE_HASH);
     throw new AppError("Invalid or expired reset token", 400);
   }
 
