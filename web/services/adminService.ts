@@ -1,6 +1,9 @@
+import axios from 'axios';
 import { api } from './api';
 import { User } from './authService';
 import { Property } from '@/types/property';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
 export const adminService = {
   // Gestion utilisateurs
@@ -39,7 +42,7 @@ export const adminService = {
   },
 
   getFeaturedAgents: async (): Promise<User[]> => {
-    const response = await api.get('/users/featured-agents');
+    const response = await axios.get(`${API_BASE_URL}/users/featured-agents`);
     return response.data.data;
   },
 };
