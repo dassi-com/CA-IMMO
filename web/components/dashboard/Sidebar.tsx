@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home,
@@ -60,7 +60,6 @@ const navigationItems = {
 
 export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -147,7 +146,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
 
           {/* Bottom Section */}
           <div className="p-6 border-t border-white/10">
-            <button onClick={async () => { await logout(); router.push('/login'); }} className="flex items-center gap-3 text-white/70 hover:text-white w-full">
+            <button onClick={logout} className="flex items-center gap-3 text-white/70 hover:text-white w-full">
               <LogOut size={20} />
               <AnimatePresence>
                 {isOpen && (
@@ -222,7 +221,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                   ))}
                 </nav>
                 <div className="p-6 border-t border-white/10">
-                  <button onClick={async () => { await logout(); router.push('/login'); }} className="flex items-center gap-3 text-white/70 w-full">
+                  <button onClick={logout} className="flex items-center gap-3 text-white/70 w-full">
                     <LogOut size={20} />
                     <span className="text-sm">Déconnexion</span>
                   </button>

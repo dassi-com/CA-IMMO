@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "search": "Recherche",
+    "dashboard": "Tableau de bord",
+    "favorites": "Favoris",
+    "postProperty": "Publier un bien",
+    "signIn": "Connexion",
+    "profile": "Profil"
+  },
+  "language": {
+    "switchTo": "EN",
+    "label": "Langue"
+  }
+}

@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, LayoutDashboard, Heart, User, LogIn } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const { isAuthenticated, getDashboardLink } = useAuth();
+  const { t } = useTranslation();
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === href;
@@ -25,7 +27,7 @@ export default function BottomNav() {
           }`}
         >
           <Home size={20} />
-          <span className={`text-xs mt-1 font-medium ${isActive('/') ? 'text-red-600' : 'text-gray-500'}`}>Home</span>
+          <span className={`text-xs mt-1 font-medium ${isActive('/') ? 'text-red-600' : 'text-gray-500'}`}>{t('nav.home')}</span>
         </Link>
 
         <Link
@@ -35,7 +37,7 @@ export default function BottomNav() {
           }`}
         >
           <Search size={20} />
-          <span className={`text-xs mt-1 font-medium ${isActive('/search') ? 'text-red-600' : 'text-gray-500'}`}>Search</span>
+          <span className={`text-xs mt-1 font-medium ${isActive('/search') ? 'text-red-600' : 'text-gray-500'}`}>{t('nav.search')}</span>
         </Link>
 
         {isAuthenticated ? (
@@ -47,7 +49,7 @@ export default function BottomNav() {
               }`}
             >
               <LayoutDashboard size={20} />
-              <span className={`text-xs mt-1 font-medium ${pathname.includes('/dashboard') ? 'text-red-600' : 'text-gray-500'}`}>Dashboard</span>
+              <span className={`text-xs mt-1 font-medium ${pathname.includes('/dashboard') ? 'text-red-600' : 'text-gray-500'}`}>{t('nav.dashboard')}</span>
             </Link>
 
             <Link
@@ -57,7 +59,7 @@ export default function BottomNav() {
               }`}
             >
               <Heart size={20} />
-              <span className={`text-xs mt-1 font-medium ${isActive('/favorites') ? 'text-red-600' : 'text-gray-500'}`}>Favorites</span>
+              <span className={`text-xs mt-1 font-medium ${isActive('/favorites') ? 'text-red-600' : 'text-gray-500'}`}>{t('nav.favorites')}</span>
             </Link>
           </>
         ) : (
@@ -69,7 +71,7 @@ export default function BottomNav() {
               }`}
             >
               <LogIn size={20} />
-              <span className={`text-xs mt-1 font-medium ${isActive('/login') ? 'text-red-600' : 'text-gray-500'}`}>Sign In</span>
+              <span className={`text-xs mt-1 font-medium ${isActive('/login') ? 'text-red-600' : 'text-gray-500'}`}>{t('nav.signIn')}</span>
             </Link>
           </>
         )}
@@ -81,7 +83,7 @@ export default function BottomNav() {
           }`}
         >
           <User size={20} />
-          <span className={`text-xs mt-1 font-medium ${isActive('/settings') ? 'text-red-600' : 'text-gray-500'}`}>Profile</span>
+          <span className={`text-xs mt-1 font-medium ${isActive('/settings') ? 'text-red-600' : 'text-gray-500'}`}>{t('nav.profile')}</span>
         </Link>
       </div>
     </div>
