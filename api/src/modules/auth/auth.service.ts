@@ -149,6 +149,7 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithU
       phone: dto.phone,
       password: hashedPassword,
       role,
+      is_verified: true,
     },
   });
 
