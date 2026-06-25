@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { authService } from '@/services/authService';
 
 export default function CallbackHandler() {
-  const searchParams = useSearchParams();
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
-    const refreshToken = searchParams.get('refreshToken');
-    const role = searchParams.get('role');
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get('accessToken');
+    const refreshToken = params.get('refreshToken');
+    const role = params.get('role');
 
     if (accessToken && refreshToken) {
       localStorage.setItem('accessToken', accessToken);
@@ -31,7 +31,7 @@ export default function CallbackHandler() {
     } else {
       setError('Authentication failed. No tokens received.');
     }
-  }, [searchParams]);
+  }, []);
 
   if (error) {
     return (

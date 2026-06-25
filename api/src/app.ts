@@ -48,13 +48,18 @@ app.use(helmet({
 
 app.disable('x-powered-by');
 
-const corsOrigin = env.clientUrl;
-if (!corsOrigin && process.env.NODE_ENV === 'production') {
-  console.warn('CLIENT_URL is not set. CORS will be restrictive.');
-}
+const corsOrigins = env.clientUrl
+  ? env.clientUrl.split(',').map((s: string) => s.trim())
+  : ['http://localhost:3000'];
 app.use(
   cors({
-    origin: corsOrigin || false,
+    origin: (origin, callback) => {
+      if (!origin || corsOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     credentials: true,
   })
 );
