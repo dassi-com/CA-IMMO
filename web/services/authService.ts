@@ -27,6 +27,9 @@ export const authService = {
     if (response.data.data.accessToken) {
       localStorage.setItem('accessToken', response.data.data.accessToken);
       localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      if (response.data.data.user?.role) {
+        localStorage.setItem('userRole', response.data.data.user.role);
+      }
     }
     
     return response.data.data;
@@ -46,6 +49,9 @@ export const authService = {
     if (response.data.data.accessToken) {
       localStorage.setItem('accessToken', response.data.data.accessToken);
       localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      if (response.data.data.user?.role) {
+        localStorage.setItem('userRole', response.data.data.user.role);
+      }
     }
     
     return response.data.data;
@@ -60,6 +66,7 @@ export const authService = {
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('userRole');
     }
   },
 
@@ -75,13 +82,13 @@ export const authService = {
 
   // Mettre à jour le profil
   updateProfile: async (data: { full_name: string; email: string; phone: string }): Promise<User> => {
-    const response = await api.put('/auth/profile', data);
+    const response = await api.put('/users/profile', data);
     return response.data.data;
   },
 
   // Changer le mot de passe
   changePassword: async (data: { current_password: string; new_password: string; confirm_password: string }): Promise<void> => {
-    await api.put('/auth/password', data);
+    await api.put('/users/profile/password', data);
   },
 
   // Uploader un avatar

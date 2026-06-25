@@ -43,6 +43,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
+      if (currentUser?.role) {
+        localStorage.setItem('userRole', currentUser.role);
+      }
     } catch (error) {
       setUser(null);
     } finally {
@@ -52,18 +55,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string, rememberMe?: boolean) => {
     const response = await authService.login(email, password, rememberMe);
-    if (response.user) setUser(response.user);
+    if (response.user) {
+      setUser(response.user);
+      localStorage.setItem('userRole', response.user.role);
+    }
     return response;
   };
 
   const register = async (data: { full_name: string; email: string; phone: string; password: string; confirm_password: string; role: 'TENANT' | 'OWNER' }) => {
     const response = await authService.register(data);
-    if (response.user) setUser(response.user);
+    if (response.user) {
+      setUser(response.user);
+      localStorage.setItem('userRole', response.user.role);
+    }
   };
 
   const logout = async () => {
     await authService.logout();
     setUser(null);
+    localStorage.removeItem('userRole');
   };
 
   const getDashboardLink = useCallback(() => {

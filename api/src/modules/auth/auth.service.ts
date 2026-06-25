@@ -83,6 +83,9 @@ export const googleAuthService = async (profile: Profile): Promise<User> => {
   });
 
   if (user) {
+    if (user.is_suspended) {
+      throw new AppError("Your account has been suspended", 403);
+    }
     return user;
   }
 
@@ -108,7 +111,6 @@ export const googleAuthService = async (profile: Profile): Promise<User> => {
       full_name: fullName,
       email,
       google_id: profile.id,
-      is_verified: true,
     },
   });
 
@@ -149,7 +151,6 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithU
       phone: dto.phone,
       password: hashedPassword,
       role,
-      is_verified: true,
     },
   });
 
@@ -182,14 +183,6 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
     throw new AppError(
       "Account temporarily locked due to too many failed attempts. Please try again later.",
       429
-    );
-  }
-
-  // Vérifier si l'email a été vérifié
-  if (!user.is_verified && user.password) {
-    throw new AppError(
-      "Please verify your email address before logging in",
-      403
     );
   }
 

@@ -18,9 +18,26 @@ export default function RegisterPage() {
     role: 'TENANT' as 'TENANT' | 'OWNER',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+
+  const validatePassword = (password: string): string[] => {
+    const errors: string[] = [];
+    if (password.length < 8) errors.push('Au moins 8 caractères');
+    if (!/[A-Z]/.test(password)) errors.push('Une majuscule');
+    if (!/[a-z]/.test(password)) errors.push('Une minuscule');
+    if (!/[0-9]/.test(password)) errors.push('Un chiffre');
+    return errors;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const pwErrors = validatePassword(formData.password);
+    if (pwErrors.length > 0) {
+      setPasswordErrors(pwErrors);
+      setIsLoading(false);
+      return;
+    }
+    setPasswordErrors([]);
     setIsLoading(true);
     try {
       await authRegister({
@@ -165,10 +182,25 @@ export default function RegisterPage() {
                 type="password"
                 placeholder="Votre mot de passe"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, password: e.target.value });
+                  if (passwordErrors.length > 0) {
+                    setPasswordErrors(validatePassword(e.target.value));
+                  }
+                }}
                 required
                 className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
               />
+              {passwordErrors.length > 0 && (
+                <div className="mt-2 text-xs text-red-600">
+                  <p className="font-medium mb-1">Le mot de passe doit contenir :</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {passwordErrors.map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
 
