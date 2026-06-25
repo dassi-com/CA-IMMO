@@ -30,11 +30,12 @@ api.interceptors.response.use(
 
     if (!originalRequest) return Promise.reject(error);
 
-    // Empêcher les boucles infinies sur /auth/refresh
-    if (originalRequest.url?.includes('/auth/refresh')) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      window.location.href = '/login';
+    // Empêcher les boucles infinies sur /auth/refresh, /auth/login, /auth/register
+    if (originalRequest.url?.includes('/auth/refresh') || originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register')) {
+      if (originalRequest.url?.includes('/auth/refresh')) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+      }
       return Promise.reject(error);
     }
 
