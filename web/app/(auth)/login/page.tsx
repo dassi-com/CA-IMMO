@@ -68,7 +68,11 @@ export default function LoginPage() {
       else if (role === 'TENANT') router.push('/tenant');
       else router.push('/');
     } catch (error: any) {
-      const message = error?.response?.data?.message || 'Erreur de connexion';
+      const errors = error?.response?.data?.errors;
+      let message = error?.response?.data?.message || 'Erreur de connexion';
+      if (errors?.length > 0) {
+        message = errors.map((e: any) => e.message).join(', ');
+      }
       toast.error(message);
     } finally {
       setIsLoading(false);

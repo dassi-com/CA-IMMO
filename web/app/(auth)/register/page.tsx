@@ -38,7 +38,11 @@ export default function RegisterPage() {
         router.push('/tenant');
       }
     } catch (error: any) {
-      const message = error?.response?.data?.message || "Erreur lors de l'inscription";
+      const errors = error?.response?.data?.errors;
+      let message = error?.response?.data?.message || "Erreur lors de l'inscription";
+      if (errors?.length > 0) {
+        message = errors.map((e: any) => e.message).join(', ');
+      }
       toast.error(message);
     } finally {
       setIsLoading(false);
