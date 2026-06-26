@@ -26,8 +26,8 @@ const RESET_TOKEN_EXPIRES_IN_MS = 60 * 60 * 1000;
 const MAX_FAILED_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
-// 🔹 HASH FIXE pour éviter la fuite de timing
-const FAKE_HASH = "$2a$12$0000000000000000000000000000000000000000000000000000000000";
+// 🔹 HASH FIXE pour éviter la fuite de timing (généré au démarrage)
+const FAKE_HASH = bcrypt.hashSync("dummy_timing_attack_mitigation", SALT_ROUNDS);
 
 const generateAccessToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, env.jwtSecret, {
@@ -241,7 +241,6 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
       data: {
         failed_login_attempts: 0,
         locked_until: null,
-        last_login: new Date(),
       },
     });
   }

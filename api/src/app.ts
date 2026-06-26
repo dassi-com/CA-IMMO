@@ -8,7 +8,7 @@ import timeout from 'connect-timeout';
 import swaggerUi from 'swagger-ui-express';
 import { validateEnv, env } from './config/env';
 import { errorMiddleware } from './middlewares/error.middleware';
-import { createApiLimiter, createAuthLimiter, createPasswordResetLimiter } from './middlewares/rateLimit.middleware';
+import { createApiLimiter, createAuthLimiter, createPasswordResetLimiter, createTokenOpLimiter } from './middlewares/rateLimit.middleware';
 import { swaggerSpec } from './config/swagger';
 import './config/passport';
 import authRouter from './modules/auth/auth.routes';
@@ -57,7 +57,7 @@ app.use(
       if (!origin || corsOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(null, false);
+        callback(new Error("Origin not allowed by CORS"));
       }
     },
     credentials: true,
@@ -75,6 +75,10 @@ app.use('/api/v1/auth/refresh', authLimiter);
 
 const passwordResetLimiter = createPasswordResetLimiter();
 app.use('/api/v1/auth/forgot-password', passwordResetLimiter);
+
+const tokenOpLimiter = createTokenOpLimiter();
+app.use('/api/v1/auth/logout', tokenOpLimiter);
+app.use('/api/v1/auth/reset-password', tokenOpLimiter);
 
 // ─── Parsing & Compression ────────────────────
 app.use(express.json({ limit: '1mb' }));

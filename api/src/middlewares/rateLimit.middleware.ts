@@ -68,6 +68,19 @@ export const createPasswordResetLimiter = () =>
     keyGenerator: (req: Request) => getIp(req),
   });
 
+export const createTokenOpLimiter = () =>
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: isDev ? 50 : 5,
+    message: {
+      success: false,
+      message: 'Too many requests, please try again later.',
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request) => getIp(req),
+  });
+
 export const createInquiryLimiter = () =>
   rateLimit({
     windowMs: 15 * 60 * 1000,

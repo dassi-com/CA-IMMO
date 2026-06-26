@@ -13,14 +13,17 @@ export default function CallbackHandler() {
     const refreshToken = params.get('refreshToken');
     const role = params.get('role');
 
+    window.location.hash = '';
+
     if (accessToken && refreshToken) {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
-      authService.getCurrentUser().then(() => {
-        if (role === 'ADMIN') window.location.href = '/admin';
-        else if (role === 'OWNER') window.location.href = '/agent';
-        else if (role === 'TENANT') window.location.href = '/tenant';
+      authService.getCurrentUser().then((user) => {
+        const targetRole = user?.role || role;
+        if (targetRole === 'ADMIN') window.location.href = '/admin';
+        else if (targetRole === 'OWNER') window.location.href = '/agent';
+        else if (targetRole === 'TENANT') window.location.href = '/tenant';
         else window.location.href = '/';
       }).catch(() => {
         if (role === 'ADMIN') window.location.href = '/admin';
