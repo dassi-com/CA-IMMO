@@ -65,7 +65,7 @@ model User {
   password     String?
   google_id    String?   @unique
   role         Role      @default(TENANT)
-  is_verified        Boolean   @default(false)
+  is_verified        Boolean   @default(true)
   is_suspended       Boolean   @default(false)
   is_featured        Boolean   @default(false)
   failed_login_attempts Int   @default(0)

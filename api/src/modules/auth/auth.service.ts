@@ -222,13 +222,7 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
     throw new AppError("Your account has been suspended", 403);
   }
 
-  // 6. Vérifier si le compte est vérifié (si votre système l'exige)
-  if (!user.is_verified) {
-    console.log(`⚠️ Email non vérifié: ${dto.email}`);
-    throw new AppError("Please verify your email before logging in", 403);
-  }
-
-  // 7. Vérifier si le compte est verrouillé
+  // 6. Vérifier si le compte est verrouillé
   if (user.locked_until && user.locked_until > new Date()) {
     const remainingTime = Math.ceil(
       (user.locked_until.getTime() - Date.now()) / 1000 / 60
