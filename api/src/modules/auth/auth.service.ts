@@ -233,7 +233,7 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
       data: {
         failed_login_attempts: 0,
         locked_until: null,
-        last_login: new Date(),
+        // last_login: new Date(), // TODO: Ajouter le champ last_login dans Prisma
       },
     });
   }
