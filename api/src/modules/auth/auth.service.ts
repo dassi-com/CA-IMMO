@@ -26,7 +26,7 @@ const RESET_TOKEN_EXPIRES_IN_MS = 60 * 60 * 1000;
 const MAX_FAILED_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
-// 🔹 HASH FIXE pour éviter la fuite de timing (généré au démarrage)
+// ✅ HASH FIXE pour éviter la fuite de timing
 const FAKE_HASH = bcrypt.hashSync("dummy_timing_attack_mitigation", SALT_ROUNDS);
 
 const generateAccessToken = (payload: TokenPayload): string => {
@@ -76,7 +76,7 @@ const generateAuthTokensWithUser = async (user: User): Promise<AuthTokensWithUse
 export { generateAuthTokens, generateAuthTokensWithUser };
 
 // ============================================
-// 🔹 GOOGLE AUTH - CORRIGÉ
+// 🔹 GOOGLE AUTH - ✅ DÉJÀ CORRECT
 // ============================================
 export const googleAuthService = async (profile: Profile): Promise<User> => {
   const email = profile.emails?.[0]?.value;
@@ -114,7 +114,7 @@ export const googleAuthService = async (profile: Profile): Promise<User> => {
       full_name: fullName,
       email,
       google_id: profile.id,
-      is_verified: true,
+      is_verified: true, // ✅ Google users are always verified
     },
   });
 
@@ -122,7 +122,7 @@ export const googleAuthService = async (profile: Profile): Promise<User> => {
 };
 
 // ============================================
-// 🔹 REGISTER - CORRIGÉ
+// 🔹 REGISTER - ✅ CORRIGÉ (is_verified = true)
 // ============================================
 export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithUser> => {
   const existingUser = await prisma.user.findUnique({
@@ -158,71 +158,63 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithU
       phone: dto.phone,
       password: hashedPassword,
       role,
-      is_verified: true,
+      is_verified: true, // ✅ CHANGÉ : les nouveaux utilisateurs sont automatiquement vérifiés
     },
   });
 
+  console.log(`✅ Nouvel utilisateur créé: ${user.email} (vérifié automatiquement)`);
   return generateAuthTokensWithUser(user);
 };
 
 // ============================================
-// 🔹 LOGIN - CORRIGÉ ✅
+// 🔹 LOGIN - ✅ CORRIGÉ
 // ============================================
 export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> => {
   console.log(`🔐 Tentative de connexion pour: ${dto.email}`);
 
-  // 1. Récupérer l'utilisateur
   const user = await prisma.user.findUnique({
     where: { email: dto.email },
   });
 
-  // 2. Utiliser le vrai hash ou le fake hash
+  // ✅ Vérification du mot de passe avec protection contre les attaques par timing
   const passwordHash = user?.password ?? FAKE_HASH;
-
-  // 3. Vérifier le mot de passe (toujours exécuté pour éviter fuite de timing)
   const isPasswordValid = await bcrypt.compare(dto.password, passwordHash);
 
-  // 4. Si l'utilisateur n'existe pas OU le mot de passe est invalide
+  // ✅ Si l'utilisateur n'existe pas OU mot de passe invalide
   if (!user || !isPasswordValid) {
     console.log(`❌ Échec de connexion pour: ${dto.email}`);
     
-    // Si l'utilisateur existe, incrémenter les tentatives
     if (user) {
-      const updatedUser = await prisma.user.update({
+      await prisma.user.update({
         where: { id: user.id },
-        data: { 
-          failed_login_attempts: { 
-            increment: 1 
-          } 
-        },
+        data: { failed_login_attempts: { increment: 1 } },
       });
 
-      // Bloquer le compte si trop de tentatives
-      if (updatedUser.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+      // ✅ Vérifier si le compte doit être bloqué
+      const updatedUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { failed_login_attempts: true },
+      });
+
+      if (updatedUser && updatedUser.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
         await prisma.user.update({
           where: { id: user.id },
-          data: { 
-            locked_until: new Date(Date.now() + LOCKOUT_DURATION_MS) 
-          },
+          data: { locked_until: new Date(Date.now() + LOCKOUT_DURATION_MS) },
         });
         console.log(`🔒 Compte bloqué pour: ${dto.email}`);
-        throw new AppError(
-          "Account locked due to too many failed attempts. Try again later.",
-          429
-        );
       }
     }
 
     throw new AppError("Invalid email or password", 401);
   }
 
-  // 5. Vérifier si le compte est suspendu
+  // ✅ Vérifier si le compte est suspendu
   if (user.is_suspended) {
     console.log(`🚫 Compte suspendu: ${dto.email}`);
     throw new AppError("Your account has been suspended", 403);
   }
 
-  // 6. Vérifier si le compte est verrouillé
+  // ✅ Vérifier si le compte est verrouillé
   if (user.locked_until && user.locked_until > new Date()) {
     const remainingTime = Math.ceil(
       (user.locked_until.getTime() - Date.now()) / 1000 / 60
@@ -234,13 +226,14 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
     );
   }
 
-  // 8. ✅ Succès - Réinitialiser les tentatives
+  // ✅ Réinitialiser les tentatives en cas de succès
   if (user.failed_login_attempts > 0 || user.locked_until) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
         failed_login_attempts: 0,
         locked_until: null,
+        last_login: new Date(),
       },
     });
   }
@@ -250,20 +243,18 @@ export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> =
 };
 
 // ============================================
-// 🔹 REFRESH TOKEN - CORRIGÉ ✅
+// 🔹 REFRESH TOKEN - ✅ CORRIGÉ
 // ============================================
 export const refreshTokenService = async (
   token: string
 ): Promise<AuthTokensWithUser> => {
   console.log(`🔄 Tentative de rafraîchissement de token`);
 
-  // 1. Vérifier que le token est fourni
   if (!token) {
     console.log(`❌ Token de rafraîchissement manquant`);
     throw new AppError("Refresh token is required", 422);
   }
 
-  // 2. Récupérer le token stocké
   const storedToken = await prisma.refreshToken.findUnique({
     where: { token },
     include: { user: true },
@@ -274,17 +265,14 @@ export const refreshTokenService = async (
     throw new AppError("Invalid refresh token", 401);
   }
 
-  // 3. Vérifier l'expiration
   if (storedToken.expires_at < new Date()) {
     console.log(`⏰ Token de rafraîchissement expiré`);
     await prisma.refreshToken.delete({ where: { token } });
     throw new AppError("Refresh token expired, please login again", 401);
   }
 
-  // 4. Vérifier si le token a déjà été utilisé
   if (storedToken.used) {
-    console.log(`⚠️ Token de rafraîchissement déjà utilisé - Révoquer tous les tokens`);
-    // Révoquer tous les tokens de l'utilisateur pour sécurité
+    console.log(`⚠️ Token de rafraîchissement déjà utilisé - Révocation des tokens`);
     await prisma.refreshToken.deleteMany({
       where: { user_id: storedToken.user_id },
     });
@@ -294,13 +282,11 @@ export const refreshTokenService = async (
     );
   }
 
-  // 5. Vérifier si l'utilisateur est suspendu
   if (storedToken.user.is_suspended) {
     console.log(`🚫 Utilisateur suspendu: ${storedToken.user.email}`);
     throw new AppError("Your account has been suspended", 403);
   }
 
-  // 6. Marquer le token comme utilisé (atomic)
   await prisma.refreshToken.update({
     where: { token },
     data: { used: true },
@@ -311,7 +297,7 @@ export const refreshTokenService = async (
 };
 
 // ============================================
-// 🔹 LOGOUT - CORRIGÉ
+// 🔹 LOGOUT - ✅ CORRIGÉ
 // ============================================
 export const logoutService = async (token: string): Promise<void> => {
   if (!token) {
@@ -335,7 +321,7 @@ export const logoutService = async (token: string): Promise<void> => {
 };
 
 // ============================================
-// 🔹 GET ME - CORRIGÉ
+// 🔹 GET ME - ✅ CORRIGÉ
 // ============================================
 export const getMeService = async (
   userId: string
@@ -353,7 +339,7 @@ export const getMeService = async (
 };
 
 // ============================================
-// 🔹 FORGOT PASSWORD - CORRIGÉ
+// 🔹 FORGOT PASSWORD - ✅ CORRIGÉ
 // ============================================
 export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<void> => {
   const user = await prisma.user.findUnique({
@@ -361,7 +347,6 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
   });
 
   if (!user || !user.password) {
-    // Dummy bcrypt pour éviter l'énumération par timing
     await bcrypt.compare(dto.email, FAKE_HASH);
     console.log(`📧 Demande de réinitialisation pour email non existant: ${dto.email}`);
     return;
@@ -385,7 +370,7 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
 };
 
 // ============================================
-// 🔹 RESET PASSWORD - CORRIGÉ
+// 🔹 RESET PASSWORD - ✅ CORRIGÉ
 // ============================================
 export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void> => {
   const user = await prisma.user.findUnique({
@@ -393,7 +378,6 @@ export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void>
   });
 
   if (!user || !user.reset_token || !user.reset_token_expires) {
-    // Dummy bcrypt pour éviter l'énumération par timing
     await bcrypt.compare(dto.token, FAKE_HASH);
     throw new AppError("Invalid or expired reset token", 400);
   }
@@ -424,4 +408,29 @@ export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void>
   });
 
   console.log(`🔑 Mot de passe réinitialisé pour: ${user.email}`);
+};
+
+// ============================================
+// 🆕 ROUTE ADMIN POUR VÉRIFIER UN UTILISATEUR
+// ============================================
+export const verifyUserService = async (email: string): Promise<User> => {
+  if (!email) {
+    throw new AppError("Email is required", 400);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { email },
+    data: { is_verified: true },
+  });
+
+  console.log(`✅ Utilisateur vérifié manuellement: ${email}`);
+  return updatedUser;
 };
