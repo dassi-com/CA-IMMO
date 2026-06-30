@@ -363,7 +363,7 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
     },
   });
 
-  const resetUrl = `${env.clientUrl}/reset-password?token=${resetToken}`;
+  const resetUrl = `${env.clientUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
 
   await sendPasswordResetEmail(user.email, resetUrl);
   console.log(`📧 Email de réinitialisation envoyé à: ${user.email}`);

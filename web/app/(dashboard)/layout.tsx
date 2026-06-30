@@ -9,6 +9,13 @@ const roleRouteMap: Record<string, string> = {
   '/tenant': 'TENANT',
 };
 
+function getRequiredRole(pathname: string): string | undefined {
+  const prefix = Object.keys(roleRouteMap).find((prefix) =>
+    pathname === prefix || pathname.startsWith(prefix + '/')
+  );
+  return prefix ? roleRouteMap[prefix] : undefined;
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -22,9 +29,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return;
     }
 
-    const requiredRole = roleRouteMap[pathname];
+    const requiredRole = getRequiredRole(pathname);
     if (requiredRole && user?.role !== requiredRole) {
-      router.replace(getDashboardLink());
+      const redirectTo = getDashboardLink();
+      if (redirectTo !== pathname) {
+        router.replace(redirectTo);
+      }
     }
   }, [isLoading, isAuthenticated, user, pathname, router, getDashboardLink]);
 
@@ -40,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return null;
   }
 
-  const requiredRole = roleRouteMap[pathname];
+  const requiredRole = getRequiredRole(pathname);
   if (requiredRole && user?.role !== requiredRole) {
     return null;
   }
