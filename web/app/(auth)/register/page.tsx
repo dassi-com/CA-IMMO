@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Building2, User, Mail, Lock, Phone } from 'lucide-react';
@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: authRegister } = useAuth();
+  const { register: authRegister, user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,6 +19,13 @@ export default function RegisterPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (redirectTo && user) {
+      router.push(redirectTo);
+    }
+  }, [redirectTo, user, router]);
 
   const validatePassword = (password: string): string[] => {
     const errors: string[] = [];
@@ -50,9 +57,9 @@ export default function RegisterPage() {
       });
       toast.success('Compte créé avec succès');
       if (formData.role === 'OWNER') {
-        router.push('/agent');
+        setRedirectTo('/agent');
       } else {
-        router.push('/tenant');
+        setRedirectTo('/tenant');
       }
     } catch (error: any) {
       const errors = error?.response?.data?.errors;
