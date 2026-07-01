@@ -33,18 +33,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) {
-      const storedRole = localStorage.getItem('userRole');
-      if (storedRole) {
-        setUser({
-          id: '',
-          full_name: '',
-          email: '',
-          phone: '',
-          role: storedRole as User['role'],
-          is_verified: false,
-          is_suspended: false,
-        });
-      }
       checkAuth();
     } else {
       setIsLoading(false);
@@ -58,23 +46,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(currentUser);
         localStorage.setItem('userRole', currentUser.role);
       } else {
-        throw new Error('No user returned');
-      }
-    } catch {
-      const storedRole = localStorage.getItem('userRole');
-      if (storedRole) {
-        setUser({
-          id: '',
-          full_name: '',
-          email: '',
-          phone: '',
-          role: storedRole as User['role'],
-          is_verified: false,
-          is_suspended: false,
-        });
-      } else {
         setUser(null);
       }
+    } catch {
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
@@ -104,8 +79,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getDashboardLink = useCallback(() => {
-    const role = user?.role || localStorage.getItem('userRole');
-    switch (role) {
+    if (!user) return '/login';
+    switch (user.role) {
       case 'ADMIN': return '/admin';
       case 'OWNER': return '/agent';
       case 'TENANT': return '/tenant';
