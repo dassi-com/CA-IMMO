@@ -11,6 +11,7 @@ import {
   getMyPropertiesService,
   updatePropertyStatusService,
   featurePropertyService,
+  getPropertiesStatsService,
   listPendingPropertiesService,
 } from "./properties.service";
 import {
@@ -92,6 +93,13 @@ export const featureProperty = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const property = await featurePropertyService(req.params.id as string);
     sendSuccess(res, property, "Property featured successfully");
+  }
+);
+
+export const getPropertiesStats = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const stats = await getPropertiesStatsService();
+    sendSuccess(res, stats, "Stats fetched successfully");
   }
 );
 

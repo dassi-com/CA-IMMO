@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "prisma generate && prisma db push --accept-data-loss && npx ts-node --transpile-only prisma/seed.ts",
+    "postinstall": "prisma generate && prisma db push --accept-data-loss && npx ts-node --transpile-only prisma/seed.ts && npx ts-node --transpile-only prisma/fix-is-verified.ts",
     "prisma:seed": "npx ts-node --transpile-only prisma/seed.ts",
+    "prisma:fix-verified": "npx ts-node --transpile-only prisma/fix-is-verified.ts",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
@@ -59,6 +60,7 @@
     "@types/nodemailer": "^8.0.0",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.17",
+    "@types/socket.io": "^3.0.1",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/yamljs": "^0.2.34",

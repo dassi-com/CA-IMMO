@@ -11,6 +11,7 @@ import {
 } from "./auth.validator";
 import passport from "../../config/passport";
 import { env } from "../../config/env";
+import { verifyUserService } from "./auth.service"; // ✅ Nouvel import
 
 const router = Router();
 
@@ -215,7 +216,7 @@ router.get("/google", passport.authenticate("google", { session: false, scope: [
  *     responses:
  *       302:
  *         description: Redirection vers le frontend avec les tokens
- */
+ */ 
 router.get(
   "/google/callback",
   (req: Request, res: Response, next: NextFunction) => {
@@ -232,5 +233,74 @@ router.get(
   },
   googleCallback
 );
+
+// ============================================
+// 🆕 ROUTE ADMIN : Vérifier un utilisateur manuellement
+// ============================================
+/**
+ * @swagger
+ * /auth/admin/verify-user:
+ *   post:
+ *     summary: [ADMIN] Vérifier un utilisateur manuellement
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Utilisateur vérifié avec succès
+ *       400:
+ *         description: Email manquant
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
+router.post("/admin/verify-user", async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required"
+      });
+    }
+    
+    const user = await verifyUserService(email);
+    
+    return res.status(200).json({
+      success: true,
+      message: `✅ ${email} verified successfully`,
+      data: {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        is_verified: user.is_verified,
+        is_suspended: user.is_suspended,
+      }
+    });
+  } catch (error: any) {
+    console.error("❌ Erreur lors de la vérification:", error);
+    
+    // Gérer les erreurs spécifiques
+    if (error.message === "User not found") {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+    
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Something went wrong"
+    });
+  }
+});
 
 export default router;

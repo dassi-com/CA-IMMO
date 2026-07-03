@@ -20,8 +20,9 @@ export const registerValidator: ValidationChain[] = [
     .trim()
     .notEmpty()
     .withMessage("Phone is required")
-    .isMobilePhone("any")
-    .withMessage("Invalid phone number"),
+    .customSanitizer((value: string) => value.replace(/[^0-9+]/g, ""))
+    .isLength({ min: 8, max: 15 })
+    .withMessage("Phone number must be between 8 and 15 digits"),
 
   body("password")
     .notEmpty()

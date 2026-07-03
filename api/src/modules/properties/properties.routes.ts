@@ -11,6 +11,7 @@ import {
   getMyProperties,
   updatePropertyStatus,
   featureProperty,
+  getPropertiesStats,
   listPendingProperties,
 } from "./properties.controller";
 import {
@@ -75,6 +76,18 @@ const router = Router();
  *               $ref: '#/components/schemas/PaginatedResponse'
  */
 router.get("/", validate(propertiesListValidator), listProperties);
+
+/**
+ * @swagger
+ * /properties/stats:
+ *   get:
+ *     summary: Obtenir les statistiques (villes, types)
+ *     tags: [Properties]
+ *     responses:
+ *       200:
+ *         description: Statistiques des propriétés
+ */
+router.get("/stats", getPropertiesStats);
 
 /**
  * @swagger

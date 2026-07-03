@@ -59,7 +59,7 @@ export default function ExplorePopularCities() {
     );
   }
 
-  if (cities.length === 0) return null;
+  if (!cities?.length) return null;
 
   return (
     <section className="py-16">

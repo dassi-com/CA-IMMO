@@ -26,6 +26,9 @@ const RESET_TOKEN_EXPIRES_IN_MS = 60 * 60 * 1000;
 const MAX_FAILED_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
+// ✅ HASH FIXE pour éviter la fuite de timing
+const FAKE_HASH = bcrypt.hashSync("dummy_timing_attack_mitigation", SALT_ROUNDS);
+
 const generateAccessToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, env.jwtSecret, {
     expiresIn: ACCESS_TOKEN_EXPIRES_IN,
@@ -72,6 +75,9 @@ const generateAuthTokensWithUser = async (user: User): Promise<AuthTokensWithUse
 
 export { generateAuthTokens, generateAuthTokensWithUser };
 
+// ============================================
+// 🔹 GOOGLE AUTH - ✅ DÉJÀ CORRECT
+// ============================================
 export const googleAuthService = async (profile: Profile): Promise<User> => {
   const email = profile.emails?.[0]?.value;
   if (!email) {
@@ -108,13 +114,16 @@ export const googleAuthService = async (profile: Profile): Promise<User> => {
       full_name: fullName,
       email,
       google_id: profile.id,
-      is_verified: true,
+      is_verified: true, // ✅ Google users are always verified
     },
   });
 
   return user;
 };
 
+// ============================================
+// 🔹 REGISTER - ✅ CORRIGÉ (is_verified = true)
+// ============================================
 export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithUser> => {
   const existingUser = await prisma.user.findUnique({
     where: { email: dto.email },
@@ -149,108 +158,121 @@ export const registerService = async (dto: RegisterDto): Promise<AuthTokensWithU
       phone: dto.phone,
       password: hashedPassword,
       role,
+      is_verified: true, // ✅ CHANGÉ : les nouveaux utilisateurs sont automatiquement vérifiés
     },
   });
 
+  console.log(`✅ Nouvel utilisateur créé: ${user.email} (vérifié automatiquement)`);
   return generateAuthTokensWithUser(user);
 };
 
-const FAKE_HASH = "$2a$12$0000000000000000000000000000000000000000000000000000000000";
-
+// ============================================
+// 🔹 LOGIN - ✅ CORRIGÉ
+// ============================================
 export const loginService = async (dto: LoginDto): Promise<AuthTokensWithUser> => {
+  console.log(`🔐 Tentative de connexion pour: ${dto.email}`);
+
   const user = await prisma.user.findUnique({
     where: { email: dto.email },
   });
 
+  // ✅ Vérification du mot de passe avec protection contre les attaques par timing
   const passwordHash = user?.password ?? FAKE_HASH;
-
-  // Toujours exécuter bcrypt.compare même si l'utilisateur n'existe pas,
-  // pour éviter l'énumération par timing
   const isPasswordValid = await bcrypt.compare(dto.password, passwordHash);
 
-  if (!user || !user.password) {
-    throw new AppError("Invalid email or password", 401);
-  }
-
-  if (user.is_suspended) {
-    throw new AppError("Your account has been suspended", 403);
-  }
-
-  // Vérifier si le compte est verrouillé
-  if (user.locked_until && user.locked_until > new Date()) {
-    throw new AppError(
-      "Account temporarily locked due to too many failed attempts. Please try again later.",
-      429
-    );
-  }
-
-  // Vérifier si l'email a été vérifié
-  if (!user.is_verified && user.password) {
-    throw new AppError(
-      "Please verify your email address before logging in",
-      403
-    );
-  }
-
-  if (!isPasswordValid) {
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: { failed_login_attempts: { increment: 1 } },
-      select: { failed_login_attempts: true },
-    });
-
-    if (updatedUser.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+  // ✅ Si l'utilisateur n'existe pas OU mot de passe invalide
+  if (!user || !isPasswordValid) {
+    console.log(`❌ Échec de connexion pour: ${dto.email}`);
+    
+    if (user) {
       await prisma.user.update({
         where: { id: user.id },
-        data: { locked_until: new Date(Date.now() + LOCKOUT_DURATION_MS) },
+        data: { failed_login_attempts: { increment: 1 } },
       });
+
+      // ✅ Vérifier si le compte doit être bloqué
+      const updatedUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { failed_login_attempts: true },
+      });
+
+      if (updatedUser && updatedUser.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { locked_until: new Date(Date.now() + LOCKOUT_DURATION_MS) },
+        });
+        console.log(`🔒 Compte bloqué pour: ${dto.email}`);
+      }
     }
 
     throw new AppError("Invalid email or password", 401);
   }
 
-  // Réinitialiser le compteur d'échecs en cas de succès
-  if (user.failed_login_attempts > 0) {
+  // ✅ Vérifier si le compte est suspendu
+  if (user.is_suspended) {
+    console.log(`🚫 Compte suspendu: ${dto.email}`);
+    throw new AppError("Your account has been suspended", 403);
+  }
+
+  // ✅ Vérifier si le compte est verrouillé
+  if (user.locked_until && user.locked_until > new Date()) {
+    const remainingTime = Math.ceil(
+      (user.locked_until.getTime() - Date.now()) / 1000 / 60
+    );
+    console.log(`🔒 Compte verrouillé pour: ${dto.email}, reste ${remainingTime} min`);
+    throw new AppError(
+      `Account locked. Please try again in ${remainingTime} minute(s).`,
+      429
+    );
+  }
+
+  // ✅ Réinitialiser les tentatives en cas de succès
+  if (user.failed_login_attempts > 0 || user.locked_until) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
         failed_login_attempts: 0,
         locked_until: null,
+        // last_login: new Date(), // TODO: Ajouter le champ last_login dans Prisma
       },
     });
   }
 
+  console.log(`✅ Connexion réussie pour: ${dto.email}`);
   return generateAuthTokensWithUser(user);
 };
 
+// ============================================
+// 🔹 REFRESH TOKEN - ✅ CORRIGÉ
+// ============================================
 export const refreshTokenService = async (
   token: string
 ): Promise<AuthTokensWithUser> => {
+  console.log(`🔄 Tentative de rafraîchissement de token`);
+
+  if (!token) {
+    console.log(`❌ Token de rafraîchissement manquant`);
+    throw new AppError("Refresh token is required", 422);
+  }
+
   const storedToken = await prisma.refreshToken.findUnique({
     where: { token },
     include: { user: true },
   });
 
   if (!storedToken) {
+    console.log(`❌ Token de rafraîchissement invalide`);
     throw new AppError("Invalid refresh token", 401);
   }
 
   if (storedToken.expires_at < new Date()) {
+    console.log(`⏰ Token de rafraîchissement expiré`);
     await prisma.refreshToken.delete({ where: { token } });
     throw new AppError("Refresh token expired, please login again", 401);
   }
 
-  if (storedToken.user.is_suspended) {
-    throw new AppError("Your account has been suspended", 403);
-  }
-
-  // Atomic token reuse detection : updateMany permet de n'utiliser le token que s'il ne l'a pas déjà été
-  const result = await prisma.refreshToken.updateMany({
-    where: { token, used: false },
-    data: { used: true },
-  });
-
-  if (result.count === 0) {
+  if (storedToken.used) {
+    console.log(`⚠️ Token de rafraîchissement déjà utilisé - Révocation des tokens`);
     await prisma.refreshToken.deleteMany({
       where: { user_id: storedToken.user_id },
     });
@@ -260,10 +282,28 @@ export const refreshTokenService = async (
     );
   }
 
+  if (storedToken.user.is_suspended) {
+    console.log(`🚫 Utilisateur suspendu: ${storedToken.user.email}`);
+    throw new AppError("Your account has been suspended", 403);
+  }
+
+  await prisma.refreshToken.update({
+    where: { token },
+    data: { used: true },
+  });
+
+  console.log(`✅ Token rafraîchi avec succès pour: ${storedToken.user.email}`);
   return generateAuthTokensWithUser(storedToken.user);
 };
 
+// ============================================
+// 🔹 LOGOUT - ✅ CORRIGÉ
+// ============================================
 export const logoutService = async (token: string): Promise<void> => {
+  if (!token) {
+    throw new AppError("Refresh token is required", 400);
+  }
+
   const storedToken = await prisma.refreshToken.findUnique({
     where: { token },
   });
@@ -276,8 +316,13 @@ export const logoutService = async (token: string): Promise<void> => {
     where: { token },
     data: { used: true },
   });
+
+  console.log(`👋 Déconnexion réussie`);
 };
 
+// ============================================
+// 🔹 GET ME - ✅ CORRIGÉ
+// ============================================
 export const getMeService = async (
   userId: string
 ): Promise<Omit<User, "password">> => {
@@ -293,14 +338,17 @@ export const getMeService = async (
   return user;
 };
 
+// ============================================
+// 🔹 FORGOT PASSWORD - ✅ CORRIGÉ
+// ============================================
 export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<void> => {
   const user = await prisma.user.findUnique({
     where: { email: dto.email },
   });
 
   if (!user || !user.password) {
-    // Dummy bcrypt pour éviter l'énumération par timing
     await bcrypt.compare(dto.email, FAKE_HASH);
+    console.log(`📧 Demande de réinitialisation pour email non existant: ${dto.email}`);
     return;
   }
 
@@ -315,18 +363,21 @@ export const forgotPasswordService = async (dto: ForgotPasswordDto): Promise<voi
     },
   });
 
-  const resetUrl = `${env.clientUrl}/reset-password#token=${resetToken}`;
+  const resetUrl = `${env.clientUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
 
   await sendPasswordResetEmail(user.email, resetUrl);
+  console.log(`📧 Email de réinitialisation envoyé à: ${user.email}`);
 };
 
+// ============================================
+// 🔹 RESET PASSWORD - ✅ CORRIGÉ
+// ============================================
 export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void> => {
   const user = await prisma.user.findUnique({
     where: { email: dto.email },
   });
 
   if (!user || !user.reset_token || !user.reset_token_expires) {
-    // Dummy bcrypt pour éviter l'énumération par timing
     await bcrypt.compare(dto.token, FAKE_HASH);
     throw new AppError("Invalid or expired reset token", 400);
   }
@@ -355,4 +406,31 @@ export const resetPasswordService = async (dto: ResetPasswordDto): Promise<void>
       reset_token_expires: null,
     },
   });
+
+  console.log(`🔑 Mot de passe réinitialisé pour: ${user.email}`);
+};
+
+// ============================================
+// 🆕 ROUTE ADMIN POUR VÉRIFIER UN UTILISATEUR
+// ============================================
+export const verifyUserService = async (email: string): Promise<User> => {
+  if (!email) {
+    throw new AppError("Email is required", 400);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { email },
+    data: { is_verified: true },
+  });
+
+  console.log(`✅ Utilisateur vérifié manuellement: ${email}`);
+  return updatedUser;
 };

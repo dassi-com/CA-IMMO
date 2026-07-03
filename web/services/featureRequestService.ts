@@ -31,11 +31,16 @@ export interface FeatureRequestResponse {
 }
 
 export const featureRequestService = {
+  create: async (data: { target: 'AGENT' | 'PROPERTY'; target_id: string; reason?: string }): Promise<FeatureRequestResponse> => {
+    const response = await api.post('/feature-requests', data);
+    return response.data.data;
+  },
+
   getPending: async (target?: 'AGENT' | 'PROPERTY'): Promise<{ requests: FeatureRequestResponse[]; meta: any }> => {
     const params = new URLSearchParams();
     if (target) params.set('target', target);
     const response = await api.get(`/feature-requests/pending?${params}`);
-    return response.data;
+    return { requests: response.data.data, meta: response.data.meta };
   },
 
   approve: async (requestId: string): Promise<FeatureRequestResponse> => {

@@ -42,8 +42,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkAuth = async () => {
     try {
       const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-    } catch (error) {
+      if (currentUser) {
+        setUser(currentUser);
+        localStorage.setItem('userRole', currentUser.role);
+      } else {
+        setUser(null);
+      }
+    } catch {
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -52,26 +57,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string, rememberMe?: boolean) => {
     const response = await authService.login(email, password, rememberMe);
-    if (response.user) setUser(response.user);
+    if (response.user) {
+      setUser(response.user);
+      localStorage.setItem('userRole', response.user.role);
+    }
     return response;
   };
 
   const register = async (data: { full_name: string; email: string; phone: string; password: string; confirm_password: string; role: 'TENANT' | 'OWNER' }) => {
     const response = await authService.register(data);
-    if (response.user) setUser(response.user);
+    if (response.user) {
+      setUser(response.user);
+      localStorage.setItem('userRole', response.user.role);
+    }
   };
 
   const logout = async () => {
     await authService.logout();
     setUser(null);
+    localStorage.removeItem('userRole');
   };
 
   const getDashboardLink = useCallback(() => {
     if (!user) return '/login';
     switch (user.role) {
-      case 'ADMIN': return '/admin';      // ✅ corrigé
-      case 'OWNER': return '/agent';      // ✅ corrigé
-      case 'TENANT': return '/tenant';    // ✅ corrigé
+      case 'ADMIN': return '/admin';
+      case 'OWNER': return '/agent';
+      case 'TENANT': return '/tenant';
       default: return '/login';
     }
   }, [user]);

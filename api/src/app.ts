@@ -8,7 +8,7 @@ import timeout from 'connect-timeout';
 import swaggerUi from 'swagger-ui-express';
 import { validateEnv, env } from './config/env';
 import { errorMiddleware } from './middlewares/error.middleware';
-import { createApiLimiter, createAuthLimiter, createPasswordResetLimiter } from './middlewares/rateLimit.middleware';
+import { createApiLimiter, createAuthLimiter, createPasswordResetLimiter, createTokenOpLimiter } from './middlewares/rateLimit.middleware';
 import { swaggerSpec } from './config/swagger';
 import './config/passport';
 import authRouter from './modules/auth/auth.routes';
@@ -19,6 +19,7 @@ import paymentsRouter from './modules/payments/payments.routes';
 import mediaRouter from './modules/media/media.routes';
 import favoritesRouter from './modules/favorites/favorites.routes';
 import featureRequestsRouter from './modules/feature-requests/feature-requests.routes';
+import notificationsRouter from './modules/notifications/notifications.routes';
 
 validateEnv();
 
@@ -48,13 +49,18 @@ app.use(helmet({
 
 app.disable('x-powered-by');
 
-const corsOrigin = env.clientUrl;
-if (!corsOrigin && process.env.NODE_ENV === 'production') {
-  console.warn('CLIENT_URL is not set. CORS will be restrictive.');
-}
+const corsOrigins = env.clientUrl
+  ? env.clientUrl.split(',').map((s: string) => s.trim())
+  : ['http://localhost:3000'];
 app.use(
   cors({
-    origin: corsOrigin || false,
+    origin: (origin, callback) => {
+      if (!origin || corsOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Origin not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -70,6 +76,10 @@ app.use('/api/v1/auth/refresh', authLimiter);
 
 const passwordResetLimiter = createPasswordResetLimiter();
 app.use('/api/v1/auth/forgot-password', passwordResetLimiter);
+
+const tokenOpLimiter = createTokenOpLimiter();
+app.use('/api/v1/auth/logout', tokenOpLimiter);
+app.use('/api/v1/auth/reset-password', tokenOpLimiter);
 
 // ─── Parsing & Compression ────────────────────
 app.use(express.json({ limit: '1mb' }));
@@ -121,6 +131,7 @@ app.use('/api/v1/payments', paymentsRouter);
 app.use('/api/v1/properties', mediaRouter);
 app.use('/api/v1/favorites', favoritesRouter);
 app.use('/api/v1/feature-requests', featureRequestsRouter);
+app.use('/api/v1/notifications', notificationsRouter);
 
 // ─── 404 Handler ──────────────────────────────
 app.use((_req: Request, res: Response) => {

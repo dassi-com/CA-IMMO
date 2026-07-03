@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "dashboard": "Dashboard",
+    "favorites": "Favorites",
+    "postProperty": "Post Property",
+    "signIn": "Sign In",
+    "profile": "Profile"
+  },
+  "language": {
+    "switchTo": "FR",
+    "label": "Language"
+  }
+}

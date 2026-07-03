@@ -1,6 +1,16 @@
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const decoded = jwtDecode<{ exp: number }>(token);
+    return decoded.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -9,10 +19,30 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const token = localStorage.getItem('accessToken');
-    if (token) {
+    if (!token) return config;
+
+    if (!isTokenExpired(token)) {
       config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    }
+
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return config;
+
+    try {
+      const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+      const newToken = data?.data?.accessToken;
+      const newRefresh = data?.data?.refreshToken;
+      if (newToken) {
+        localStorage.setItem('accessToken', newToken);
+        if (newRefresh) localStorage.setItem('refreshToken', newRefresh);
+        config.headers.Authorization = `Bearer ${newToken}`;
+      }
+    } catch {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
     }
     return config;
   },
@@ -29,11 +59,12 @@ api.interceptors.response.use(
 
     if (!originalRequest) return Promise.reject(error);
 
-    // Empêcher les boucles infinies sur /auth/refresh
-    if (originalRequest.url?.includes('/auth/refresh')) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      window.location.href = '/login';
+    // Empêcher les boucles infinies sur /auth/refresh, /auth/login, /auth/register
+    if (originalRequest.url?.includes('/auth/refresh') || originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register')) {
+      if (originalRequest.url?.includes('/auth/refresh')) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+      }
       return Promise.reject(error);
     }
 

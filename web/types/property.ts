@@ -41,10 +41,13 @@ export interface Property {
 export interface PropertyFilters {
   city?: string;
   neighborhood?: string;
-  property_type?: PropertyTypeCategory;
+  property_type?: PropertyTypeCategory | string;
   price_min?: number;
   price_max?: number;
   size_min?: number;
   size_max?: number;
   sort?: 'price_asc' | 'price_desc' | 'newest';
+  is_featured?: string;
+  limit?: number;
+  page?: number;
 }

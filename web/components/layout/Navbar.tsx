@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
+import NotificationBell from '@/components/dashboard/NotificationBell';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function Navbar() {
               }`}
             >
               <Home size={16} />
-              <span>Home</span>
+              <span>Accueil</span>
             </Link>
 
             <Link
@@ -37,7 +38,7 @@ export default function Navbar() {
               }`}
             >
               <Search size={16} />
-              <span>Search</span>
+              <span>Recherche</span>
             </Link>
 
             {isAuthenticated && (
@@ -48,7 +49,7 @@ export default function Navbar() {
                 }`}
               >
                 <LayoutDashboard size={16} />
-                <span>Dashboard</span>
+                <span>Tableau de bord</span>
               </Link>
             )}
 
@@ -60,9 +61,11 @@ export default function Navbar() {
                 }`}
               >
                 <Heart size={16} />
-                <span>Favorites</span>
+                <span>Favoris</span>
               </Link>
             )}
+
+            {isAuthenticated && <NotificationBell />}
 
             {isAgent && (
               <Link
@@ -70,7 +73,7 @@ export default function Navbar() {
                 className="flex items-center space-x-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition"
               >
                 <PlusCircle size={14} />
-                <span>Post Property</span>
+                <span>Publier un bien</span>
               </Link>
             )}
 
@@ -80,7 +83,7 @@ export default function Navbar() {
                 className="flex items-center space-x-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition"
               >
                 <LogIn size={14} />
-                <span>Sign In</span>
+                <span>Connexion</span>
               </Link>
             )}
           </div>
@@ -97,6 +100,8 @@ export default function Navbar() {
                 <Heart size={20} />
               </Link>
             )}
+
+            {isAuthenticated && <NotificationBell />}
 
             {!isAuthenticated && (
               <Link
@@ -128,7 +133,7 @@ export default function Navbar() {
                 }`}
               >
                 <Home size={18} />
-                <span>Home</span>
+                <span>Accueil</span>
               </Link>
 
               <Link
@@ -139,7 +144,7 @@ export default function Navbar() {
                 }`}
               >
                 <Search size={18} />
-                <span>Search</span>
+                <span>Recherche</span>
               </Link>
 
               {isAuthenticated && (
@@ -151,7 +156,7 @@ export default function Navbar() {
                   }`}
                 >
                   <LayoutDashboard size={18} />
-                  <span>Dashboard</span>
+                  <span>Tableau de bord</span>
                 </Link>
               )}
 
@@ -164,7 +169,7 @@ export default function Navbar() {
                   }`}
                 >
                   <Heart size={18} />
-                  <span>Favorites</span>
+                  <span>Favoris</span>
                 </Link>
               )}
 
@@ -175,7 +180,7 @@ export default function Navbar() {
                   className="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition text-gray-600 hover:text-red-600 hover:bg-red-50"
                 >
                   <LogIn size={18} />
-                  <span>Sign In</span>
+                  <span>Connexion</span>
                 </Link>
               )}
 
@@ -187,7 +192,7 @@ export default function Navbar() {
                     className="flex items-center justify-center space-x-2 bg-red-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 transition"
                   >
                     <PlusCircle size={16} />
-                    <span>Post Property</span>
+                    <span>Publier un bien</span>
                   </Link>
                 </div>
               )}

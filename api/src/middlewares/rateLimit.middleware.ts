@@ -2,6 +2,8 @@ import { Request } from 'express';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const getUserIdFromToken = (req: Request): string | null => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
@@ -30,7 +32,7 @@ const keyGenerator = (req: Request): string => {
 export const createApiLimiter = () =>
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: isDev ? 1000 : 100,
     message: {
       success: false,
       message: 'Too many requests, please try again later.',
@@ -43,7 +45,7 @@ export const createApiLimiter = () =>
 export const createAuthLimiter = () =>
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 10,
+    max: isDev ? 100 : 10,
     message: {
       success: false,
       message: 'Too many authentication attempts, please try again later.',
@@ -56,7 +58,7 @@ export const createAuthLimiter = () =>
 export const createPasswordResetLimiter = () =>
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 3,
+    max: isDev ? 30 : 3,
     message: {
       success: false,
       message: 'Too many password reset requests, please try again later.',
@@ -66,10 +68,23 @@ export const createPasswordResetLimiter = () =>
     keyGenerator: (req: Request) => getIp(req),
   });
 
+export const createTokenOpLimiter = () =>
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: isDev ? 50 : 5,
+    message: {
+      success: false,
+      message: 'Too many requests, please try again later.',
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request) => getIp(req),
+  });
+
 export const createInquiryLimiter = () =>
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 20,
+    max: isDev ? 200 : 20,
     message: {
       success: false,
       message: 'Too many inquiries, please try again later.',

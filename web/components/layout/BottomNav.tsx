@@ -25,7 +25,7 @@ export default function BottomNav() {
           }`}
         >
           <Home size={20} />
-          <span className={`text-xs mt-1 font-medium ${isActive('/') ? 'text-red-600' : 'text-gray-500'}`}>Home</span>
+          <span className={`text-xs mt-1 font-medium ${isActive('/') ? 'text-red-600' : 'text-gray-500'}`}>Accueil</span>
         </Link>
 
         <Link
@@ -35,7 +35,7 @@ export default function BottomNav() {
           }`}
         >
           <Search size={20} />
-          <span className={`text-xs mt-1 font-medium ${isActive('/search') ? 'text-red-600' : 'text-gray-500'}`}>Search</span>
+          <span className={`text-xs mt-1 font-medium ${isActive('/search') ? 'text-red-600' : 'text-gray-500'}`}>Recherche</span>
         </Link>
 
         {isAuthenticated ? (
@@ -47,7 +47,7 @@ export default function BottomNav() {
               }`}
             >
               <LayoutDashboard size={20} />
-              <span className={`text-xs mt-1 font-medium ${pathname.includes('/dashboard') ? 'text-red-600' : 'text-gray-500'}`}>Dashboard</span>
+              <span className={`text-xs mt-1 font-medium ${pathname.includes('/dashboard') ? 'text-red-600' : 'text-gray-500'}`}>Tableau de bord</span>
             </Link>
 
             <Link
@@ -57,7 +57,7 @@ export default function BottomNav() {
               }`}
             >
               <Heart size={20} />
-              <span className={`text-xs mt-1 font-medium ${isActive('/favorites') ? 'text-red-600' : 'text-gray-500'}`}>Favorites</span>
+              <span className={`text-xs mt-1 font-medium ${isActive('/favorites') ? 'text-red-600' : 'text-gray-500'}`}>Favoris</span>
             </Link>
           </>
         ) : (
@@ -69,7 +69,7 @@ export default function BottomNav() {
               }`}
             >
               <LogIn size={20} />
-              <span className={`text-xs mt-1 font-medium ${isActive('/login') ? 'text-red-600' : 'text-gray-500'}`}>Sign In</span>
+              <span className={`text-xs mt-1 font-medium ${isActive('/login') ? 'text-red-600' : 'text-gray-500'}`}>Connexion</span>
             </Link>
           </>
         )}
@@ -81,7 +81,7 @@ export default function BottomNav() {
           }`}
         >
           <User size={20} />
-          <span className={`text-xs mt-1 font-medium ${isActive('/settings') ? 'text-red-600' : 'text-gray-500'}`}>Profile</span>
+          <span className={`text-xs mt-1 font-medium ${isActive('/settings') ? 'text-red-600' : 'text-gray-500'}`}>Profil</span>
         </Link>
       </div>
     </div>

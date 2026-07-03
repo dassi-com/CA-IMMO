@@ -20,7 +20,7 @@ const options: swaggerJsdoc.Options = {
         description: 'Serveur de développement',
       },
       {
-        url: 'https://immo-1-uu6j.onrender.com/api/v1',
+        url: 'https://immo-eqap.onrender.com/api/v1',
         description: 'Serveur de production',
       },
     ],

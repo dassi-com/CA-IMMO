@@ -80,9 +80,10 @@ export default function AdminDashboard() {
         price: `${p.price.toLocaleString()} ${p.currency}`,
         type: p.property_type,
       })));
+      const allProperties = await propertyService.getAll().catch(() => []);
       setStats({
         totalUsers: fetchedUsers.length,
-        totalListings: fetchedPending.length + (stats.totalListings || 0),
+        totalListings: allProperties.length + fetchedPending.length,
         pendingListings: fetchedPending.length,
         totalRevenue: 0,
       });
@@ -161,7 +162,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-gray-800">Bonjour, Admin 🔐</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Bonjour, Admin</h1>
             <p className="text-gray-600 mt-2">Supervision de la plateforme CentralAfricaHomes</p>
           </motion.div>
 

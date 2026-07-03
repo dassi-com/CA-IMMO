@@ -1,26 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { authService } from '@/services/authService';
 
 export default function CallbackHandler() {
-  const searchParams = useSearchParams();
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
-    const refreshToken = searchParams.get('refreshToken');
-    const role = searchParams.get('role');
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get('accessToken');
+    const refreshToken = params.get('refreshToken');
+    const role = params.get('role');
+
+    window.location.hash = '';
 
     if (accessToken && refreshToken) {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
-      authService.getCurrentUser().then(() => {
-        if (role === 'ADMIN') window.location.href = '/admin';
-        else if (role === 'OWNER') window.location.href = '/agent';
-        else if (role === 'TENANT') window.location.href = '/tenant';
+      authService.getCurrentUser().then((user) => {
+        const targetRole = user?.role || role;
+        if (targetRole === 'ADMIN') window.location.href = '/admin';
+        else if (targetRole === 'OWNER') window.location.href = '/agent';
+        else if (targetRole === 'TENANT') window.location.href = '/tenant';
         else window.location.href = '/';
       }).catch(() => {
         if (role === 'ADMIN') window.location.href = '/admin';
@@ -31,7 +34,7 @@ export default function CallbackHandler() {
     } else {
       setError('Authentication failed. No tokens received.');
     }
-  }, [searchParams]);
+  }, []);
 
   if (error) {
     return (

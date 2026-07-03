@@ -15,7 +15,7 @@ export default function FeaturedProperties() {
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const data = await propertyService.getFeatured();
+        const data = await propertyService.getAll({ is_featured: 'true', limit: 6, sort: 'newest' });
         setProperties(data);
       } catch (error) {
         console.error('Error loading properties:', error);
