@@ -15,6 +15,7 @@ import {
   DollarSign,
   Calendar,
   Send,
+  Bell,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -26,6 +27,7 @@ import { Property } from '@/types/property';
 import { inquiryService, Inquiry } from '@/services/inquiryService';
 import { featureRequestService } from '@/services/featureRequestService';
 import { useAuth } from '@/contexts/AuthContext';
+import NotificationsPanel from '@/components/dashboard/NotificationsPanel';
 import toast from 'react-hot-toast';
 
 interface ListingRow {
@@ -357,12 +359,11 @@ export default function AgentDashboard() {
               transition={{ delay: 0.8 }}
               className="bg-white rounded-2xl shadow-lg p-6"
             >
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Top performances par propriété</h3>
-              <div className="space-y-4">
-                <p className="text-gray-500 text-sm text-center py-8">
-                  Les performances s'afficheront ici une fois vos annonces publiées.
-                </p>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+                <Bell className="w-5 h-5 text-red-600" />
               </div>
+              <NotificationsPanel />
             </motion.div>
           </div>
         </div>

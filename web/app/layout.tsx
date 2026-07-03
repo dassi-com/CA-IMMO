@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import Navbar from '@/components/layout/Navbar';
 import BottomNav from '@/components/layout/BottomNav';
 import Footer from '@/components/layout/Footer';
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="fr">
       <body>
         <AuthProvider>
+          <NotificationProvider>
           <Navbar />
           <main className="pt-16 md:pt-16 pb-16 md:pb-0">
             {children}
@@ -35,6 +37,7 @@ export default function RootLayout({
               error: { iconTheme: { primary: '#dc2626', secondary: '#fff' } },
             }}
           />
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

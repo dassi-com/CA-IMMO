@@ -1,7 +1,9 @@
 import "dotenv/config";
+import http from "http";
 import app from "./app";
 import { env } from "./config/env";
 import { prisma } from "./utils/prisma";
+import { initSocket } from "./config/socket";
 
 const startServer = async (): Promise<void> => {
   try {
@@ -9,7 +11,10 @@ const startServer = async (): Promise<void> => {
     await prisma.$connect();
     console.log(" Database connected successfully");
 
-    app.listen(env.port, () => {
+    const server = http.createServer(app);
+    initSocket(server);
+
+    server.listen(env.port, () => {
       console.log(` Server running in ${env.nodeEnv} mode on port ${env.port}`);
       console.log(` Health check: http://localhost:${env.port}/health`);
     });

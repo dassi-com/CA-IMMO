@@ -4,6 +4,7 @@ import { AppError } from '../../middlewares/error.middleware';
 import { sanitizeText, sanitizeOptional } from '../../utils/sanitize';
 import { parsePagination } from '../../utils/pagination';
 import { createAuditLog } from '../../utils/audit';
+import { createNotification } from '../notifications/notifications.service';
 import {
   CreateFeatureRequestDto,
   FeatureRequestResponseDto,
@@ -323,6 +324,16 @@ export const approveFeatureRequestService = async (
     details: `Target: ${request.target}, ID: ${request.target_id}`,
   });
 
+  const requesterId = updatedRequest.requester_id;
+  const targetLabel = request.target === 'AGENT' ? 'votre profil' : 'votre propriété';
+  await createNotification(
+    requesterId,
+    'FEATURE_APPROVED',
+    'Demande approuvée',
+    `Votre demande de mise en avant pour ${targetLabel} a été approuvée.`,
+    request.target === 'AGENT' ? '/agent' : `/properties/${request.property_id}`
+  );
+
   return mapRequestToResponse(updatedRequest);
 };
 
@@ -365,6 +376,16 @@ export const rejectFeatureRequestService = async (
     targetType: "FEATURE_REQUEST",
     details: `Target: ${request.target}, ID: ${request.target_id}`,
   });
+
+  const requesterId = updatedRequest.requester_id;
+  const targetLabel = request.target === 'AGENT' ? 'votre profil' : 'votre propriété';
+  await createNotification(
+    requesterId,
+    'FEATURE_REJECTED',
+    'Demande rejetée',
+    `Votre demande de mise en avant pour ${targetLabel} a été rejetée.${rejectionReason ? ` Raison : ${rejectionReason}` : ''}`,
+    '/agent'
+  );
 
   return mapRequestToResponse(updatedRequest);
 };

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
+import NotificationBell from '@/components/dashboard/NotificationBell';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,6 +65,8 @@ export default function Navbar() {
               </Link>
             )}
 
+            {isAuthenticated && <NotificationBell />}
+
             {isAgent && (
               <Link
                 href="/post-property"
@@ -97,6 +100,8 @@ export default function Navbar() {
                 <Heart size={20} />
               </Link>
             )}
+
+            {isAuthenticated && <NotificationBell />}
 
             {!isAuthenticated && (
               <Link
