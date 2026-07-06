@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -37,24 +36,14 @@ const FacebookIcon = () => (
 );
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { login: authLogin, user } = useAuth();
+  const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
-
-  useEffect(() => {
-    if (!loginSuccess || !user) return;
-    if (user.role === 'ADMIN') router.push('/admin');
-    else if (user.role === 'OWNER') router.push('/agent');
-    else if (user.role === 'TENANT') router.push('/tenant');
-    else router.push('/');
-  }, [loginSuccess, user, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -69,9 +58,13 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await authLogin(formData.email, formData.password, formData.rememberMe);
+      const loginResponse = await authLogin(formData.email, formData.password, formData.rememberMe);
       toast.success('Connexion réussie');
-      setLoginSuccess(true);
+      const role = loginResponse?.user?.role;
+      if (role === 'ADMIN') window.location.href = '/admin';
+      else if (role === 'OWNER') window.location.href = '/agent';
+      else if (role === 'TENANT') window.location.href = '/tenant';
+      else window.location.href = '/';
     } catch (error: any) {
       const errors = error?.response?.data?.errors;
       let message = error?.response?.data?.message || 'Erreur de connexion';
