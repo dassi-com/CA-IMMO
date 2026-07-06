@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
+import { Menu, X, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 import NotificationBell from '@/components/dashboard/NotificationBell';
@@ -11,7 +11,7 @@ import NotificationBell from '@/components/dashboard/NotificationBell';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { isAuthenticated, isAgent, getDashboardLink } = useAuth();
+  const { isAuthenticated, isAgent } = useAuth();
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 fixed top-0 left-0 right-0 z-50">
@@ -21,50 +21,6 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-5">
-            <Link
-              href="/"
-              className={`flex items-center space-x-1 text-sm transition ${
-                pathname === '/' ? 'text-red-600 font-medium' : 'text-gray-600 hover:text-red-600'
-              }`}
-            >
-              <Home size={16} />
-              <span>Accueil</span>
-            </Link>
-
-            <Link
-              href="/search"
-              className={`flex items-center space-x-1 text-sm transition ${
-                pathname === '/search' ? 'text-red-600 font-medium' : 'text-gray-600 hover:text-red-600'
-              }`}
-            >
-              <Search size={16} />
-              <span>Recherche</span>
-            </Link>
-
-            {isAuthenticated && (
-              <Link
-                href={getDashboardLink()}
-                className={`flex items-center space-x-1 text-sm transition ${
-                  pathname.includes('/dashboard') ? 'text-red-600 font-medium' : 'text-gray-600 hover:text-red-600'
-                }`}
-              >
-                <LayoutDashboard size={16} />
-                <span>Tableau de bord</span>
-              </Link>
-            )}
-
-            {isAuthenticated && (
-              <Link
-                href="/favorites"
-                className={`flex items-center space-x-1 text-sm transition ${
-                  pathname === '/favorites' ? 'text-red-600 font-medium' : 'text-gray-600 hover:text-red-600'
-                }`}
-              >
-                <Heart size={16} />
-                <span>Favoris</span>
-              </Link>
-            )}
-
             {isAuthenticated && <NotificationBell />}
 
             {isAgent && (
@@ -90,17 +46,6 @@ export default function Navbar() {
 
           {/* Mobile Icons */}
           <div className="flex items-center space-x-4 md:hidden">
-            {isAuthenticated && (
-              <Link
-                href="/favorites"
-                className={`p-1.5 rounded-full transition ${
-                  pathname === '/favorites' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600'
-                }`}
-              >
-                <Heart size={20} />
-              </Link>
-            )}
-
             {isAuthenticated && <NotificationBell />}
 
             {!isAuthenticated && (
@@ -125,54 +70,6 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-100">
             <div className="flex flex-col space-y-2">
-              <Link
-                href="/"
-                onClick={() => setIsMenuOpen(false)}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                  pathname === '/' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                }`}
-              >
-                <Home size={18} />
-                <span>Accueil</span>
-              </Link>
-
-              <Link
-                href="/search"
-                onClick={() => setIsMenuOpen(false)}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                  pathname === '/search' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                }`}
-              >
-                <Search size={18} />
-                <span>Recherche</span>
-              </Link>
-
-              {isAuthenticated && (
-                <Link
-                  href={getDashboardLink()}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                    pathname.includes('/dashboard') ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                  }`}
-                >
-                  <LayoutDashboard size={18} />
-                  <span>Tableau de bord</span>
-                </Link>
-              )}
-
-              {isAuthenticated && (
-                <Link
-                  href="/favorites"
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                    pathname === '/favorites' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                  }`}
-                >
-                  <Heart size={18} />
-                  <span>Favoris</span>
-                </Link>
-              )}
-
               {!isAuthenticated && (
                 <Link
                   href="/login"

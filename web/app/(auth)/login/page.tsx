@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
@@ -38,21 +38,14 @@ const FacebookIcon = () => (
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login: authLogin, user } = useAuth();
+  const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [redirectTo, setRedirectTo] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
-
-  useEffect(() => {
-    if (redirectTo && user) {
-      router.push(redirectTo);
-    }
-  }, [redirectTo, user, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -67,13 +60,13 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await authLogin(formData.email, formData.password, formData.rememberMe);
+      const loginResponse = await authLogin(formData.email, formData.password, formData.rememberMe);
       toast.success('Connexion réussie');
-      const role = response?.user?.role;
-      if (role === 'ADMIN') setRedirectTo('/admin');
-      else if (role === 'OWNER') setRedirectTo('/agent');
-      else if (role === 'TENANT') setRedirectTo('/tenant');
-      else setRedirectTo('/');
+      const role = loginResponse?.user?.role;
+      if (role === 'ADMIN') router.push('/admin');
+      else if (role === 'OWNER') router.push('/agent');
+      else if (role === 'TENANT') router.push('/tenant');
+      else router.push('/');
     } catch (error: any) {
       const errors = error?.response?.data?.errors;
       let message = error?.response?.data?.message || 'Erreur de connexion';
