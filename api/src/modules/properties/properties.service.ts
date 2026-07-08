@@ -325,7 +325,7 @@ export const featurePropertyService = async (propertyId: string) => {
 
 export const getPropertiesStatsService = async () => {
   const properties = await prisma.property.findMany({
-    where: { is_deleted: false, status: "APPROVED" },
+    where: { is_deleted: false, status: "APPROVED", is_featured: true },
     select: { city: true, property_type: true },
   });
 
