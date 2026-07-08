@@ -309,7 +309,7 @@ export const featureUserService = async (userId: string, actorId: string): Promi
 };
 
 export const listFeaturedAgentsService = async (): Promise<UserResponseDto[]> => {
-  const agents = await prisma.user.findMany({
+  let agents = await prisma.user.findMany({
     where: {
       role: "OWNER",
       is_featured: true,
@@ -318,6 +318,18 @@ export const listFeaturedAgentsService = async (): Promise<UserResponseDto[]> =>
     select: PUBLIC_USER_FIELDS,
     orderBy: { updated_at: "desc" },
   });
+
+  if (agents.length === 0) {
+    agents = await prisma.user.findMany({
+      where: {
+        role: "OWNER",
+        is_suspended: false,
+      },
+      select: PUBLIC_USER_FIELDS,
+      orderBy: { updated_at: "desc" },
+      take: 8,
+    });
+  }
 
   return agents.map(mapUserToResponse);
 };
