@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Star, Search } from 'lucide-react';
 import { AgentsSkeleton } from '@/components/ui/Skeleton';
-import { adminService } from '@/services/adminService';
 
 interface Agent {
   id: string;
   full_name: string;
   email: string;
   phone: string | null;
+  role: string;
+  is_featured: boolean;
 }
 
 export default function TrustedRealEstateAgents() {
@@ -20,8 +21,11 @@ export default function TrustedRealEstateAgents() {
   useEffect(() => {
     const loadAgents = async () => {
       try {
-        const featuredAgents = await adminService.getFeaturedAgents();
-        setAgents(featuredAgents);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/users/featured-agents`);
+        const data = await response.json();
+        if (data.success) {
+          setAgents(data.data || []);
+        }
       } catch (error) {
         console.error('Error loading agents:', error);
       } finally {
