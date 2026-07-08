@@ -144,7 +144,7 @@ router.get(
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-router.get("/:id", validate(propertyIdValidator), getProperty);
+router.get("/:id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})", validate(propertyIdValidator), getProperty);
 
 /**
  * @swagger
@@ -236,7 +236,7 @@ router.get(
  *         $ref: '#/components/responses/NotFound'
  */
 router.put(
-  "/:id",
+  "/:id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})",
   authenticate,
   authorize("OWNER"),
   validate(updatePropertyValidator),
@@ -269,7 +269,7 @@ router.put(
  *         $ref: '#/components/responses/NotFound'
  */
 router.delete(
-  "/:id",
+  "/:id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})",
   authenticate,
   authorize("OWNER"),
   validate(propertyIdValidator),
@@ -313,7 +313,7 @@ router.delete(
  *         $ref: '#/components/responses/NotFound'
  */
 router.patch(
-  "/:id/status",
+  "/:id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/status",
   authenticate,
   authorize("ADMIN"),
   validate(updatePropertyStatusValidator),
@@ -346,7 +346,7 @@ router.patch(
  *         $ref: '#/components/responses/NotFound'
  */
 router.patch(
-  "/:id/feature",
+  "/:id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/feature",
   authenticate,
   authorize("ADMIN"),
   validate(propertyIdValidator),
