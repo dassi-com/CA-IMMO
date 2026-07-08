@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
-import NotificationBell from '@/components/dashboard/NotificationBell';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -56,16 +55,13 @@ export default function Navbar() {
             {isAuthenticated && (
               <Link
                 href="/favorites"
-                className={`flex items-center space-x-1 text-sm transition ${
+                className={`flex items-center transition ${
                   pathname === '/favorites' ? 'text-red-600 font-medium' : 'text-gray-600 hover:text-red-600'
                 }`}
               >
                 <Heart size={16} />
-                <span>Favoris</span>
               </Link>
             )}
-
-            {isAuthenticated && <NotificationBell />}
 
             {isAgent && (
               <Link
@@ -100,8 +96,6 @@ export default function Navbar() {
                 <Heart size={20} />
               </Link>
             )}
-
-            {isAuthenticated && <NotificationBell />}
 
             {!isAuthenticated && (
               <Link
@@ -157,19 +151,6 @@ export default function Navbar() {
                 >
                   <LayoutDashboard size={18} />
                   <span>Tableau de bord</span>
-                </Link>
-              )}
-
-              {isAuthenticated && (
-                <Link
-                  href="/favorites"
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                    pathname === '/favorites' ? 'text-red-600 bg-red-50' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                  }`}
-                >
-                  <Heart size={18} />
-                  <span>Favoris</span>
                 </Link>
               )}
 
