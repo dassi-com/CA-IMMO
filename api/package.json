@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "prisma generate",
-"render:setup": "prisma db push --accept-data-loss && npx ts-node --transpile-only prisma/seed.ts && npx ts-node --transpile-only prisma/fix-is-verified.ts",
+    "render:setup": "prisma db push --accept-data-loss && npx ts-node --transpile-only prisma/seed.ts",
     "prisma:seed": "npx ts-node --transpile-only prisma/seed.ts",
     "prisma:fix-verified": "npx ts-node --transpile-only prisma/fix-is-verified.ts",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
