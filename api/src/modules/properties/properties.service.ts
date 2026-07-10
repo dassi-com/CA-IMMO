@@ -78,11 +78,11 @@ export const listPropertiesService = async (query: PropertiesListQuery) => {
   };
 
   if (query.city) {
-    where.city = { contains: query.city, mode: "insensitive" };
+    where.city = { contains: query.city, mode: "insensitive" as any };
   }
 
   if (query.neighborhood) {
-    where.neighborhood = { contains: query.neighborhood, mode: "insensitive" };
+    where.neighborhood = { contains: query.neighborhood, mode: "insensitive" as any };
   }
 
   if (query.property_type) {
@@ -357,7 +357,7 @@ export const listPendingPropertiesService = async (query: PropertiesListQuery) =
   };
 
   if (query.city) {
-    where.city = { contains: query.city, mode: "insensitive" };
+    where.city = { contains: query.city, mode: "insensitive" as any };
   }
 
   if (query.property_type) {
