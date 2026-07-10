@@ -9,16 +9,8 @@ import { propertyService } from '@/services/propertyService';
 interface CityCount {
   city: string;
   count: number;
+  image_url: string;
 }
-
-const cityImages: Record<string, string> = {
-  'Abidjan': 'https://images.unsplash.com/photo-1582266255765-fa5cf1a1d501?w=600&q=80',
-  'Bouaké': 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=600&q=80',
-  'Yamoussoukro': 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600&q=80',
-  'San Pedro': 'https://images.unsplash.com/photo-1487956382158-bb926046304a?w=600&q=80',
-  'Korhogo': 'https://images.unsplash.com/photo-1464146072230-91cabc968266?w=600&q=80',
-  'Daloa': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
-};
 
 export default function ExplorePopularCities() {
   const [cities, setCities] = useState<CityCount[]>([]);
@@ -107,7 +99,7 @@ export default function ExplorePopularCities() {
             >
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                style={{ backgroundImage: `url(${cityImages[city.city] || 'https://images.unsplash.com/photo-1487956382158-bb926046304a?w=600&q=80'})` }}
+                style={{ backgroundImage: `url(${city.image_url || 'https://images.unsplash.com/photo-1487956382158-bb926046304a?w=600&q=80'})` }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">

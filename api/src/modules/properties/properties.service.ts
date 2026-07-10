@@ -326,19 +326,26 @@ export const featurePropertyService = async (propertyId: string) => {
 export const getPropertiesStatsService = async () => {
   const properties = await prisma.property.findMany({
     where: { is_deleted: false, status: "APPROVED" },
-    select: { city: true, property_type: true },
+    select: {
+      city: true,
+      property_type: true,
+      images: { take: 1, select: { image_url: true } },
+    },
   });
 
-  const cityCounts: Record<string, number> = {};
+  const cityData: Record<string, { count: number; image_url: string }> = {};
   const typeCounts: Record<string, number> = {};
 
   properties.forEach((p) => {
-    cityCounts[p.city] = (cityCounts[p.city] || 0) + 1;
+    if (!cityData[p.city]) {
+      cityData[p.city] = { count: 0, image_url: p.images[0]?.image_url ?? "" };
+    }
+    cityData[p.city].count += 1;
     typeCounts[p.property_type] = (typeCounts[p.property_type] || 0) + 1;
   });
 
-  const cities = Object.entries(cityCounts)
-    .map(([city, count]) => ({ city, count }))
+  const cities = Object.entries(cityData)
+    .map(([city, data]) => ({ city, count: data.count, image_url: data.image_url }))
     .sort((a, b) => b.count - a.count);
 
   const propertyTypes = Object.entries(typeCounts)
