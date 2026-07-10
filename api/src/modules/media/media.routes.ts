@@ -48,7 +48,7 @@ const router = Router();
  *         $ref: '#/components/responses/NotFound'
  */
 router.get(
-  "/:propertyId([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/images",
+  "/:propertyId/images",
   validate(propertyIdValidator),
   getPropertyImages
 );
@@ -95,7 +95,7 @@ router.get(
  *         $ref: '#/components/responses/NotFound'
  */
 router.post(
-  "/:propertyId([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/images",
+  "/:propertyId/images",
   authenticate,
   authorize("OWNER"),
   validate(propertyIdValidator),
@@ -135,7 +135,7 @@ router.post(
  *         $ref: '#/components/responses/NotFound'
  */
 router.delete(
-  "/:propertyId([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/images/:imageId([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})",
+  "/:propertyId/images/:imageId",
   authenticate,
   authorize("OWNER"),
   validate(imageIdValidator),
@@ -192,7 +192,7 @@ router.delete(
  *         $ref: '#/components/responses/ValidationError'
  */
 router.patch(
-  "/:propertyId([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/images/reorder",
+  "/:propertyId/images/reorder",
   authenticate,
   authorize("OWNER"),
   validate(reorderImagesValidator),
