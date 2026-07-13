@@ -17,38 +17,44 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl p-6 text-center border border-gray-100 hover:shadow-lg transition-shadow">
-      <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4 bg-gray-100">
-        {avatarUrl && !imgError ? (
-          <Image
-            src={avatarUrl}
-            alt={name}
-            width={80}
-            height={80}
-            className="object-cover w-full h-full"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-primary-100">
-            <span className="text-2xl font-bold text-primary-600">
-              {name?.charAt(0).toUpperCase() ?? '?'}
+    <div className="bg-white rounded-xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
+      <div className="flex items-start gap-4">
+        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-100">
+          {avatarUrl && !imgError ? (
+            <Image
+              src={avatarUrl}
+              alt={name}
+              width={64}
+              height={64}
+              className="object-cover w-full h-full"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-primary-100">
+              <span className="text-xl font-bold text-primary-600">
+                {name?.charAt(0).toUpperCase() ?? '?'}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 text-base truncate">{name}</h3>
+          <p className="text-gray-500 text-sm truncate">{agency}</p>
+
+          <div className="flex items-center gap-3 mt-2">
+            <div className="flex items-center gap-1">
+              <Star size={14} className="fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-semibold text-gray-700">
+                {rating?.toFixed(1) ?? 'N/A'}
+              </span>
+            </div>
+            <span className="text-xs text-gray-400">
+              {listingsCount ?? 0} {(listingsCount ?? 0) === 1 ? 'listing' : 'listings'}
             </span>
           </div>
-        )}
+        </div>
       </div>
-
-      <h3 className="font-semibold text-gray-900 text-lg">{name}</h3>
-      <p className="text-gray-500 text-sm mt-0.5">{agency}</p>
-
-      <div className="flex items-center justify-center gap-1.5 mt-3">
-        <Star size={16} className="fill-yellow-400 text-yellow-400" />
-        <span className="text-sm font-semibold text-gray-700">
-          {rating?.toFixed(1) ?? 'N/A'}
-        </span>
-      </div>
-      <p className="text-xs text-gray-400 mt-1">
-        {listingsCount ?? 0} {(listingsCount ?? 0) === 1 ? 'listing' : 'listings'}
-      </p>
 
       <div className="flex gap-2 mt-4">
         <a

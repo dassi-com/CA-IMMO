@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { Search, Home, Key, MapPin } from 'lucide-react';
 
 export default function HeroSection() {
@@ -40,15 +39,17 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative h-[600px] flex items-center justify-center mt-16 overflow-hidden">
-      <Image
-        src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&q=80"
-        alt="Modern city skyline"
-        fill
-        className="object-cover"
-        priority
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+    <section
+      className="relative bg-cover bg-center bg-no-repeat min-h-[550px] flex items-center mt-16 transition-all duration-500"
+      style={{
+        backgroundImage: activeTab === 'buy'
+          ? "url('https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1600&q=80')"
+          : activeTab === 'rent'
+          ? "url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=80')"
+          : "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80')"
+      }}
+    >
+      <div className="absolute inset-0 bg-black/50"></div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4">
         <div className="text-center mb-8">
