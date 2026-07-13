@@ -39,10 +39,12 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
       <p className="text-gray-500 text-sm mt-0.5">{agency}</p>
       <div className="flex items-center justify-center gap-1.5 mt-3">
         <Star size={16} className="fill-yellow-400 text-yellow-400" />
-        <span className="text-sm font-semibold text-gray-700">{rating.toFixed(1)}</span>
+        <span className="text-sm font-semibold text-gray-700">
+          {rating?.toFixed(1) ?? 'N/A'}
+        </span>
       </div>
       <p className="text-xs text-gray-400 mt-1">
-        {listingsCount} {listingsCount === 1 ? 'listing' : 'listings'}
+        {listingsCount ?? 0} {(listingsCount ?? 0) === 1 ? 'listing' : 'listings'}
       </p>
     </div>
   );

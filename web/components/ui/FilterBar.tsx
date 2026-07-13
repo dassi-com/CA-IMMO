@@ -73,13 +73,13 @@ export default function FilterBar({
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
-      <div className="flex rounded-lg overflow-hidden border border-white/20 bg-white/10 backdrop-blur-sm">
+      <div className="flex rounded-lg overflow-hidden border border-gray-200 bg-white shadow-sm">
         <button
           onClick={() => onTabChange('buy')}
           className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition ${
             activeTab === 'buy'
-              ? 'bg-indigo-600 text-white shadow-md'
-              : 'text-white/80 hover:text-white hover:bg-white/10'
+              ? 'bg-primary-600 text-white shadow-md'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
           <Home size={16} />
@@ -89,8 +89,8 @@ export default function FilterBar({
           onClick={() => onTabChange('rent')}
           className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition ${
             activeTab === 'rent'
-              ? 'bg-indigo-600 text-white shadow-md'
-              : 'text-white/80 hover:text-white hover:bg-white/10'
+              ? 'bg-primary-600 text-white shadow-md'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
           <Building2 size={16} />
@@ -102,7 +102,7 @@ export default function FilterBar({
         <select
           value={selectedType}
           onChange={(e) => onTypeChange(e.target.value)}
-          className="appearance-none px-4 py-2.5 pr-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+          className="appearance-none px-4 py-2.5 pr-10 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
         >
           {typeOptions.map((option) => (
             <option key={option.value} value={option.value} className="text-gray-900 bg-white">
@@ -110,14 +110,14 @@ export default function FilterBar({
             </option>
           ))}
         </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none" size={16} />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
       </div>
 
       <div className="relative">
         <select
           value={selectedPrice}
           onChange={(e) => onPriceChange(e.target.value)}
-          className="appearance-none px-4 py-2.5 pr-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+          className="appearance-none px-4 py-2.5 pr-10 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
         >
           {priceOptions[activeTab].map((option) => (
             <option key={option} value={option} className="text-gray-900 bg-white">
@@ -125,7 +125,7 @@ export default function FilterBar({
             </option>
           ))}
         </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none" size={16} />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
       </div>
     </div>
   );
