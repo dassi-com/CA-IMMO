@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Star } from 'lucide-react';
+import { Star, Phone, MessageCircle } from 'lucide-react';
 
 interface AgentCardProps {
   name: string;
@@ -10,9 +10,10 @@ interface AgentCardProps {
   rating: number;
   listingsCount: number;
   avatarUrl: string | null;
+  phone: string | null;
 }
 
-export default function AgentCard({ name, agency, rating, listingsCount, avatarUrl }: AgentCardProps) {
+export default function AgentCard({ name, agency, rating, listingsCount, avatarUrl, phone }: AgentCardProps) {
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -28,15 +29,17 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-indigo-100">
-            <span className="text-2xl font-bold text-indigo-600">
-              {name.charAt(0).toUpperCase()}
+          <div className="w-full h-full flex items-center justify-center bg-primary-100">
+            <span className="text-2xl font-bold text-primary-600">
+              {name?.charAt(0).toUpperCase() ?? '?'}
             </span>
           </div>
         )}
       </div>
+
       <h3 className="font-semibold text-gray-900 text-lg">{name}</h3>
       <p className="text-gray-500 text-sm mt-0.5">{agency}</p>
+
       <div className="flex items-center justify-center gap-1.5 mt-3">
         <Star size={16} className="fill-yellow-400 text-yellow-400" />
         <span className="text-sm font-semibold text-gray-700">
@@ -46,6 +49,33 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
       <p className="text-xs text-gray-400 mt-1">
         {listingsCount ?? 0} {(listingsCount ?? 0) === 1 ? 'listing' : 'listings'}
       </p>
+
+      <div className="flex gap-2 mt-4">
+        <a
+          href={phone ? `tel:${phone}` : '#'}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition ${
+            phone
+              ? 'bg-primary-600 text-white hover:bg-primary-700'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          <Phone size={14} />
+          <span>Call</span>
+        </a>
+        <a
+          href={phone ? `https://wa.me/${phone.replace(/[^0-9]/g, '')}` : '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition ${
+            phone
+              ? 'bg-green-600 text-white hover:bg-green-700'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          <MessageCircle size={14} />
+          <span>WhatsApp</span>
+        </a>
+      </div>
     </div>
   );
 }

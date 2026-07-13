@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { isAuthenticated, isAgent, getDashboardLink } = useAuth();
+  const { isAuthenticated, isAgent, isAdmin, getDashboardLink } = useAuth();
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 fixed top-0 left-0 right-0 z-50">
@@ -63,7 +63,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {isAgent && (
+            {(isAgent || isAdmin) && (
               <Link
                 href="/post-property"
                 className="flex items-center space-x-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition"
@@ -165,7 +165,7 @@ export default function Navbar() {
                 </Link>
               )}
 
-              {isAgent && (
+              {(isAgent || isAdmin) && (
                 <div className="pt-2 mt-1 border-t border-gray-100">
                   <Link
                     href="/post-property"

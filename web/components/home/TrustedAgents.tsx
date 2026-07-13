@@ -10,6 +10,7 @@ interface Agent {
   rating: number;
   listings_count: number;
   avatar_url: string | null;
+  phone: string | null;
 }
 
 function AgentSkeletonGrid() {
@@ -25,7 +26,11 @@ function AgentSkeletonGrid() {
               <div key={j} className="w-4 h-4 bg-gray-200 rounded" />
             ))}
           </div>
-          <div className="h-4 bg-gray-200 rounded w-1/3 mx-auto" />
+          <div className="h-4 bg-gray-200 rounded w-1/3 mx-auto mb-4" />
+          <div className="flex gap-2">
+            <div className="h-9 bg-gray-200 rounded-lg flex-1" />
+            <div className="h-9 bg-gray-200 rounded-lg flex-1" />
+          </div>
         </div>
       ))}
     </div>
@@ -89,6 +94,7 @@ export default function TrustedAgents() {
               rating={agent.rating}
               listingsCount={agent.listings_count}
               avatarUrl={agent.avatar_url}
+              phone={agent.phone}
             />
           ))}
         </div>
