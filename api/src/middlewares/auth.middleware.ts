@@ -16,7 +16,12 @@ export const authenticate = asyncHandler(
 
     const token = authHeader.split(" ")[1];
 
-    const payload = jwt.verify(token, env.jwtSecret, { algorithms: ["HS256"] });
+    let payload: string | jwt.JwtPayload;
+    try {
+      payload = jwt.verify(token, env.jwtSecret, { algorithms: ["HS256"] });
+    } catch {
+      throw new AppError("Invalid or expired token", 401);
+    }
 
     if (typeof payload === "string" || !payload.id || !payload.role) {
       throw new AppError("Invalid token payload", 401);
