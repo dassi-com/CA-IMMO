@@ -17,7 +17,7 @@ function AgentSkeletonGrid() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="bg-surface rounded-card p-6 border border-border">
+        <div key={i} className="bg-white rounded-card p-6 border border-border">
           <div className="w-20 h-20 skeleton rounded-full mx-auto mb-4" />
           <div className="h-5 skeleton rounded w-2/3 mx-auto mb-1" />
           <div className="h-4 skeleton rounded w-1/2 mx-auto mb-3" />

@@ -170,7 +170,7 @@ export default function FavoritesPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="appearance-none bg-surface border border-border rounded-card px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600"
+              className="appearance-none bg-white border border-border rounded-card px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600"
             >
               <option value="recent">Sort by: Recently Added</option>
               <option value="price-asc">Price: Low to High</option>
@@ -181,7 +181,7 @@ export default function FavoritesPage() {
 
           <button
             onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-            className="p-2 bg-surface border border-border rounded-card hover:bg-gray-50"
+            className="p-2 bg-white border border-border rounded-card hover:bg-gray-50"
           >
             <LayoutGrid className="w-4 h-4 text-gray-600" />
           </button>
@@ -203,7 +203,7 @@ export default function FavoritesPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedFavorites.map((property) => (
-                <div key={property.id} className="bg-surface rounded-card shadow-card hover:shadow-card-hover transition overflow-hidden">
+                <div key={property.id} className="bg-white rounded-card shadow-card hover:shadow-card-hover transition overflow-hidden">
                   <Link href={`/properties/${property.id}`}>
                     <div className="relative h-48 overflow-hidden">
                       <Image
@@ -309,7 +309,7 @@ export default function FavoritesPage() {
       {/* Modal d'alerte */}
       {showAlertModal && selectedProperty && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface rounded-card max-w-md w-full shadow-elevated">
+          <div className="bg-white rounded-card max-w-md w-full shadow-elevated">
             <div className="flex justify-between items-center p-4 border-b border-border">
               <h3 className="font-semibold text-gray-900">Set Price Alert</h3>
               <button onClick={() => setShowAlertModal(false)} className="p-1 hover:bg-gray-100 rounded transition">

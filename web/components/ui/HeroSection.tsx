@@ -54,7 +54,7 @@ export default function HeroSection() {
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4">
         <div className="text-center mb-8 animate-fade-in-up">
-          <span className="inline-flex items-center gap-2 bg-surface/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-medium px-3 py-1.5 rounded-full mb-4">
+          <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-medium px-3 py-1.5 rounded-full mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-accent-400"></span>
             Where Vision Finds Home
           </span>
@@ -70,7 +70,7 @@ export default function HeroSection() {
           </p>
         </div>
 
-        <div className="bg-surface rounded-card shadow-elevated overflow-hidden max-w-4xl mx-auto animate-fade-in-up">
+        <div className="bg-white rounded-card shadow-elevated overflow-hidden max-w-4xl mx-auto animate-fade-in-up">
           <div className="flex space-x-2 p-4 border-b border-border">
             <button
               onClick={() => setActiveTab('buy')}

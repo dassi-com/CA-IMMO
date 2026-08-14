@@ -17,7 +17,7 @@ const certifications = [
 
 export default function TrustedPartners() {
   return (
-    <section className="py-16 bg-surface">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900">Our Trusted Partners</h2>

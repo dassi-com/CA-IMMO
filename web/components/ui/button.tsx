@@ -22,7 +22,7 @@ const buttonVariants = cva(
         // Ghost : transparent
         ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900',
         // White : fond blanc (pour surfaces rouges/sombres)
-        white: 'bg-surface text-primary-600 shadow-card hover:bg-gray-100',
+        white: 'bg-white text-primary-600 shadow-card hover:bg-gray-100',
       },
       size: {
         sm: 'h-9 px-3.5 text-xs',

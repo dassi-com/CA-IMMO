@@ -17,7 +17,7 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="bg-surface rounded-card p-5 border border-border shadow-card hover:shadow-card-hover transition-shadow">
+    <div className="bg-white rounded-card p-5 border border-border shadow-card hover:shadow-card-hover transition-shadow">
       <div className="flex items-start gap-4">
         <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-100">
           {avatarUrl && !imgError ? (

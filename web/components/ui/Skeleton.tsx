@@ -2,7 +2,7 @@ export function SkeletonCard({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-surface rounded-card shadow-card overflow-hidden">
+        <div key={i} className="bg-white rounded-card shadow-card overflow-hidden">
           <div className="h-48 skeleton" />
           <div className="p-5 space-y-3">
             <div className="h-5 skeleton rounded w-3/4" />
@@ -44,7 +44,7 @@ export function SkeletonCards({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-surface rounded-card shadow-card overflow-hidden">
+        <div key={i} className="bg-white rounded-card shadow-card overflow-hidden">
           <div className="p-6 space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 skeleton rounded-full" />
@@ -69,7 +69,7 @@ export function FeaturedPropertiesSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="bg-surface rounded-card shadow-card overflow-hidden">
+        <div key={i} className="bg-white rounded-card shadow-card overflow-hidden">
           <div className="h-48 skeleton" />
           <div className="p-4 space-y-3">
             <div className="h-6 skeleton rounded w-1/3" />
@@ -99,7 +99,7 @@ export function PropertyTypesSkeleton() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="bg-surface rounded-card overflow-hidden border border-border">
+        <div key={i} className="bg-white rounded-card overflow-hidden border border-border">
           <div className="h-32 skeleton" />
           <div className="p-3 space-y-2">
             <div className="h-4 skeleton rounded w-2/3 mx-auto" />
@@ -115,7 +115,7 @@ export function AgentsSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="bg-surface rounded-card p-6 border border-border">
+        <div key={i} className="bg-white rounded-card p-6 border border-border">
           <div className="w-20 h-20 skeleton rounded-full mx-auto mb-4" />
           <div className="h-5 skeleton rounded w-2/3 mx-auto mb-3" />
           <div className="flex justify-center gap-1 mb-4">

@@ -21,10 +21,10 @@ export default function Footer() {
               Où la vision trouve son foyer. Le réseau immobilier premium d'Afrique centrale.
             </p>
             <div className="flex items-center gap-2">
-              <a href="#" aria-label="Site web" className="p-2 rounded-lg bg-surface/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Globe size={16} /></a>
-              <a href="#" aria-label="Partager" className="p-2 rounded-lg bg-surface/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Share2 size={16} /></a>
-              <a href="#" aria-label="Email" className="p-2 rounded-lg bg-surface/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><AtSign size={16} /></a>
-              <a href="#" aria-label="Messagerie" className="p-2 rounded-lg bg-surface/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><MessageCircle size={16} /></a>
+              <a href="#" aria-label="Site web" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Globe size={16} /></a>
+              <a href="#" aria-label="Partager" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Share2 size={16} /></a>
+              <a href="#" aria-label="Email" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><AtSign size={16} /></a>
+              <a href="#" aria-label="Messagerie" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><MessageCircle size={16} /></a>
             </div>
           </div>
 

@@ -75,7 +75,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
       {/* Mobile Menu Button */}
       <button
         onClick={handleMobileMenuToggle}
-        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-surface rounded-lg shadow-card"
+        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-white rounded-lg shadow-card"
       >
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
@@ -120,7 +120,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                     className={`relative flex items-center gap-3 px-6 py-3 mx-3 rounded-card transition-all ${
                       isActive
                         ? 'bg-primary-600 text-white shadow-card'
-                        : 'text-white/70 hover:bg-surface/10 hover:text-white'
+                        : 'text-white/70 hover:bg-white/10 hover:text-white'
                     }`}
                   >
                     <item.icon size={20} />
@@ -207,7 +207,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                         className={`flex items-center gap-3 px-6 py-3 mx-3 rounded-card ${
                           pathname === item.href
                             ? 'bg-primary-600 text-white'
-                            : 'text-white/70 hover:bg-surface/10'
+                            : 'text-white/70 hover:bg-white/10'
                         }`}
                       >
                         <item.icon size={20} />

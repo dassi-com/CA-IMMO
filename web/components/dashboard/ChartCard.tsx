@@ -33,7 +33,7 @@ export default function ChartCard({ title, icon: Icon, children, delay = 0 }: Ch
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className="bg-surface rounded-card shadow-card p-6 hover:shadow-card-hover transition-all duration-300"
+      className="bg-white rounded-card shadow-card p-6 hover:shadow-card-hover transition-all duration-300"
     >
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 bg-primary-50 rounded-card">
