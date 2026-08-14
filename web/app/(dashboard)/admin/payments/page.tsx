@@ -37,7 +37,7 @@ export default function AdminPaymentsPage() {
                 placeholder="Rechercher..."
                 value={searchTerm}
                 onChange={e => { setSearchTerm(e.target.value); }}
-                className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 w-64"
+                className="pl-10 pr-4 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 w-64"
               />
             </div>
           </motion.div>
@@ -47,8 +47,8 @@ export default function AdminPaymentsPage() {
               onClick={() => setActiveTab('payments')}
               className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 activeTab === 'payments'
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-primary-600 text-white shadow-md'
+                  : 'bg-surface text-gray-600 hover:bg-gray-100 border border-gray-200'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -60,8 +60,8 @@ export default function AdminPaymentsPage() {
               onClick={() => setActiveTab('packages')}
               className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 activeTab === 'packages'
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-primary-600 text-white shadow-md'
+                  : 'bg-surface text-gray-600 hover:bg-gray-100 border border-gray-200'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -72,11 +72,11 @@ export default function AdminPaymentsPage() {
           </div>
 
           {activeTab === 'payments' ? (
-            <motion.div key="payments" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-2xl shadow-lg p-12 text-center text-gray-400">
+            <motion.div key="payments" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-surface rounded-2xl shadow-lg p-12 text-center text-gray-400">
               Aucun paiement pour le moment.
             </motion.div>
           ) : (
-            <motion.div key="packages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-2xl shadow-lg p-12 text-center text-gray-400">
+            <motion.div key="packages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-surface rounded-2xl shadow-lg p-12 text-center text-gray-400">
               Aucun package disponible pour le moment.
             </motion.div>
           )}

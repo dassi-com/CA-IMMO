@@ -83,7 +83,7 @@ export default function AdminListingsPage() {
     const styles: Record<string, string> = {
       APPROVED: 'bg-green-100 text-green-700',
       PENDING: 'bg-yellow-100 text-yellow-700',
-      REJECTED: 'bg-red-100 text-red-700',
+      REJECTED: 'bg-primary-100 text-primary-700',
     };
     return styles[status] || 'bg-gray-100 text-gray-600';
   };
@@ -108,7 +108,7 @@ export default function AdminListingsPage() {
                 placeholder="Rechercher par titre ou ville..."
                 value={searchTerm}
                 onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 w-72"
+                className="pl-10 pr-4 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 w-72"
               />
             </div>
           </motion.div>
@@ -120,8 +120,8 @@ export default function AdminListingsPage() {
                 onClick={() => { setStatusFilter(tab); setCurrentPage(1); }}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   statusFilter === tab
-                    ? 'bg-red-600 text-white shadow-md'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                    ? 'bg-primary-600 text-white shadow-md'
+                    : 'bg-surface text-gray-600 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 {tab === 'ALL' ? 'Toutes' : tab === 'PENDING' ? 'En attente' : tab === 'APPROVED' ? 'Approuvées' : 'Rejetées'}
@@ -141,7 +141,7 @@ export default function AdminListingsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.04 }}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                  className="bg-surface rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
                 >
                   <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
                     {p.images?.[0]?.image_url ? (
@@ -167,7 +167,7 @@ export default function AdminListingsPage() {
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-bold text-gray-900 truncate flex-1">{p.title}</h3>
-                      <span className="text-red-600 font-bold ml-2">{p.price.toLocaleString()} {p.currency}</span>
+                      <span className="text-primary-600 font-bold ml-2">{p.price.toLocaleString()} {p.currency}</span>
                     </div>
                     <div className="flex items-center gap-1 text-sm text-gray-500 mb-3">
                       <MapPin size={14} />
@@ -188,7 +188,7 @@ export default function AdminListingsPage() {
                       </button>
                       <button
                         onClick={() => handleReject(p.id)}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-primary-50 text-primary-600 rounded-xl text-sm font-medium hover:bg-primary-100 transition-colors"
                         title="Rejeter"
                       >
                         <XCircle size={16} />
@@ -220,7 +220,7 @@ export default function AdminListingsPage() {
           )}
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-8 bg-white rounded-xl px-6 py-4 shadow-sm">
+            <div className="flex items-center justify-between mt-8 bg-surface rounded-xl px-6 py-4 shadow-sm">
               <span className="text-sm text-gray-500">Page {currentPage} sur {totalPages}</span>
               <div className="flex items-center gap-2">
                 <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
@@ -229,7 +229,7 @@ export default function AdminListingsPage() {
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                   <button key={p} onClick={() => setCurrentPage(p)}
-                    className={`w-9 h-9 rounded-lg text-sm font-medium ${p === currentPage ? 'bg-red-600 text-white' : 'border border-gray-200 hover:bg-gray-50'}`}>
+                    className={`w-9 h-9 rounded-lg text-sm font-medium ${p === currentPage ? 'bg-primary-600 text-white' : 'border border-gray-200 hover:bg-gray-50'}`}>
                     {p}
                   </button>
                 ))}

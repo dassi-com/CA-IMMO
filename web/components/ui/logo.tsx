@@ -1,15 +1,70 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
-export default function Logo() {
+interface LogoProps {
+  /** Version du logo Monabris */
+  variant?: 'primary' | 'white-on-red' | 'dark-background' | 'app-icon';
+  /** Afficher le nom de la marque à côté de l'icône */
+  showName?: boolean;
+  /** Utiliser un fond de carte pour les versions sur fond rouge/sombre */
+  containerClassName?: string;
+  className?: string;
+  size?: number;
+}
+
+const LOGO_ASSETS = {
+  primary: '/logo-primary.svg',
+  'white-on-red': '/logo-white-on-red.svg',
+  'dark-background': '/logo-dark-background.svg',
+  'app-icon': '/logo-app-icon.svg',
+} as const;
+
+export default function Logo({
+  variant = 'primary',
+  showName = true,
+  className = '',
+  size = 40,
+}: LogoProps) {
   return (
-    <Link href="/" className="flex items-center space-x-2">
-      <div className="bg-primary-600 rounded-lg w-8 h-8 flex items-center justify-center">
-        <span className="text-white font-bold text-sm">CA</span>
+    <Link href="/" className={`flex items-center gap-2.5 group ${className}`}>
+      <div className="relative flex-shrink-0">
+        <Image
+          src={LOGO_ASSETS[variant]}
+          alt="Monabris"
+          width={size}
+          height={size}
+          className="drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+          priority
+        />
       </div>
-      <div>
-        <span className="text-gray-900 font-bold">CentralAfrica<span className="text-primary-è00">Homes</span></span>
-        <p className="text-gray-400 text-[10px] leading-tight">Find Your Dream Property</p>
-      </div>
+      {showName && (
+        <div className="leading-tight">
+          <span className="font-extrabold text-xl tracking-tight text-gray-900">
+            Mona<span className="text-primary-600">bris</span>
+          </span>
+          <p className="text-[10px] text-gray-500 font-medium tracking-wide hidden sm:block">
+            Where Vision Finds Home
+          </p>
+        </div>
+      )}
     </Link>
+  );
+}
+
+/** Icône Monabris seule (version app icon) */
+export function MonabrisMark({
+  variant = 'primary',
+  className = '',
+  size = 40,
+}: Omit<LogoProps, 'showName'>) {
+  return (
+    <Image
+      src={LOGO_ASSETS[variant]}
+      alt="Monabris"
+      width={size}
+      height={size}
+      className={className}
+      priority
+    />
   );
 }

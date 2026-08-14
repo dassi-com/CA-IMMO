@@ -35,7 +35,7 @@ export default function NotificationsPanel() {
       {notifications.length > 1 && (
         <button
           onClick={markAllAsRead}
-          className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium mb-3"
+          className="flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 font-medium mb-3"
         >
           <CheckCheck size={14} />
           Tout marquer comme lu
@@ -48,7 +48,7 @@ export default function NotificationsPanel() {
             href={notif.link || '#'}
             onClick={() => markAsRead(notif.id)}
             className={`block p-3 rounded-xl transition ${
-              notif.is_read ? 'bg-gray-50' : 'bg-red-50 border border-red-100'
+              notif.is_read ? 'bg-gray-50' : 'bg-primary-50 border border-primary-100'
             }`}
           >
             <div className="flex items-start justify-between gap-2">
@@ -62,7 +62,7 @@ export default function NotificationsPanel() {
                 </p>
               </div>
               {!notif.is_read && (
-                <span className="w-2 h-2 bg-red-600 rounded-full flex-shrink-0 mt-1" />
+                <span className="w-2 h-2 bg-primary-600 rounded-full flex-shrink-0 mt-1" />
               )}
             </div>
           </Link>

@@ -114,7 +114,7 @@ export default function AgentDashboard() {
   const userName = user?.full_name || 'Agent';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-monabris-background">
       <Sidebar role="agent" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
       <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
@@ -132,15 +132,15 @@ export default function AgentDashboard() {
               {!user?.is_featured && (
                 <button
                   onClick={handleRequestFeatured}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl text-sm font-medium hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-accent-400 text-black rounded-card text-sm font-medium hover:bg-accent-500 transition-all shadow-card"
                 >
                   <Star size={16} />
                   Demander la mise en avant
                 </button>
               )}
               {user?.is_featured && (
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-yellow-50 text-yellow-700 rounded-xl text-sm font-medium">
-                  <Star size={16} className="fill-yellow-400 text-yellow-400" />
+                <div className="flex items-center gap-2 px-4 py-2.5 bg-accent-50 text-accent-800 rounded-card text-sm font-medium">
+                  <Star size={16} className="fill-accent-400 text-accent-400" />
                   Agent en avant
                 </div>
               )}
@@ -150,13 +150,13 @@ export default function AgentDashboard() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                <div key={i} className="bg-surface rounded-card shadow-card p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gray-200 rounded-xl" />
-                    <div className="w-16 h-4 bg-gray-200 rounded" />
+                    <div className="w-12 h-12 skeleton rounded-card" />
+                    <div className="w-16 h-4 skeleton rounded" />
                   </div>
-                  <div className="h-8 bg-gray-200 rounded w-1/2 mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                  <div className="h-8 skeleton rounded w-1/2 mb-2" />
+                  <div className="h-4 skeleton rounded w-1/3" />
                 </div>
               ))}
             </div>
@@ -199,9 +199,9 @@ export default function AgentDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
+            className="bg-surface rounded-card shadow-card overflow-hidden mb-8"
           >
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-border">
               <h2 className="text-xl font-bold text-gray-800">Dernières annonces</h2>
             </div>
             {loading ? (
@@ -230,7 +230,7 @@ export default function AgentDashboard() {
                             : listing.status === 'PENDING'
                             ? 'bg-yellow-100 text-yellow-600'
                             : listing.status === 'REJECTED'
-                            ? 'bg-red-100 text-red-600'
+                            ? 'bg-primary-100 text-primary-600'
                             : 'bg-purple-100 text-purple-600'
                         }`}>
                           {listing.status}
@@ -241,7 +241,7 @@ export default function AgentDashboard() {
                           <button className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
                             <Edit size={18} />
                           </button>
-                          <button onClick={() => handleDelete(listing.id)} className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
+                          <button onClick={() => handleDelete(listing.id)} className="p-1 text-primary-600 hover:bg-primary-50 rounded transition-colors">
                             <Trash2 size={18} />
                           </button>
                         </div>
@@ -259,24 +259,24 @@ export default function AgentDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className="bg-surface rounded-card shadow-card p-6"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Annonces en attente</h3>
-                <Clock className="w-5 h-5 text-yellow-600" />
+                <Clock className="w-5 h-5 text-warning" />
               </div>
               <div className="space-y-3">
                 {pendingListings.length === 0 ? (
                   <p className="text-gray-500 text-sm text-center py-4">Aucune annonce en attente</p>
                 ) : (pendingListings.map((listing) => (
-                  <div key={listing.id} className="p-3 bg-yellow-50 rounded-xl">
+                  <div key={listing.id} className="p-3 bg-warning/10 rounded-card">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium text-gray-800">{listing.title}</h4>
-                      <span className="text-xs text-yellow-600">En validation</span>
+                      <span className="text-xs text-warning">En validation</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">{listing.type}</span>
-                      <span className="text-red-600 font-medium">{listing.price}</span>
+                      <span className="text-primary-600 font-medium">{listing.price}</span>
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <span className="text-xs text-gray-400">{listing.date}</span>
@@ -290,7 +290,7 @@ export default function AgentDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className="bg-surface rounded-card shadow-card p-6"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Demandes de visite récentes</h3>
@@ -300,7 +300,7 @@ export default function AgentDashboard() {
                 {inquiries.length === 0 ? (
                   <p className="text-gray-500 text-sm text-center py-4">Aucune demande de contact</p>
                 ) : (inquiries.map((inq) => (
-                  <div key={inq.id} className="p-3 bg-blue-50 rounded-xl">
+                  <div key={inq.id} className="p-3 bg-blue-50 rounded-card">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <h4 className="font-medium text-gray-800">{inq.name}</h4>
@@ -328,40 +328,43 @@ export default function AgentDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg p-6 text-white"
+              className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-card shadow-card p-6 text-white relative overflow-hidden"
             >
+              <div className="brand-pattern-light absolute inset-0 opacity-30 pointer-events-none" />
+              <div className="relative">
               <div className="flex items-center gap-3 mb-4">
-                <Star className="w-8 h-8 text-yellow-400 fill-yellow-400" />
+                <Star className="w-8 h-8 text-accent-400 fill-accent-400" />
                 <h3 className="text-xl font-bold">Mettez vos annonces en avant</h3>
               </div>
               <p className="mb-4 opacity-90">
                 Augmentez votre visibilité jusqu'à 300% avec nos packages promotionnels
               </p>
               <div className="flex items-center gap-4 mb-6">
-                <div className="bg-white/20 rounded-lg p-3">
+                <div className="bg-surface/15 rounded-card p-3 backdrop-blur-sm">
                   <div className="text-2xl font-bold">50,000 FCFA</div>
                   <div className="text-xs">1 mois</div>
                 </div>
-                <div className="bg-white/20 rounded-lg p-3">
+                <div className="bg-surface/15 rounded-card p-3 backdrop-blur-sm">
                   <div className="text-2xl font-bold">120,000 FCFA</div>
                   <div className="text-xs">3 mois</div>
                 </div>
               </div>
-              <Link href="/post-property" className="w-full py-3 bg-white text-red-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+              <Link href="/post-property" className="w-full py-3 bg-surface text-primary-600 rounded-card font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 shadow-card">
                 <DollarSign size={20} />
                 Publier une nouvelle annonce
               </Link>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className="bg-surface rounded-card shadow-card p-6"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
-                <Bell className="w-5 h-5 text-red-600" />
+                <Bell className="w-5 h-5 text-primary-600" />
               </div>
               <NotificationsPanel />
             </motion.div>

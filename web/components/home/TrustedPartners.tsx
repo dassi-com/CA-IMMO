@@ -27,7 +27,7 @@ export default function TrustedPartners() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-12">
           {partners.map((partner) => (
-            <div key={partner} className="bg-gray-50 rounded-lg p-4 text-center hover:shadow-md transition">
+            <div key={partner} className="bg-gray-50 rounded-card p-4 text-center hover:shadow-card transition">
               <p className="font-medium text-gray-700">{partner}</p>
             </div>
           ))}
@@ -39,8 +39,8 @@ export default function TrustedPartners() {
         </div>
         <div className="flex flex-wrap justify-center gap-6">
           {certifications.map((cert) => (
-            <div key={cert} className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full">
-              <CheckCircle size={18} className="text-green-500" />
+            <div key={cert} className="flex items-center gap-2 bg-success/10 px-4 py-2 rounded-full">
+              <CheckCircle size={18} className="text-success" />
               <span className="text-gray-700 text-sm">{cert}</span>
             </div>
           ))}

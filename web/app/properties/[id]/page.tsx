@@ -54,16 +54,16 @@ export default function PropertyDetailPage() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-96 bg-gray-200 rounded-xl mb-6"></div>
-          <div className="h-8 bg-gray-200 w-1/3 mb-4"></div>
-          <div className="h-4 bg-gray-200 w-1/2 mb-8"></div>
+        <div className="space-y-4">
+          <div className="skeleton rounded-card h-96 mb-6"></div>
+          <div className="h-8 skeleton rounded w-1/3 mb-4"></div>
+          <div className="h-4 skeleton rounded w-1/2 mb-8"></div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="h-32 bg-gray-200 rounded mb-4"></div>
-              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 skeleton rounded mb-4"></div>
+              <div className="h-32 skeleton rounded"></div>
             </div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-64 skeleton rounded"></div>
           </div>
         </div>
       </div>
@@ -79,18 +79,18 @@ export default function PropertyDetailPage() {
 
   return (
     <>
-      <div className="bg-gray-50 min-h-screen pb-12">
+      <div className="bg-monabris-background min-h-screen pb-12">
         <div className="container mx-auto px-4 py-6">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-6"
+            className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition mb-6"
           >
             <ArrowLeft size={20} />
             <span>Back to Search</span>
           </button>
 
           <div className="mb-8">
-            <div className="relative h-[500px] rounded-xl overflow-hidden bg-gray-200 mb-4">
+            <div className="relative h-[500px] rounded-card overflow-hidden bg-gray-200 shadow-card mb-4">
               <Image
                 src={imageUrl(selectedImage)}
                 alt={property.title}
@@ -99,7 +99,7 @@ export default function PropertyDetailPage() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               />
               {property.images && property.images.length > 0 && (
-                <div className="absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1 rounded-full">
+                <div className="absolute bottom-4 right-4 bg-secondary/70 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-full">
                   {selectedImage + 1} / {property.images.length}
                 </div>
               )}
@@ -110,8 +110,8 @@ export default function PropertyDetailPage() {
                   <button
                     key={img.id}
                     onClick={() => setSelectedImage(idx)}
-                    className={`relative w-24 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition ${
-                      selectedImage === idx ? 'border-red-600' : 'border-transparent'
+                    className={`relative w-24 h-20 rounded-card overflow-hidden flex-shrink-0 border-2 transition ${
+                      selectedImage === idx ? 'border-primary-600' : 'border-transparent'
                     }`}
                   >
                     <Image src={img.image_url} alt={`Photo ${idx + 1}`} fill className="object-cover" sizes="96px" />
@@ -123,22 +123,22 @@ export default function PropertyDetailPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-xl p-6 shadow-sm">
+              <div className="bg-white rounded-card p-6 shadow-card">
                 <div className="flex justify-between items-start mb-4">
                   <h1 className="text-2xl font-bold text-gray-900">{property.title}</h1>
                   <div className="text-right">
-                    <span className="text-2xl font-bold text-red-600">
+                    <span className="text-2xl font-bold text-primary-600">
                       {getFormattedPrice(property.price, property.currency)}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-gray-500 mb-4">
+                <div className="flex items-center gap-2 text-gray-600 mb-4">
                   <MapPin size={18} />
                   <span>{getPropertyFullLocation(property)}</span>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-monabris-background rounded-card mb-6">
                   {property.size_m2 > 0 && (
                     <div className="text-center">
                       <Square className="mx-auto text-gray-500 mb-1" size={20} />
@@ -148,10 +148,10 @@ export default function PropertyDetailPage() {
                   )}
                 </div>
 
-                <div className="border-b border-gray-200 mb-4">
+                <div className="border-b border-border mb-4">
                   <div className="flex gap-6">
                     {['Overview', 'Features', 'Neighborhood', 'Investment'].map((tab) => (
-                      <button key={tab} className="py-2 text-gray-600 hover:text-red-600 border-b-2 border-transparent hover:border-red-600 transition">
+                      <button key={tab} className="py-2 text-gray-600 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-600 transition">
                         {tab}
                       </button>
                     ))}
@@ -163,25 +163,25 @@ export default function PropertyDetailPage() {
                   <p className="text-gray-600 leading-relaxed">{property.description}</p>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 mt-6">
+                <div className="bg-monabris-background rounded-card p-4 mt-6">
                   <h3 className="font-semibold text-gray-900 mb-3">Property Details</h3>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="flex justify-between py-2 border-b border-gray-200">
-                      <span className="text-gray-500">Property Type</span>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-gray-600">Property Type</span>
                       <span className="text-gray-900 capitalize">{property.property_type}</span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-gray-200">
-                      <span className="text-gray-500">Added on</span>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-gray-600">Added on</span>
                       <span className="text-gray-900">{new Date(property.created_at).toLocaleDateString()}</span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-gray-200">
-                      <span className="text-gray-500">Status</span>
-                      <span className={`font-medium ${property.status === 'APPROVED' ? 'text-green-600' : property.status === 'PENDING' ? 'text-yellow-600' : 'text-red-600'}`}>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-gray-600">Status</span>
+                      <span className={`font-medium ${property.status === 'APPROVED' ? 'text-success' : property.status === 'PENDING' ? 'text-warning' : 'text-error'}`}>
                         {property.status}
                       </span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-gray-200">
-                      <span className="text-gray-500">Surface</span>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-gray-600">Surface</span>
                       <span className="text-gray-900">{property.size_m2} m²</span>
                     </div>
                   </div>
@@ -190,25 +190,25 @@ export default function PropertyDetailPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white rounded-xl p-6 shadow-sm sticky top-24">
+              <div className="bg-white rounded-card p-6 shadow-card sticky top-24">
                 <h3 className="font-semibold text-gray-900 mb-4">Contact Agent</h3>
 
                 {property.owner && (
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                      <span className="text-red-600 font-bold text-xl">
+                    <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center">
+                      <span className="text-primary-600 font-bold text-xl">
                         {ownerName.charAt(0)}
                       </span>
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">{ownerName}</p>
-                      <p className="text-sm text-gray-500">{ownerEmail}</p>
+                      <p className="text-sm text-gray-600">{ownerEmail}</p>
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-3 mb-6">
-                  <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
+                  <div className="bg-monabris-background rounded-card p-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Phone size={16} className="text-gray-500" />
                       <span className="text-gray-600 text-sm">Phone</span>
@@ -218,13 +218,13 @@ export default function PropertyDetailPage() {
                         {contactUnlocked ? ownerPhone : (ownerPhone ? '••••••••' : 'N/A')}
                       </span>
                       {contactUnlocked ? (
-                        <Unlock size={14} className="text-green-500" />
+                        <Unlock size={14} className="text-success" />
                       ) : (
                         <Lock size={14} className="text-gray-400" />
                       )}
                     </div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
+                  <div className="bg-monabris-background rounded-card p-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Mail size={16} className="text-gray-500" />
                       <span className="text-gray-600 text-sm">Email</span>
@@ -234,7 +234,7 @@ export default function PropertyDetailPage() {
                         {contactUnlocked ? ownerEmail : '••••••••'}
                       </span>
                       {contactUnlocked ? (
-                        <Unlock size={14} className="text-green-500" />
+                        <Unlock size={14} className="text-success" />
                       ) : (
                         <Lock size={14} className="text-gray-400" />
                       )}
@@ -251,28 +251,28 @@ export default function PropertyDetailPage() {
                 <div className="space-y-2">
                   <button
                     onClick={handleUnlock}
-                    className="w-full bg-red-600 text-white py-2.5 rounded-lg font-medium hover:bg-red-700 transition flex items-center justify-center gap-2"
+                    className="w-full bg-primary-600 text-white py-2.5 rounded-card font-medium hover:bg-primary-700 shadow-card transition flex items-center justify-center gap-2"
                   >
                     <Unlock size={16} />
                     Unlock to Call
                   </button>
                   <button
                     onClick={handleUnlock}
-                    className="w-full border border-red-600 text-red-600 py-2.5 rounded-lg font-medium hover:bg-red-50 transition flex items-center justify-center gap-2"
+                    className="w-full border border-primary-600 text-primary-600 py-2.5 rounded-card font-medium hover:bg-primary-50 transition flex items-center justify-center gap-2"
                   >
                     <MessageCircle size={16} />
                     Unlock for WhatsApp
                   </button>
                   <button
                     onClick={handleUnlock}
-                    className="w-full border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                    className="w-full border border-border text-gray-700 py-2.5 rounded-card font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
                   >
                     <Calendar size={16} />
                     Unlock to Schedule
                   </button>
                   <button
                     onClick={handleUnlock}
-                    className="w-full border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                    className="w-full border border-border text-gray-700 py-2.5 rounded-card font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
                   >
                     <Mail size={16} />
                     Unlock to Message

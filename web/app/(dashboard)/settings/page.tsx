@@ -126,7 +126,7 @@ export default function SettingsPage() {
       <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
         <div className="p-6 lg:p-8 max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8">
-            <Link href={getDashboardLink()} className="inline-flex items-center gap-2 text-gray-500 hover:text-red-600 transition mb-4">
+            <Link href={getDashboardLink()} className="inline-flex items-center gap-2 text-gray-500 hover:text-primary-600 transition mb-4">
               <ChevronLeft size={20} />
               <span>Retour au tableau de bord</span>
             </Link>
@@ -139,11 +139,11 @@ export default function SettingsPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden"
+                className="bg-surface rounded-2xl shadow-lg overflow-hidden"
               >
-                <div className="p-6 border-b border-gray-100">
+                <div className="p-6 border-b border-border">
                   <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <User size={22} className="text-red-600" />
+                    <User size={22} className="text-primary-600" />
                     Informations personnelles
                   </h2>
                 </div>
@@ -157,7 +157,7 @@ export default function SettingsPage() {
                         name="full_name"
                         value={profile.full_name}
                         onChange={handleProfileChange}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="w-full pl-10 pr-4 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       />
                     </div>
@@ -172,7 +172,7 @@ export default function SettingsPage() {
                         name="email"
                         value={profile.email}
                         onChange={handleProfileChange}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="w-full pl-10 pr-4 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       />
                     </div>
@@ -188,7 +188,7 @@ export default function SettingsPage() {
                         value={profile.phone}
                         onChange={handleProfileChange}
                         placeholder="+237691234567"
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="w-full pl-10 pr-4 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default function SettingsPage() {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
                     >
                       <Save size={18} />
                       {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
@@ -210,11 +210,11 @@ export default function SettingsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden"
+                className="bg-surface rounded-2xl shadow-lg overflow-hidden"
               >
-                <div className="p-6 border-b border-gray-100">
+                <div className="p-6 border-b border-border">
                   <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <Lock size={22} className="text-red-600" />
+                    <Lock size={22} className="text-primary-600" />
                     Sécurité
                   </h2>
                 </div>
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                         name="current_password"
                         value={passwords.current_password}
                         onChange={handlePasswordChange}
-                        className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="w-full pl-10 pr-10 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       />
                       <button
@@ -250,7 +250,7 @@ export default function SettingsPage() {
                         name="new_password"
                         value={passwords.new_password}
                         onChange={handlePasswordChange}
-                        className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="w-full pl-10 pr-10 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                         minLength={6}
                       />
@@ -273,7 +273,7 @@ export default function SettingsPage() {
                         name="confirm_password"
                         value={passwords.confirm_password}
                         onChange={handlePasswordChange}
-                        className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="w-full pl-10 pr-10 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       />
                       <button
@@ -290,7 +290,7 @@ export default function SettingsPage() {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
                     >
                       <Lock size={18} />
                       {saving ? 'Modification...' : 'Changer le mot de passe'}
@@ -305,10 +305,10 @@ export default function SettingsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-2xl shadow-lg p-6"
+                className="bg-surface rounded-2xl shadow-lg p-6"
               >
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <Shield size={20} className="text-red-600" />
+                  <Shield size={20} className="text-primary-600" />
                   Mon compte
                 </h3>
                   <div className="space-y-4">
@@ -317,14 +317,14 @@ export default function SettingsPage() {
                       {user?.avatar_url ? (
                         <Image src={user.avatar_url} alt={user.full_name} width={64} height={64} className="rounded-full object-cover w-16 h-16" />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xl">
+                        <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-xl">
                           {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                         </div>
                       )}
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={avatarUploading}
-                        className="absolute -bottom-1 -right-1 bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 transition-colors disabled:opacity-50"
+                        className="absolute -bottom-1 -right-1 bg-primary-600 text-white rounded-full p-1.5 hover:bg-primary-700 transition-colors disabled:opacity-50"
                       >
                         <Camera size={14} />
                       </button>
@@ -340,11 +340,11 @@ export default function SettingsPage() {
                       <p className="font-semibold text-gray-900">{user?.full_name}</p>
                       <p className="text-sm text-gray-500">{user?.email}</p>
                     </div>
-                    {avatarUploading && <p className="text-xs text-red-600">Téléchargement...</p>}
+                    {avatarUploading && <p className="text-xs text-primary-600">Téléchargement...</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex justify-between py-2 border-b border-gray-100">
+                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-sm text-gray-500">Rôle</span>
                       <span className={`text-sm font-medium px-2.5 py-0.5 rounded-full ${
                         isAdmin ? 'bg-purple-100 text-purple-700' :
@@ -354,7 +354,7 @@ export default function SettingsPage() {
                         {isAdmin ? 'Administrateur' : isAgent ? 'Agent' : 'Locataire'}
                       </span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-gray-100">
+                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-sm text-gray-500">Téléphone</span>
                       <span className="text-sm text-gray-900">{user?.phone || '—'}</span>
                     </div>

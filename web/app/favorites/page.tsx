@@ -120,8 +120,8 @@ export default function FavoritesPage() {
 
   if (isAuthLoading || !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 pb-24 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-monabris-background pt-20 pb-24 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -129,20 +129,20 @@ export default function FavoritesPage() {
   // Affichage du chargement
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 pb-24">
+      <div className="min-h-screen bg-monabris-background pt-20 pb-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
-              <Heart className="w-5 h-5 text-red-500" />
+            <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center">
+              <Heart className="w-5 h-5 text-primary-600" />
             </div>
             <div>
-              <div className="h-7 w-32 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 w-24 bg-gray-200 rounded mt-1 animate-pulse"></div>
+              <div className="h-7 skeleton rounded w-32"></div>
+              <div className="h-4 skeleton rounded w-24 mt-1"></div>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-xl h-96 animate-pulse"></div>
+              <div key={i} className="skeleton rounded-card h-96"></div>
             ))}
           </div>
         </div>
@@ -151,16 +151,16 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-24">
+    <div className="min-h-screen bg-monabris-background pt-20 pb-24">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header avec icône cœur */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-            <Heart className="w-5 h-5 text-red-500" />
+          <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center">
+            <Heart className="w-5 h-5 text-primary-600" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">My Favorites</h1>
-            <p className="text-gray-500 text-sm">{favorites.length} saved properties</p>
+            <p className="text-gray-600 text-sm">{favorites.length} saved properties</p>
           </div>
         </div>
 
@@ -170,7 +170,7 @@ export default function FavoritesPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+              className="appearance-none bg-white border border-border rounded-card px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600"
             >
               <option value="recent">Sort by: Recently Added</option>
               <option value="price-asc">Price: Low to High</option>
@@ -181,7 +181,7 @@ export default function FavoritesPage() {
 
           <button
             onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-            className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+            className="p-2 bg-white border border-border rounded-card hover:bg-gray-50"
           >
             <LayoutGrid className="w-4 h-4 text-gray-600" />
           </button>
@@ -190,12 +190,12 @@ export default function FavoritesPage() {
         {/* Liste des favoris */}
         {favorites.length === 0 ? (
           <div className="text-center py-16">
-            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Heart className="w-10 h-10 text-blue-500" />
+            <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-10 h-10 text-primary-600" />
             </div>
             <h2 className="text-xl font-semibold mb-2">No favorites yet</h2>
-            <p className="text-gray-500 mb-6">Start saving properties you love</p>
-            <Link href="/search" className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
+            <p className="text-gray-600 mb-6">Start saving properties you love</p>
+            <Link href="/search" className="bg-primary-600 text-white px-6 py-2 rounded-card hover:bg-primary-700 shadow-card">
               Browse Properties
             </Link>
           </div>
@@ -203,7 +203,7 @@ export default function FavoritesPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedFavorites.map((property) => (
-                <div key={property.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
+                <div key={property.id} className="bg-white rounded-card shadow-card hover:shadow-card-hover transition overflow-hidden">
                   <Link href={`/properties/${property.id}`}>
                     <div className="relative h-48 overflow-hidden">
                       <Image
@@ -219,19 +219,19 @@ export default function FavoritesPage() {
                   <div className="p-4">
                     <div className="flex justify-between items-start">
                       <Link href={`/properties/${property.id}`}>
-                        <h3 className="font-semibold text-gray-900 hover:text-red-600 line-clamp-1">
+                        <h3 className="font-semibold text-gray-900 hover:text-primary-600 line-clamp-1">
                           {property.title}
                         </h3>
                       </Link>
                       <button 
                         onClick={() => removeFavorite(property.id)} 
-                        className="p-1 hover:bg-red-50 rounded transition"
+                        className="p-1 hover:bg-primary-50 rounded transition"
                       >
-                        <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-500" />
+                        <Trash2 className="w-4 h-4 text-gray-400 hover:text-primary-600" />
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
+                    <div className="flex items-center gap-1 text-gray-600 text-sm mt-1">
                       <MapPin className="w-3 h-3" />
                       <span>{property.location}</span>
                     </div>
@@ -243,7 +243,7 @@ export default function FavoritesPage() {
                     </div>
 
                     <div className="flex justify-between items-center mt-3">
-                      <span className="text-lg font-bold text-red-600">
+                      <span className="text-lg font-bold text-primary-600">
                         {formatPrice(property.price, property.currency)}
                       </span>
                       <button
@@ -251,7 +251,7 @@ export default function FavoritesPage() {
                           setSelectedProperty(property);
                           setShowAlertModal(true);
                         }}
-                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600 transition"
+                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-primary-600 transition"
                       >
                         <Bell className="w-3 h-3" />
                         Alert
@@ -263,11 +263,11 @@ export default function FavoritesPage() {
             </div>
 
             {/* Banner with features */}
-            <div className="mt-10 bg-gradient-to-r from-red-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-6 border border-red-200 shadow-sm">
+            <div className="mt-10 bg-primary-50/70 backdrop-blur-sm rounded-card p-6 border border-primary-100 shadow-card">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <Heart className="w-5 h-5 text-red-500" />
+                    <Heart className="w-5 h-5 text-primary-600" />
                     <h3 className="font-semibold text-gray-800 text-lg">Never lose track of properties you love</h3>
                   </div>
                   <p className="text-gray-600 text-sm mb-3">
@@ -277,19 +277,19 @@ export default function FavoritesPage() {
                   
                   <div className="flex flex-wrap gap-6">
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-success rounded-full flex items-center justify-center">
                         <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                       </div>
                       <span className="text-sm text-gray-700 font-medium">Price Alerts</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-success rounded-full flex items-center justify-center">
                         <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                       </div>
                       <span className="text-sm text-gray-700 font-medium">Similar Listings</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-success rounded-full flex items-center justify-center">
                         <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                       </div>
                       <span className="text-sm text-gray-700 font-medium">Market Updates</span>
@@ -297,7 +297,7 @@ export default function FavoritesPage() {
                   </div>
                 </div>
                 
-                <button className="bg-red-600 text-white px-5 py-2.5 rounded-xl hover:bg-red-700 transition shadow-sm whitespace-nowrap font-medium text-sm">
+                <button className="bg-primary-600 text-white px-5 py-2.5 rounded-card hover:bg-primary-700 transition shadow-card whitespace-nowrap font-medium text-sm">
                   Manage Alerts
                 </button>
               </div>
@@ -309,8 +309,8 @@ export default function FavoritesPage() {
       {/* Modal d'alerte */}
       {showAlertModal && selectedProperty && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full">
-            <div className="flex justify-between items-center p-4 border-b">
+          <div className="bg-white rounded-card max-w-md w-full shadow-elevated">
+            <div className="flex justify-between items-center p-4 border-b border-border">
               <h3 className="font-semibold text-gray-900">Set Price Alert</h3>
               <button onClick={() => setShowAlertModal(false)} className="p-1 hover:bg-gray-100 rounded transition">
                 <X className="w-5 h-5 text-gray-500" />
@@ -322,29 +322,29 @@ export default function FavoritesPage() {
               </p>
               <div className="space-y-3">
                 <label className="flex items-center gap-3 text-sm cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-400" defaultChecked />
+                  <input type="checkbox" className="w-4 h-4 rounded border-border text-primary-600 focus:ring-primary-600" defaultChecked />
                   <span className="text-gray-700">Price drop notification</span>
                 </label>
                 <label className="flex items-center gap-3 text-sm cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-400" />
+                  <input type="checkbox" className="w-4 h-4 rounded border-border text-primary-600 focus:ring-primary-600" />
                   <span className="text-gray-700">Similar properties in same area</span>
                 </label>
                 <label className="flex items-center gap-3 text-sm cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-400" />
+                  <input type="checkbox" className="w-4 h-4 rounded border-border text-primary-600 focus:ring-primary-600" />
                   <span className="text-gray-700">Weekly market updates</span>
                 </label>
               </div>
             </div>
-            <div className="flex gap-3 p-4 border-t">
+            <div className="flex gap-3 p-4 border-t border-border">
               <button 
                 onClick={() => setShowAlertModal(false)} 
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                className="flex-1 px-4 py-2 border border-border rounded-card text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
               <button 
                 onClick={() => setShowAlertModal(false)} 
-                className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                className="flex-1 bg-primary-600 text-white px-4 py-2 rounded-card hover:bg-primary-700 shadow-card transition"
               >
                 Set Alert
               </button>

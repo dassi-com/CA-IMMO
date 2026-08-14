@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220" fill="none">
+  <g opacity="0.06">
+    <!-- Architectural grid / floor plan motif -->
+    <rect x="20" y="20" width="180" height="180" stroke="#C41E3A" stroke-width="1"/>
+    <rect x="40" y="40" width="140" height="140" stroke="#C41E3A" stroke-width="1"/>
+    <path d="M20 110 H200 M110 20 V200" stroke="#C41E3A" stroke-width="0.5" stroke-dasharray="4 4"/>
+    <!-- Building / skyscraper silhouettes -->
+    <path d="M60 140 h24 v-34 h-24 z" stroke="#171717" stroke-width="1.5"/>
+    <path d="M60 106 h24 v-22 h-24 z" stroke="#171717" stroke-width="1.5"/>
+    <path d="M88 140 h20 v-50 h-20 z" stroke="#171717" stroke-width="1.5"/>
+    <path d="M112 140 h18 v-28 h-18 z" stroke="#171717" stroke-width="1.5"/>
+    <path d="M134 140 h26 v-60 h-26 z" stroke="#171717" stroke-width="1.5"/>
+    <!-- Key / investment mark -->
+    <circle cx="110" cy="88" r="26" stroke="#C8B15D" stroke-width="1.5"/>
+    <path d="M110 88 l24 24 M126 104 l8 8 M118 112 l6 6" stroke="#C8B15D" stroke-width="1.5"/>
+  </g>
+</svg>

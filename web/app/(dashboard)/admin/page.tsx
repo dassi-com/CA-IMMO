@@ -151,7 +151,7 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-monabris-background">
       <Sidebar role="admin" isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
       <main className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-24'}`}>
@@ -163,20 +163,20 @@ export default function AdminDashboard() {
             className="mb-8"
           >
             <h1 className="text-3xl font-bold text-gray-800">Bonjour, Admin</h1>
-            <p className="text-gray-600 mt-2">Supervision de la plateforme CentralAfricaHomes</p>
+            <p className="text-gray-600 mt-2">Supervision de la plateforme Monabris</p>
           </motion.div>
 
           {/* Stats Grid */}
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                <div key={i} className="bg-surface rounded-card shadow-card p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gray-200 rounded-xl" />
-                    <div className="w-16 h-4 bg-gray-200 rounded" />
+                    <div className="w-12 h-12 skeleton rounded-card" />
+                    <div className="w-16 h-4 skeleton rounded" />
                   </div>
-                  <div className="h-8 bg-gray-200 rounded w-1/2 mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                  <div className="h-8 skeleton rounded w-1/2 mb-2" />
+                  <div className="h-4 skeleton rounded w-1/3" />
                 </div>
               ))}
             </div>
@@ -220,9 +220,9 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
+            className="bg-surface rounded-card shadow-card overflow-hidden mb-8"
           >
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-border">
               <h2 className="text-xl font-bold text-gray-800">Annonces à valider</h2>
             </div>
             {loading ? (
@@ -265,14 +265,14 @@ export default function AdminDashboard() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-600">{listing.type}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-medium text-red-600">{listing.price}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-medium text-primary-600">{listing.price}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-500">{listing.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button onClick={() => handleApprove(listing.id)} className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors">
                             <CheckCircle size={18} />
                           </button>
-                          <button onClick={() => handleReject(listing.id)} className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
+                          <button onClick={() => handleReject(listing.id)} className="p-1.5 bg-primary-100 text-primary-600 rounded-lg hover:bg-primary-200 transition-colors">
                             <XCircle size={18} />
                           </button>
                           <button onClick={() => handleFeature(listing.id)} className="p-1.5 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-colors">
@@ -295,9 +295,9 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden"
+              className="bg-surface rounded-card shadow-card overflow-hidden"
             >
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-border">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-800">Gestion des utilisateurs</h2>
                   <div className="relative">
@@ -307,7 +307,7 @@ export default function AdminDashboard() {
                       placeholder="Rechercher..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      className="pl-10 pr-4 py-2 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600"
                     />
                   </div>
                 </div>
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 text-xs rounded-full ${
-                              !user.is_suspended ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                              !user.is_suspended ? 'bg-green-100 text-green-600' : 'bg-primary-100 text-primary-600'
                             }`}
                           >
                             {user.is_suspended ? 'Suspendu' : 'Actif'}
@@ -371,7 +371,7 @@ export default function AdminDashboard() {
                             <button onClick={() => handleSuspend(user.id)} className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors">
                               <Shield size={18} />
                             </button>
-                            <button onClick={() => handleDeleteUser(user.id)} className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
+                            <button onClick={() => handleDeleteUser(user.id)} className="p-1 text-primary-600 hover:bg-primary-50 rounded transition-colors">
                               <XCircle size={18} />
                             </button>
                           </div>
@@ -389,12 +389,12 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className="bg-surface rounded-card shadow-card p-6"
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Demandes de mise en avant récentes</h3>
               <div className="space-y-3">
                 {paymentRequests.map((payment) => (
-                  <div key={payment.id} className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                  <div key={payment.id} className="p-3 bg-accent-50 rounded-card">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <h4 className="font-medium text-gray-800">{payment.agentName}</h4>
@@ -403,8 +403,8 @@ export default function AdminDashboard() {
                       <div
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
                           payment.status === 'confirmed'
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-yellow-100 text-yellow-600'
+                            ? 'bg-success/10 text-success'
+                            : 'bg-warning/10 text-warning'
                         }`}
                       >
                         {payment.status === 'confirmed' ? 'Confirmé' : 'En attente'}
@@ -412,13 +412,13 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">{payment.date}</span>
-                      <span className="font-bold text-red-600">{payment.amount.toLocaleString()} FCFA</span>
+                      <span className="font-bold text-primary-600">{payment.amount.toLocaleString()} FCFA</span>
                     </div>
                     <div className="flex gap-2 mt-3">
-                      <button className="flex-1 py-1.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">
+                      <button className="flex-1 py-1.5 bg-success text-white rounded-card text-sm hover:opacity-90 transition-colors">
                         Confirmer
                       </button>
-                      <button className="flex-1 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors">
+                      <button className="flex-1 py-1.5 bg-primary-600 text-white rounded-card text-sm hover:bg-primary-700 transition-colors">
                         Rejeter
                       </button>
                     </div>

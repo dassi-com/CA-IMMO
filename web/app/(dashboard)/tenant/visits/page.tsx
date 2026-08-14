@@ -25,7 +25,7 @@ export default function TenantVisitsPage() {
             {[
               { label: 'À venir', value: 0, color: 'text-blue-600', bg: 'bg-blue-50' },
               { label: 'Passées', value: 0, color: 'text-gray-600', bg: 'bg-gray-50' },
-              { label: 'Annulées', value: 0, color: 'text-red-600', bg: 'bg-red-50' },
+              { label: 'Annulées', value: 0, color: 'text-primary-600', bg: 'bg-primary-50' },
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                 className={`${stat.bg} rounded-2xl p-5 text-center`}>
@@ -35,13 +35,13 @@ export default function TenantVisitsPage() {
             ))}
           </div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg p-12 text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-surface rounded-2xl shadow-lg p-12 text-center">
             <Calendar size={48} className="mx-auto text-gray-300 mb-4" />
             <h3 className="text-lg font-semibold text-gray-800 mb-2">Aucune visite programmée</h3>
             <p className="text-gray-500 mb-6">
               Contactez un agent depuis une annonce pour planifier une visite.
             </p>
-            <Link href="/search" className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors">
+            <Link href="/search" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors">
               <Eye size={18} />
               Parcourir les annonces
             </Link>

@@ -45,7 +45,7 @@ export default function BrowseByPropertyType() {
 
   if (loading) {
     return (
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-monabris-background">
         <div className="container mx-auto px-6 md:px-8 lg:px-12">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">Browse by Property Type</h2>
           <PropertyTypesSkeleton />
@@ -55,7 +55,7 @@ export default function BrowseByPropertyType() {
   }
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-monabris-background">
       <div className="container mx-auto px-6 md:px-8 lg:px-12">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-10 max-w-5xl mx-auto">
           <div className="text-center sm:text-left mb-4 sm:mb-0">
@@ -64,7 +64,7 @@ export default function BrowseByPropertyType() {
           </div>
           <Link
             href="/search"
-            className="flex items-center gap-2 text-red-600 hover:text-red-700 font-medium transition"
+            className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition"
           >
             View All
             <ArrowRight size={18} />
@@ -78,7 +78,7 @@ export default function BrowseByPropertyType() {
               <Link
                 key={item.key}
                 href={item.backendKey ? `/search?property_type=${item.backendKey}` : '/search'}
-                className="group bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow border border-gray-100"
+                className="group bg-white rounded-card overflow-hidden hover:shadow-card-hover transition-shadow border border-border"
               >
                 <div className="h-32 relative overflow-hidden">
                   <Image

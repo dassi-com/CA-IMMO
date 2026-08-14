@@ -75,7 +75,7 @@ export default function TenantDashboard() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
+                <div key={i} className="bg-surface rounded-2xl shadow-lg p-6 animate-pulse">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 bg-gray-200 rounded-xl" />
                     <div className="w-16 h-4 bg-gray-200 rounded" />
@@ -91,7 +91,7 @@ export default function TenantDashboard() {
               title="Propriétés favorites"
               value={favoritesCount}
               icon={Heart}
-              color="from-red-500 to-pink-500"
+              color="from-primary-500 to-pink-500"
               delay={0.1}
             />
             <StatsCard
@@ -129,7 +129,7 @@ export default function TenantDashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-800">Propriétés favorites récentes</h2>
-              <button className="text-red-600 hover:text-red-700 text-sm font-medium">
+              <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
                 Voir tout →
               </button>
             </div>
@@ -145,13 +145,13 @@ export default function TenantDashboard() {
                   transition={{ delay: 0.5 + index * 0.1 }}
                   className="group cursor-pointer"
                 >
-                  <div className="relative overflow-hidden rounded-xl bg-white shadow-lg hover:shadow-2xl transition-all duration-300">
-                    <div className="relative h-48 bg-gradient-to-br from-red-400 to-red-600">
+                  <div className="relative overflow-hidden rounded-xl bg-surface shadow-lg hover:shadow-2xl transition-all duration-300">
+                    <div className="relative h-48 bg-gradient-to-br from-primary-400 to-primary-600">
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-                      <button className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors">
-                        <Heart className="w-4 h-4 text-red-600 fill-red-600" />
+                      <button className="absolute top-3 right-3 p-2 bg-surface/90 rounded-full hover:bg-surface transition-colors">
+                        <Heart className="w-4 h-4 text-primary-600 fill-primary-600" />
                       </button>
-                      <div className="absolute bottom-3 left-3 bg-red-600 text-white px-2 py-1 rounded-lg text-xs">
+                      <div className="absolute bottom-3 left-3 bg-primary-600 text-white px-2 py-1 rounded-lg text-xs">
                         {property.type}
                       </div>
                     </div>
@@ -161,7 +161,7 @@ export default function TenantDashboard() {
                         <MapPin size={14} />
                         <span>{property.location}</span>
                       </div>
-                      <p className="text-red-600 font-bold">{property.price}</p>
+                      <p className="text-primary-600 font-bold">{property.price}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -177,7 +177,7 @@ export default function TenantDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white rounded-2xl shadow-lg p-6"
+              className="bg-surface rounded-2xl shadow-lg p-6"
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Visites à venir</h3>
               <div className="space-y-4">
@@ -197,11 +197,11 @@ export default function TenantDashboard() {
             transition={{ delay: 0.8 }}
           >
             <h2 className="text-xl font-bold text-gray-800 mb-4">Recommandations personnalisées</h2>
-            <div className="text-center py-8 bg-white rounded-2xl shadow-lg">
+            <div className="text-center py-8 bg-surface rounded-2xl shadow-lg">
               <p className="text-gray-500">
                 Ajoutez des propriétés à vos favoris pour recevoir des recommandations personnalisées.
               </p>
-              <Link href="/search" className="mt-4 inline-block bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
+              <Link href="/search" className="mt-4 inline-block bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700">
                 Parcourir les annonces
               </Link>
             </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -28,24 +29,24 @@ export default function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-1.5 rounded-full text-gray-600 hover:text-red-600 hover:bg-red-50 transition"
+        className="relative p-1.5 rounded-full text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition"
       >
         <Bell size={20} />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-4.5 h-4.5 text-[10px] font-bold text-white bg-red-600 rounded-full min-w-[18px] min-h-[18px]">
+          <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-4.5 h-4.5 text-[10px] font-bold text-white bg-primary-600 rounded-full min-w-[18px] min-h-[18px]">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden z-50">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div className="absolute right-0 mt-2 w-80 bg-surface rounded-2xl shadow-xl border border-border overflow-hidden z-50">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <h3 className="font-semibold text-gray-800 text-sm">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-xs text-red-600 hover:text-red-700 font-medium"
+                className="text-xs text-primary-600 hover:text-primary-700 font-medium"
               >
                 Tout marquer comme lu
               </button>
@@ -62,7 +63,7 @@ export default function NotificationBell() {
                 <div
                   key={notif.id}
                   className={`px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer ${
-                    !notif.is_read ? 'bg-red-50/50' : ''
+                    !notif.is_read ? 'bg-primary-50/50' : ''
                   }`}
                   onClick={() => {
                     markAsRead(notif.id);
@@ -84,7 +85,7 @@ export default function NotificationBell() {
           {notifications.length > 10 && (
             <Link
               href={user.role === 'ADMIN' ? '/admin' : user.role === 'OWNER' ? '/agent' : '/tenant'}
-              className="block text-center text-xs text-red-600 font-medium py-2.5 hover:bg-gray-50 transition"
+              className="block text-center text-xs text-primary-600 font-medium py-2.5 hover:bg-gray-50 transition"
               onClick={() => setOpen(false)}
             >
               Voir toutes les notifications

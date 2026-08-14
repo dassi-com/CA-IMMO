@@ -29,15 +29,15 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="text-center">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="w-8 h-8 text-green-600" />
+      <div className="text-center animate-fade-in-up">
+        <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Mail className="w-8 h-8 text-success" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Email envoyé</h1>
-        <p className="text-gray-500 mb-6">
+        <p className="text-gray-600 mb-6">
           Si un compte existe avec cette adresse, vous recevrez un lien de réinitialisation.
         </p>
-        <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold">
+        <Link href="/login" className="text-primary-600 hover:text-primary-700 font-semibold">
           Retour à la connexion
         </Link>
       </div>
@@ -48,12 +48,12 @@ export default function ForgotPasswordPage() {
     <div>
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Mot de passe oublié</h1>
-        <p className="text-gray-500 mt-2">
+        <p className="text-gray-600 mt-2">
           Entrez votre email pour recevoir un lien de réinitialisation
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+      <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
         <div className="mb-6">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
             Email
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="Votre email"
-              className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+              className="block w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
             />
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-2.5 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-primary-600 text-white py-2.5 rounded-card font-semibold hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <div className="flex items-center justify-center gap-2">
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
         </button>
 
         <div className="text-center mt-6">
-          <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold inline-flex items-center gap-1">
+          <Link href="/login" className="text-primary-600 hover:text-primary-700 font-semibold inline-flex items-center gap-1">
             <ArrowLeft size={16} />
             Retour à la connexion
           </Link>

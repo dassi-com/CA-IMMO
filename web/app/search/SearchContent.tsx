@@ -90,11 +90,11 @@ export default function SearchContent() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 pt-24">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 w-1/4 mb-6"></div>
+        <div className="space-y-4">
+          <div className="h-8 skeleton rounded w-1/4 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-gray-200 rounded-xl h-96"></div>
+              <div key={i} className="skeleton rounded-card h-96"></div>
             ))}
           </div>
         </div>
@@ -105,9 +105,9 @@ export default function SearchContent() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8 pt-24">
-        <div className="text-center py-12 bg-white rounded-xl">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button onClick={loadProperties} className="text-red-600 hover:underline font-medium">
+        <div className="text-center py-12 bg-white rounded-card shadow-card">
+          <p className="text-primary-600 mb-4">{error}</p>
+          <button onClick={loadProperties} className="text-primary-600 hover:underline font-medium">
             Try again
           </button>
         </div>
@@ -116,7 +116,7 @@ export default function SearchContent() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-20">
+    <div className="bg-monabris-background min-h-screen pt-20">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Search Properties</h1>
@@ -125,7 +125,7 @@ export default function SearchContent() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 w-full sm:w-auto"
+                className="appearance-none bg-white border border-border rounded-card px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 w-full sm:w-auto"
               >
                 <option value="newest">Newest First</option>
                 <option value="price_asc">Price: Low to High</option>
@@ -134,16 +134,16 @@ export default function SearchContent() {
               <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
 
-            <div className="flex bg-white border border-gray-300 rounded-lg overflow-hidden">
+            <div className="flex bg-white border border-border rounded-card overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 transition ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`p-2 transition ${viewMode === 'grid' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 <Grid3x3 size={18} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 transition ${viewMode === 'list' ? 'bg-red-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`p-2 transition ${viewMode === 'list' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 <List size={18} />
               </button>
@@ -151,12 +151,12 @@ export default function SearchContent() {
 
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm"
+              className="lg:hidden flex items-center gap-2 bg-white border border-border rounded-card px-4 py-2 text-sm"
             >
               <Filter size={16} />
               Filters
               {Object.values(filters).some(v => v) && (
-                <span className="bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">●</span>
+                <span className="bg-primary-600 text-white text-xs px-1.5 py-0.5 rounded-full">●</span>
               )}
             </button>
           </div>
@@ -164,10 +164,10 @@ export default function SearchContent() {
 
         <div className="flex flex-col lg:flex-row gap-6">
           <aside className="hidden lg:block w-80 flex-shrink-0">
-            <div className="bg-white rounded-xl p-6 shadow-sm sticky top-24">
+            <div className="bg-white rounded-card p-6 shadow-card sticky top-24">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-gray-900">Filters</h3>
-                <button onClick={clearFilters} className="text-sm text-red-600 hover:underline">
+                <button onClick={clearFilters} className="text-sm text-primary-600 hover:underline">
                   Clear all
                 </button>
               </div>
@@ -180,7 +180,7 @@ export default function SearchContent() {
                     value={filters.city}
                     onChange={(e) => setFilters({ ...filters, city: e.target.value })}
                     placeholder="All cities"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-border rounded-card bg-monabris-background text-sm focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 focus:outline-none"
                   />
                 </div>
 
@@ -189,7 +189,7 @@ export default function SearchContent() {
                   <select
                     value={filters.property_type}
                     onChange={(e) => setFilters({ ...filters, property_type: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-600"
+                    className="w-full px-3 py-2 border border-border rounded-card bg-monabris-background text-sm focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 focus:outline-none"
                   >
                     <option value="">All Types</option>
                     <option value="MAISON">House</option>
@@ -208,20 +208,20 @@ export default function SearchContent() {
                       value={filters.priceMin}
                       onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })}
                       placeholder="Min"
-                      className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      className="w-1/2 px-3 py-2 border border-border rounded-card bg-monabris-background text-sm focus:outline-none"
                     />
                     <input
                       type="number"
                       value={filters.priceMax}
                       onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })}
                       placeholder="Max"
-                      className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      className="w-1/2 px-3 py-2 border border-border rounded-card bg-monabris-background text-sm focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="mt-6 pt-4 border-t border-border">
                 <p className="text-sm text-gray-600">
                   {filteredProperties.length} properties found
                 </p>
@@ -232,7 +232,7 @@ export default function SearchContent() {
           {isFilterOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
               <div className="absolute inset-0 bg-black/60" onClick={() => setIsFilterOpen(false)} />
-              <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[90vw] bg-white shadow-xl p-6 overflow-y-auto">
+              <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[90vw] bg-white shadow-elevated p-6 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-semibold text-gray-900">Filters</h3>
                   <button onClick={() => setIsFilterOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -246,7 +246,7 @@ export default function SearchContent() {
                       type="text"
                       value={filters.city}
                       onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-                      className="w-full px-3 py-2 border rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-border rounded-card bg-monabris-background text-sm"
                     />
                   </div>
                   <div>
@@ -254,7 +254,7 @@ export default function SearchContent() {
                     <select
                       value={filters.property_type}
                       onChange={(e) => setFilters({ ...filters, property_type: e.target.value })}
-                      className="w-full px-3 py-2 border rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-border rounded-card bg-monabris-background text-sm"
                     >
                       <option value="">All Types</option>
                       <option value="MAISON">House</option>
@@ -267,25 +267,25 @@ export default function SearchContent() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
                     <div className="flex gap-2">
-                      <input type="number" placeholder="Min" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} className="w-1/2 px-3 py-2 border rounded-lg text-sm" />
-                      <input type="number" placeholder="Max" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} className="w-1/2 px-3 py-2 border rounded-lg text-sm" />
+                      <input type="number" placeholder="Min" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} className="w-1/2 px-3 py-2 border border-border rounded-card bg-monabris-background text-sm" />
+                      <input type="number" placeholder="Max" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} className="w-1/2 px-3 py-2 border border-border rounded-card bg-monabris-background text-sm" />
                     </div>
                   </div>
                 </div>
-                <button onClick={clearFilters} className="w-full mt-6 text-red-600 py-2 text-sm">Clear all</button>
+                <button onClick={clearFilters} className="w-full mt-6 text-primary-600 py-2 text-sm">Clear all</button>
               </div>
             </div>
           )}
 
           <div className="flex-1 min-w-0">
             {filteredProperties.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-xl">
-                <p className="text-gray-500">No properties found matching your criteria.</p>
-                <button onClick={clearFilters} className="mt-4 text-red-600 hover:underline">Clear filters</button>
+              <div className="text-center py-12 bg-white rounded-card shadow-card">
+                <p className="text-gray-600">No properties found matching your criteria.</p>
+                <button onClick={clearFilters} className="mt-4 text-primary-600 hover:underline">Clear filters</button>
               </div>
             ) : (
               <>
-                <p className="text-sm text-gray-500 mb-4 hidden lg:block">
+                <p className="text-sm text-gray-600 mb-4 hidden lg:block">
                   Showing {filteredProperties.length} properties
                 </p>
                 <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6' : 'grid-cols-1 gap-4'}`}>

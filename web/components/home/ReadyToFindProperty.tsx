@@ -37,7 +37,7 @@ const cards = [
 
 export default function ReadyToFindProperty() {
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-monabris-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-4">
@@ -52,14 +52,14 @@ export default function ReadyToFindProperty() {
           {cards.map((card) => (
             <div
               key={card.title}
-              className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              className="bg-white rounded-card overflow-hidden shadow-card border border-border hover:shadow-card-hover transition-shadow"
             >
               <div className="relative h-48">
                 <Image
                   src={card.image}
                   alt={card.title}
                   fill
-                  className="object-cover"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="p-5">

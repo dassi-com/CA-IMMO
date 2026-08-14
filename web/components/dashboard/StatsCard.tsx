@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from 'framer-motion';
@@ -20,15 +19,15 @@ export default function StatsCard({ title, value, icon: Icon, trend, trendLabel,
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className="relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+      className="relative overflow-hidden bg-white rounded-card shadow-card hover:shadow-card-hover transition-all duration-300 group"
     >
       <div className="relative z-10 p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${color} bg-opacity-10`}>
+          <div className={`p-3 rounded-card bg-gradient-to-br ${color} bg-opacity-10`}>
             <Icon className={`w-6 h-6 text-${color.split(' ')[1]}`} />
           </div>
           {trend !== undefined && (
-            <div className={`flex items-center gap-1 text-sm ${trend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`flex items-center gap-1 text-sm ${trend >= 0 ? 'text-success' : 'text-error'}`}>
               {trend >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
               <span className="font-semibold">{Math.abs(trend)}%</span>
             </div>

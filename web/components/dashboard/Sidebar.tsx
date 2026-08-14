@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -24,6 +23,7 @@ import {
   X,
   UserCheck,
 } from 'lucide-react';
+import { MonabrisMark } from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarProps {
@@ -75,7 +75,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
       {/* Mobile Menu Button */}
       <button
         onClick={handleMobileMenuToggle}
-        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-white rounded-lg shadow-lg"
+        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-white rounded-lg shadow-card"
       >
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
@@ -84,7 +84,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
       <motion.aside
         initial={false}
         animate={{ width: isOpen ? 280 : 80 }}
-        className="hidden lg:block fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-40 shadow-2xl"
+        className="hidden lg:block fixed left-0 top-0 h-full bg-secondary text-white z-40 shadow-elevated"
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -93,18 +93,16 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
               animate={{ justifyContent: isOpen ? 'flex-start' : 'center' }}
               className="flex items-center gap-3"
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center">
-                <Home className="w-5 h-5 text-white" />
-              </div>
+              <MonabrisMark variant="dark-background" size={40} />
               <AnimatePresence>
                 {isOpen && (
                   <motion.span
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
                     exit={{ opacity: 0, width: 0 }}
-                    className="font-bold text-xl"
+                    className="font-extrabold text-xl"
                   >
-                    CentralAfricaHomes
+                    Mona<span className="text-accent-400">bris</span>
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -119,9 +117,9 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                 <Link key={item.name} href={item.href}>
                   <motion.div
                     whileHover={{ x: 5 }}
-                    className={`relative flex items-center gap-3 px-6 py-3 mx-3 rounded-lg transition-all ${
+                    className={`relative flex items-center gap-3 px-6 py-3 mx-3 rounded-card transition-all ${
                       isActive
-                        ? 'bg-red-600 text-white shadow-lg'
+                        ? 'bg-primary-600 text-white shadow-card'
                         : 'text-white/70 hover:bg-white/10 hover:text-white'
                     }`}
                   >
@@ -166,7 +164,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
           {/* Toggle Button */}
           <button
             onClick={onToggle}
-            className="absolute -right-3 top-20 bg-slate-800 rounded-full p-1 shadow-lg"
+            className="absolute -right-3 top-20 bg-gray-800 rounded-full p-1 shadow-card"
           >
             {isOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
           </button>
@@ -188,16 +186,14 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
               initial={{ x: -300 }}
               animate={{ x: 0 }}
               exit={{ x: -300 }}
-              className="fixed left-0 top-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 shadow-2xl lg:hidden"
+              className="fixed left-0 top-0 w-72 h-full bg-secondary text-white z-50 shadow-elevated lg:hidden"
             >
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b border-white/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center">
-                        <Home className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="font-bold text-xl">CentralAfricaHomes</span>
+                      <MonabrisMark variant="dark-background" size={40} />
+                      <span className="font-extrabold text-xl">Mona<span className="text-accent-400">bris</span></span>
                     </div>
                     <button onClick={() => setIsMobileMenuOpen(false)}>
                       <X size={24} />
@@ -208,9 +204,9 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                   {items.map((item) => (
                     <Link key={item.name} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
                       <div
-                        className={`flex items-center gap-3 px-6 py-3 mx-3 rounded-lg ${
+                        className={`flex items-center gap-3 px-6 py-3 mx-3 rounded-card ${
                           pathname === item.href
-                            ? 'bg-red-600 text-white'
+                            ? 'bg-primary-600 text-white'
                             : 'text-white/70 hover:bg-white/10'
                         }`}
                       >

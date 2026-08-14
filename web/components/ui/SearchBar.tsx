@@ -14,7 +14,7 @@ export default function SearchBar({ searchText, onSearchChange, onSearch }: Sear
   };
 
   return (
-    <div className="flex w-full max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden bg-white">
+    <div className="flex w-full max-w-2xl mx-auto shadow-card rounded-card overflow-hidden bg-white">
       <div className="relative flex-1">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
         <input
@@ -23,7 +23,7 @@ export default function SearchBar({ searchText, onSearchChange, onSearch }: Sear
           onChange={(e) => onSearchChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="City, neighborhood or speak your search..."
-          className="w-full pl-12 pr-4 py-4 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 text-base"
+          className="w-full pl-12 pr-4 py-4 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-600/20 text-base"
         />
       </div>
       <button

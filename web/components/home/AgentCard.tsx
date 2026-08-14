@@ -17,7 +17,7 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
+    <div className="bg-white rounded-card p-5 border border-border shadow-card hover:shadow-card-hover transition-shadow">
       <div className="flex items-start gap-4">
         <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-100">
           {avatarUrl && !imgError ? (
@@ -44,7 +44,7 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
 
           <div className="flex items-center gap-3 mt-2">
             <div className="flex items-center gap-1">
-              <Star size={14} className="fill-yellow-400 text-yellow-400" />
+              <Star size={14} className="fill-accent-400 text-accent-400" />
               <span className="text-sm font-semibold text-gray-700">
                 {rating?.toFixed(1) ?? 'N/A'}
               </span>
@@ -59,9 +59,9 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
       <div className="flex gap-2 mt-4">
         <a
           href={phone ? `tel:${phone}` : '#'}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-card text-sm font-medium transition-all duration-200 ${
             phone
-              ? 'bg-primary-600 text-white hover:bg-primary-700'
+              ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-card'
               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
           }`}
         >
@@ -72,9 +72,9 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
           href={phone ? `https://wa.me/${phone.replace(/[^0-9]/g, '')}` : '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-card text-sm font-medium transition-all duration-200 ${
             phone
-              ? 'bg-green-600 text-white hover:bg-green-700'
+              ? 'bg-success text-white hover:opacity-90'
               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
           }`}
         >

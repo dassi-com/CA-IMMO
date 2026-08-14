@@ -1,16 +1,64 @@
 import Link from 'next/link';
+import { MonabrisMark } from '@/components/ui/logo';
+import { Globe, Share2, AtSign, MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-400 mt-16">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div><h3 className="text-white text-sm mb-3">Company</h3><ul className="space-y-1"><li><Link href="/search" className="text-xs hover:text-primary-500">Browse Properties</Link></li><li><Link href="/login" className="text-xs hover:text-primary-500">Sign In</Link></li><li><Link href="/register" className="text-xs hover:text-primary-500">Create Account</Link></li></ul></div>
-          <div><h3 className="text-white text-sm mb-3">For Buyers</h3><ul className="space-y-1"><li><Link href="/search" className="text-xs hover:text-primary-500">Browse Properties</Link></li><li><Link href="/favorites" className="text-xs hover:text-primary-500">Saved Properties</Link></li><li><Link href="/search" className="text-xs hover:text-primary-500">Property Search</Link></li></ul></div>
-          <div><h3 className="text-white text-sm mb-3">For Sellers</h3><ul className="space-y-1"><li><Link href="/post-property" className="text-xs hover:text-primary-500">List Property</Link></li><li><Link href="/agent/listings" className="text-xs hover:text-primary-500">My Listings</Link></li><li><Link href="/agent/stats" className="text-xs hover:text-primary-500">Statistics</Link></li></ul></div>
-          <div><h3 className="text-white text-sm mb-3">Resources</h3><ul className="space-y-1"><li><Link href="/search" className="text-xs hover:text-primary-500">Search</Link></li><li><Link href="/post-property" className="text-xs hover:text-primary-500">Post a Property</Link></li><li><Link href="/register" className="text-xs hover:text-primary-500">Get Started</Link></li></ul></div>
+    <footer className="bg-secondary text-gray-400 mt-16 relative overflow-hidden">
+      <div className="brand-pattern-light absolute inset-0 opacity-60 pointer-events-none" />
+      <div className="container relative mx-auto px-4 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex items-center gap-2.5 mb-3">
+              <MonabrisMark variant="dark-background" size={36} />
+              <div className="leading-tight">
+                <span className="font-extrabold text-xl text-white tracking-tight">
+                  Mona<span className="text-accent-400">bris</span>
+                </span>
+              </div>
+            </div>
+            <p className="text-xs leading-relaxed mb-4">
+              Où la vision trouve son foyer. Le réseau immobilier premium d'Afrique centrale.
+            </p>
+            <div className="flex items-center gap-2">
+              <a href="#" aria-label="Site web" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Globe size={16} /></a>
+              <a href="#" aria-label="Partager" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Share2 size={16} /></a>
+              <a href="#" aria-label="Email" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><AtSign size={16} /></a>
+              <a href="#" aria-label="Messagerie" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><MessageCircle size={16} /></a>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-white text-sm mb-3 font-semibold">Entreprise</h3>
+            <ul className="space-y-2">
+              <li><Link href="/search" className="text-xs hover:text-accent-400 transition-colors">Explorer les biens</Link></li>
+              <li><Link href="/login" className="text-xs hover:text-accent-400 transition-colors">Se connecter</Link></li>
+              <li><Link href="/register" className="text-xs hover:text-accent-400 transition-colors">Créer un compte</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-white text-sm mb-3 font-semibold">Acheteurs</h3>
+            <ul className="space-y-2">
+              <li><Link href="/search" className="text-xs hover:text-accent-400 transition-colors">Recherche de biens</Link></li>
+              <li><Link href="/favorites" className="text-xs hover:text-accent-400 transition-colors">Propriétés favorites</Link></li>
+              <li><Link href="/search" className="text-xs hover:text-accent-400 transition-colors">Acheter / Louer</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-white text-sm mb-3 font-semibold">Contact</h3>
+            <ul className="space-y-2">
+              <li className="flex items-center gap-2 text-xs"><Mail size={14} className="text-accent-400" /> contact@monabris.com</li>
+              <li className="flex items-center gap-2 text-xs"><Phone size={14} className="text-accent-400" /> +241 01 234 5678</li>
+              <li className="flex items-center gap-2 text-xs"><MapPin size={14} className="text-accent-400" /> Libreville, Gabon</li>
+            </ul>
+          </div>
         </div>
-        <div className="border-t border-gray-800 mt-6 pt-6 text-center text-xs">© 2026 CentralAfricaHomes. All rights reserved.</div>
+
+        <div className="border-t border-white/10 mt-10 pt-6 text-center text-xs">
+          © 2026 Monabris. Tous droits réservés.
+        </div>
       </div>
     </footer>
   );

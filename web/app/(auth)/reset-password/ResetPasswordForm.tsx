@@ -57,16 +57,16 @@ export default function ResetPasswordForm() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md mx-auto">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-10 h-10 text-red-600" />
+          <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-10 h-10 text-primary-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">Lien invalide</h1>
-          <p className="text-gray-500 mb-8">
+          <p className="text-gray-600 mb-8">
             Ce lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau.
           </p>
           <Link
             href="/forgot-password"
-            className="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition duration-200"
+            className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-card shadow-card transition duration-200"
           >
             Demander un nouveau lien
           </Link>
@@ -79,16 +79,16 @@ export default function ResetPasswordForm() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md mx-auto">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-10 h-10 text-green-600" />
+          <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-10 h-10 text-success" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">Mot de passe réinitialisé</h1>
-          <p className="text-gray-500 mb-8">
+          <p className="text-gray-600 mb-8">
             Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
           </p>
           <Link
             href="/login"
-            className="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition duration-200"
+            className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-card shadow-card transition duration-200"
           >
             Se connecter
           </Link>
@@ -102,12 +102,12 @@ export default function ResetPasswordForm() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Nouveau mot de passe</h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-600 mt-2">
             Choisissez un nouveau mot de passe pour votre compte
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
           <div className="mb-6">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Nouveau mot de passe
@@ -124,7 +124,7 @@ export default function ResetPasswordForm() {
                 required
                 minLength={8}
                 placeholder="Minimum 8 caractères"
-                className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="block w-full pl-10 pr-10 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
               />
               <button
                 type="button"
@@ -146,7 +146,7 @@ export default function ResetPasswordForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-2.5 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary-600 text-white py-2.5 rounded-card font-semibold hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
@@ -161,7 +161,7 @@ export default function ResetPasswordForm() {
           <div className="text-center mt-6">
             <Link
               href="/login"
-              className="text-red-600 hover:text-red-700 font-semibold text-sm"
+              className="text-primary-600 hover:text-primary-700 font-semibold text-sm"
             >
               ← Retour à la connexion
             </Link>

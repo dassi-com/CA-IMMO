@@ -30,7 +30,7 @@ export default function RoleSelector() {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-40 bg-surface rounded-lg shadow-xl z-50 overflow-hidden">
             <button
               onClick={() => { setIsOpen(false); router.push(user.role === 'OWNER' ? '/agent' : '/tenant'); }}
               className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"

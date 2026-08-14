@@ -60,22 +60,22 @@ export default function TrustedRealEstateAgents() {
           {agents.map((agent) => (
             <div
               key={agent.id}
-              className="bg-white rounded-xl p-6 text-center border border-gray-100 hover:shadow-lg transition-shadow"
+              className="bg-white rounded-card p-6 text-center border border-border shadow-card hover:shadow-card-hover transition-shadow"
             >
-              <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-red-600">
+              <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-primary-600">
                   {agent.full_name.charAt(0).toUpperCase()}
                 </span>
               </div>
               <h3 className="font-semibold text-gray-900 text-lg">{agent.full_name}</h3>
               <div className="flex items-center justify-center gap-1 mt-2">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} size={14} className="fill-yellow-400 text-yellow-400" />
+                  <Star key={star} size={14} className="fill-accent-400 text-accent-400" />
                 ))}
               </div>
               <Link
                 href={`/search?owner=${encodeURIComponent(agent.id)}`}
-                className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition"
+                className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-card bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 shadow-card transition-all duration-200"
               >
                 <Search size={14} />
                 View Properties

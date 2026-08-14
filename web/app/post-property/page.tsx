@@ -37,7 +37,7 @@ export default function PostPropertyPage() {
   if (isLoading || !isAuthenticated || !isAgent) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function PostPropertyPage() {
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-6">
-          <Link href="/agent" className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-4">
+          <Link href="/agent" className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition mb-4">
             <ChevronLeft size={20} />
             <span>Back to Dashboard</span>
           </Link>
@@ -148,13 +148,13 @@ export default function PostPropertyPage() {
           <p className="text-gray-600">Fill in the details to list your property</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6">
+        <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-sm p-6">
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Basic Information</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Basic Information</h2>
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Property Title <span className="text-red-500">*</span>
+                Property Title <span className="text-primary-500">*</span>
               </label>
               <input
                 type="text"
@@ -162,7 +162,7 @@ export default function PostPropertyPage() {
                 value={formData.title}
                 onChange={handleInputChange}
                 placeholder="e.g., Modern Villa with Pool in Libreville"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent"
                 required
               />
             </div>
@@ -170,13 +170,13 @@ export default function PostPropertyPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Listing Type <span className="text-red-500">*</span>
+                  Listing Type <span className="text-primary-500">*</span>
                 </label>
                 <select
                   name="listingType"
                   value={formData.listingType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                 >
                   <option value="buy">For Sale</option>
                   <option value="rent">For Rent</option>
@@ -185,13 +185,13 @@ export default function PostPropertyPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Property Type <span className="text-red-500">*</span>
+                  Property Type <span className="text-primary-500">*</span>
                 </label>
                 <select
                   name="propertyType"
                   value={formData.propertyType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                 >
                   <option value="house">House</option>
                   <option value="apartment">Apartment</option>
@@ -205,12 +205,12 @@ export default function PostPropertyPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Location</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Location</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Country <span className="text-red-500">*</span>
+                  Country <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -218,19 +218,19 @@ export default function PostPropertyPage() {
                   value={formData.country}
                   onChange={handleInputChange}
                   placeholder="e.g., Cameroon"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  City <span className="text-red-500">*</span>
+                  City <span className="text-primary-500">*</span>
                 </label>
                 <select
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 >
                   <option value="">Select city</option>
@@ -241,7 +241,7 @@ export default function PostPropertyPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Neighborhood <span className="text-red-500">*</span>
+                  Neighborhood <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -249,13 +249,13 @@ export default function PostPropertyPage() {
                   value={formData.neighborhood}
                   onChange={handleInputChange}
                   placeholder="e.g., Batterie IV, Bonanjo"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Address <span className="text-red-500">*</span>
+                  Address <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -263,7 +263,7 @@ export default function PostPropertyPage() {
                   value={formData.address}
                   onChange={handleInputChange}
                   placeholder="e.g., 123 Main Street"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
@@ -271,12 +271,12 @@ export default function PostPropertyPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Property Details</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Property Details</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Price (XAF) <span className="text-red-500">*</span>
+                  Price (XAF) <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -284,13 +284,13 @@ export default function PostPropertyPage() {
                   value={formData.price}
                   onChange={handleInputChange}
                   placeholder="e.g., 450000000"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Surface Area (m²) <span className="text-red-500">*</span>
+                  Surface Area (m²) <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -298,7 +298,7 @@ export default function PostPropertyPage() {
                   value={formData.surface}
                   onChange={handleInputChange}
                   placeholder="e.g., 350"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
@@ -306,23 +306,23 @@ export default function PostPropertyPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Description</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Description</h2>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
               rows={5}
               placeholder="Describe your property in detail... (minimum 20 characters)"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 resize-none"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600 resize-none"
               required
             />
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-              Photos <span className="text-red-500">*</span>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">
+              Photos <span className="text-primary-500">*</span>
             </h2>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-600 transition">
+            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary-600 transition">
               <input
                 type="file"
                 id="photo-upload"
@@ -346,7 +346,7 @@ export default function PostPropertyPage() {
                     <button
                       type="button"
                       onClick={() => removePhoto(index)}
-                      className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                      className="absolute top-1 right-1 bg-primary-500 text-white p-1 rounded-full hover:bg-primary-600"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -356,17 +356,17 @@ export default function PostPropertyPage() {
             )}
           </div>
 
-          <div className="flex gap-4 pt-4 border-t border-gray-200">
+          <div className="flex gap-4 pt-4 border-t border-border">
             <Link
               href="/agent"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              className="px-6 py-2 border border-border text-gray-700 rounded-lg hover:bg-gray-50 transition"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+              className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50"
             >
               {isSubmitting ? 'Publishing...' : 'Publish Property'}
             </button>

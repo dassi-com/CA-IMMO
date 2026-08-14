@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -87,25 +87,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-monabris-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Profile Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-red-700 to-red-800 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition duration-300">
-            <User className="w-10 h-10 text-white" />
-          </div>
-        </div>
-
         {/* Welcome Text */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-600 mt-2">
             Sign in to access your dashboard and saved properties
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
           {/* Email Field */}
           <div className="mb-5">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -122,7 +115,7 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="block w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
                 placeholder="Enter your email"
               />
             </div>
@@ -144,7 +137,7 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="block w-full pl-10 pr-10 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
                 placeholder="Enter your password"
               />
               <button
@@ -169,11 +162,11 @@ export default function LoginPage() {
                 name="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleChange}
-                className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                className="w-4 h-4 rounded border-border text-primary-600 focus:ring-primary-600"
               />
               <span className="text-sm text-gray-600">Remember me</span>
             </label>
-            <Link href="/forgot-password" className="text-sm text-red-600 hover:text-red-700 font-medium">
+            <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
               Forgot password?
             </Link>
           </div>
@@ -182,7 +175,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-2.5 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary-600 text-white py-2.5 rounded-card font-semibold hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
@@ -197,7 +190,7 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-3 bg-white text-gray-500">Or continue with</span>
@@ -209,7 +202,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => handleSocialLogin('google')}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-gray-700 font-medium"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-card hover:bg-gray-50 transition text-gray-700 font-medium"
             >
               <GoogleIcon />
               <span>Google</span>
@@ -217,7 +210,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => handleSocialLogin('facebook')}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-gray-700 font-medium"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-card hover:bg-gray-50 transition text-gray-700 font-medium"
             >
               <FacebookIcon />
               <span>Facebook</span>
@@ -227,7 +220,7 @@ export default function LoginPage() {
           {/* Sign Up Link */}
           <p className="text-center mt-6 text-gray-600">
             Don't have an account?{' '}
-            <Link href="/register" className="text-red-600 hover:text-red-700 font-semibold">
+            <Link href="/register" className="text-primary-600 hover:text-primary-700 font-semibold">
               Sign Up
             </Link>
           </p>

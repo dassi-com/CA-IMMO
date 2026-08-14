@@ -74,16 +74,16 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-monabris-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
-          <p className="text-gray-500 mt-2">
-            Rejoignez CentralAfricaHomes
+          <p className="text-gray-600 mt-2">
+            Rejoignez Monabris
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
           {/* Role Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -93,10 +93,10 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, role: 'TENANT' }))}
-                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition ${
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-card border-2 transition ${
                   formData.role === 'TENANT'
-                    ? 'border-red-600 bg-red-50 text-red-700'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    ? 'border-primary-600 bg-primary-50 text-primary-700'
+                    : 'border-border text-gray-600 hover:border-gray-300'
                 }`}
               >
                 <User size={20} />
@@ -105,10 +105,10 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, role: 'OWNER' }))}
-                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition ${
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-card border-2 transition ${
                   formData.role === 'OWNER'
-                    ? 'border-red-600 bg-red-50 text-red-700'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    ? 'border-primary-600 bg-primary-50 text-primary-700'
+                    : 'border-border text-gray-600 hover:border-gray-300'
                 }`}
               >
                 <Building2 size={20} />
@@ -129,7 +129,7 @@ export default function RegisterPage() {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
             />
           </div>
 
@@ -149,7 +149,7 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
-                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
               />
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function RegisterPage() {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
-                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
               />
             </div>
           </div>
@@ -196,10 +196,10 @@ export default function RegisterPage() {
                   }
                 }}
                 required
-                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
               />
               {passwordErrors.length > 0 && (
-                <div className="mt-2 text-xs text-red-600">
+                <div className="mt-2 text-xs text-primary-700">
                   <p className="font-medium mb-1">Le mot de passe doit contenir :</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     {passwordErrors.map((err, i) => (
@@ -227,7 +227,7 @@ export default function RegisterPage() {
                 value={formData.confirm_password}
                 onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
                 required
-                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
               />
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-2.5 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary-600 text-white py-2.5 rounded-card font-semibold hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
@@ -249,7 +249,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-gray-600 mt-6">
             Déjà un compte ?{' '}
-            <Link href="/login" className="text-red-600 hover:text-red-700 font-semibold">
+            <Link href="/login" className="text-primary-600 hover:text-primary-700 font-semibold">
               Se connecter
             </Link>
           </p>

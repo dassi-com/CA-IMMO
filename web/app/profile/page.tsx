@@ -26,7 +26,7 @@ export default function ProfilePage() {
   if (isAuthLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -41,10 +41,10 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-20 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-background to-gray-100 pt-20 pb-24">
       <div className="max-w-2xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-8 text-white text-center">
+        <div className="bg-surface rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-8 text-white text-center">
             <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-10 h-10" />
             </div>
@@ -109,7 +109,7 @@ export default function ProfilePage() {
 
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 mt-6 px-4 py-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition font-medium"
+              className="w-full flex items-center justify-center gap-2 mt-6 px-4 py-3 bg-primary-50 text-primary-600 rounded-xl hover:bg-primary-100 transition font-medium"
             >
               <LogOut size={20} />
               Déconnexion

@@ -61,11 +61,11 @@ export default function AgentMessagesPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input type="text" placeholder="Rechercher..." value={searchTerm}
                 onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                className="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500" />
+                className="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500" />
             </div>
           </div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-surface rounded-2xl shadow-lg overflow-hidden">
             {loading ? (
               <div className="p-12 text-center text-gray-400">Chargement...</div>
             ) : paginated.length === 0 ? (
@@ -77,7 +77,7 @@ export default function AgentMessagesPage() {
                     className="p-4 lg:p-5 hover:bg-gray-50 transition-colors">
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold flex-shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold flex-shrink-0">
                           {inq.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -115,7 +115,7 @@ export default function AgentMessagesPage() {
                     className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"><ChevronLeft size={18} /></button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                     <button key={p} onClick={() => setCurrentPage(p)}
-                      className={`w-9 h-9 rounded-lg text-sm font-medium ${p === currentPage ? 'bg-red-600 text-white' : 'border border-gray-200 hover:bg-gray-50'}`}>{p}</button>
+                      className={`w-9 h-9 rounded-lg text-sm font-medium ${p === currentPage ? 'bg-primary-600 text-white' : 'border border-gray-200 hover:bg-gray-50'}`}>{p}</button>
                   ))}
                   <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
                     className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40"><ChevronRight size={18} /></button>

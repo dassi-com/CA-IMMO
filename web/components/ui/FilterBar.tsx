@@ -73,7 +73,7 @@ export default function FilterBar({
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
-      <div className="flex rounded-lg overflow-hidden border border-gray-200 bg-white shadow-sm">
+      <div className="flex rounded-lg overflow-hidden border border-border bg-surface shadow-sm">
         <button
           onClick={() => onTabChange('buy')}
           className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition ${
@@ -102,10 +102,10 @@ export default function FilterBar({
         <select
           value={selectedType}
           onChange={(e) => onTypeChange(e.target.value)}
-          className="appearance-none px-4 py-2.5 pr-10 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
+          className="appearance-none px-4 py-2.5 pr-10 bg-surface border border-border rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
         >
           {typeOptions.map((option) => (
-            <option key={option.value} value={option.value} className="text-gray-900 bg-white">
+            <option key={option.value} value={option.value} className="text-gray-900 bg-surface">
               {option.label}
             </option>
           ))}
@@ -117,10 +117,10 @@ export default function FilterBar({
         <select
           value={selectedPrice}
           onChange={(e) => onPriceChange(e.target.value)}
-          className="appearance-none px-4 py-2.5 pr-10 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
+          className="appearance-none px-4 py-2.5 pr-10 bg-surface border border-border rounded-lg text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
         >
           {priceOptions[activeTab].map((option) => (
-            <option key={option} value={option} className="text-gray-900 bg-white">
+            <option key={option} value={option} className="text-gray-900 bg-surface">
               {option}
             </option>
           ))}

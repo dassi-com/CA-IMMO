@@ -65,20 +65,20 @@ export default function ExplorePopularCities() {
             <div className="hidden sm:flex gap-2">
               <button
                 onClick={() => scroll('left')}
-                className="p-2 rounded-full border border-gray-300 hover:border-red-600 hover:text-red-600 transition"
+                className="p-2 rounded-full border border-border hover:border-primary-600 hover:text-primary-600 transition"
               >
                 <ChevronLeft size={20} />
               </button>
               <button
                 onClick={() => scroll('right')}
-                className="p-2 rounded-full border border-gray-300 hover:border-red-600 hover:text-red-600 transition"
+                className="p-2 rounded-full border border-border hover:border-primary-600 hover:text-primary-600 transition"
               >
                 <ChevronRight size={20} />
               </button>
             </div>
             <Link
               href="/search"
-              className="flex items-center gap-2 text-red-600 hover:text-red-700 font-medium transition"
+              className="flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition"
             >
               View All
               <ArrowRight size={18} />
@@ -95,7 +95,7 @@ export default function ExplorePopularCities() {
             <Link
               key={city.city}
               href={`/search?city=${encodeURIComponent(city.city)}`}
-              className="group relative rounded-xl overflow-hidden h-64 min-w-[280px] flex-shrink-0 block"
+              className="group relative rounded-card overflow-hidden h-64 min-w-[280px] flex-shrink-0 block shadow-card hover:shadow-card-hover"
             >
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
@@ -104,7 +104,7 @@ export default function ExplorePopularCities() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <div className="flex items-center gap-2 text-white mb-1">
-                  <MapPin size={16} className="text-red-400" />
+                  <MapPin size={16} className="text-accent-400" />
                   <h3 className="font-semibold text-lg">{city.city}</h3>
                 </div>
                 <p className="text-gray-300 text-sm">{city.count} {city.count > 1 ? 'properties' : 'property'}</p>

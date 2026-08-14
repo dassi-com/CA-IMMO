@@ -54,7 +54,7 @@ export default function AgentListingsPage() {
   );
 
   const statusBadge = (status: string) => {
-    const s: Record<string, string> = { APPROVED: 'bg-green-100 text-green-700', PENDING: 'bg-yellow-100 text-yellow-700', REJECTED: 'bg-red-100 text-red-700' };
+    const s: Record<string, string> = { APPROVED: 'bg-green-100 text-green-700', PENDING: 'bg-yellow-100 text-yellow-700', REJECTED: 'bg-primary-100 text-primary-700' };
     return s[status] || 'bg-gray-100 text-gray-600';
   };
 
@@ -76,17 +76,17 @@ export default function AgentListingsPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input type="text" placeholder="Rechercher..." value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full sm:w-56 pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500" />
+                  className="w-full sm:w-56 pl-10 pr-4 py-2.5 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500" />
               </div>
               <Link href="/post-property"
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors">
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors">
                 <Plus size={18} />
                 Nouvelle annonce
               </Link>
             </div>
           </div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-surface rounded-2xl shadow-lg overflow-hidden">
             {loading ? (
               <>
                 <div className="hidden md:block"><SkeletonTable rows={8} /></div>
@@ -142,7 +142,7 @@ export default function AgentListingsPage() {
                               <Link href={`/properties/${p.id}/edit`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                                 <Edit size={18} />
                               </Link>
-                              <button onClick={() => handleDelete(p.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                              <button onClick={() => handleDelete(p.id)} className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
                                 <Trash2 size={18} />
                               </button>
                             </div>
@@ -186,7 +186,7 @@ export default function AgentListingsPage() {
                           <Link href={`/properties/${p.id}/edit`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <Edit size={18} />
                           </Link>
-                          <button onClick={() => handleDelete(p.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                          <button onClick={() => handleDelete(p.id)} className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
                             <Trash2 size={18} />
                           </button>
                         </div>

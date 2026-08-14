@@ -31,7 +31,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
   return (
     <Link href={`/properties/${property.id}`} className="block group">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div className="bg-white rounded-card shadow-card overflow-hidden hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
         <div className="relative h-48 overflow-hidden">
           <Image
             src={imageUrl}
@@ -46,19 +46,19 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           >
             <Heart
               size={18}
-              className={`transition ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
+              className={`transition ${isFavorite ? 'fill-primary-600 text-primary-600' : 'text-gray-600'}`}
             />
           </button>
         </div>
 
         <div className="p-4">
           <div className="mb-2">
-            <span className="text-xl font-bold text-red-600">
+            <span className="text-xl font-bold text-primary-600">
               {formatPrice(property.price, property.currency)}
             </span>
           </div>
 
-          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-red-600 transition">
+          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-primary-600 transition">
             {property.title}
           </h3>
 

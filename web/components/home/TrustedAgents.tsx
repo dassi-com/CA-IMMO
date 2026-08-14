@@ -17,19 +17,19 @@ function AgentSkeletonGrid() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 animate-pulse">
-          <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4" />
-          <div className="h-5 bg-gray-200 rounded w-2/3 mx-auto mb-1" />
-          <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto mb-3" />
+        <div key={i} className="bg-white rounded-card p-6 border border-border">
+          <div className="w-20 h-20 skeleton rounded-full mx-auto mb-4" />
+          <div className="h-5 skeleton rounded w-2/3 mx-auto mb-1" />
+          <div className="h-4 skeleton rounded w-1/2 mx-auto mb-3" />
           <div className="flex justify-center gap-1 mb-2">
             {Array.from({ length: 5 }).map((_, j) => (
-              <div key={j} className="w-4 h-4 bg-gray-200 rounded" />
+              <div key={j} className="w-4 h-4 skeleton rounded" />
             ))}
           </div>
-          <div className="h-4 bg-gray-200 rounded w-1/3 mx-auto mb-4" />
+          <div className="h-4 skeleton rounded w-1/3 mx-auto mb-4" />
           <div className="flex gap-2">
-            <div className="h-9 bg-gray-200 rounded-lg flex-1" />
-            <div className="h-9 bg-gray-200 rounded-lg flex-1" />
+            <div className="h-9 skeleton rounded-card flex-1" />
+            <div className="h-9 skeleton rounded-card flex-1" />
           </div>
         </div>
       ))}

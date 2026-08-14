@@ -3,11 +3,103 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-primary: #C41E3A;
+    --color-secondary: #171717;
+    --color-background: #FAFBF6;
+    --color-warm: #E7E5E4;
+    --color-text: #171717;
+    --color-text-secondary: #5B5B5B;
+    --color-accent: #C8B15D;
+    --color-border: #E7E5E4;
+    --color-surface: #FFFFFF;
+    --color-success: #16A34A;
+    --color-warning: #F59E0B;
+    --color-error: #C41E3A;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    background-color: rgba(196, 30, 58, 0.15);
+    color: var(--color-primary);
+  }
+
+  /* Soft, subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-warm);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #A8A29E;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-secondary);
   }
 }
 
+@layer components {
+  /* Brand pattern overlay – used on hero, banners, headers */
+  .brand-pattern {
+    background-image: url("/brand-pattern.svg");
+    background-repeat: repeat;
+    background-size: 220px;
+  }
+
+  .brand-pattern-light {
+    background-image: url("/brand-pattern-light.svg");
+    background-repeat: repeat;
+    background-size: 220px;
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-warm);
+  }
+  .skeleton::after {
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.45) 20%,
+      rgba(255, 255, 255, 0.7) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    content: "";
+    animation: shimmer 1.6s infinite;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Existing animation kept for backward compatibility */
 @keyframes fadeInUp {
   from {
     opacity: 0;

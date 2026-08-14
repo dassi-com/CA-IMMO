@@ -168,7 +168,7 @@ export default function EditPropertyPage() {
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-6">
-          <Link href="/agent" className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-4">
+          <Link href="/agent" className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition mb-4">
             <ChevronLeft size={20} />
             <span>Retour au tableau de bord</span>
           </Link>
@@ -176,20 +176,20 @@ export default function EditPropertyPage() {
           <p className="text-gray-600">Modifiez les détails de votre annonce</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6">
+        <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-sm p-6">
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Informations générales</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Informations générales</h2>
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Titre de l'annonce <span className="text-red-500">*</span>
+                Titre de l'annonce <span className="text-primary-500">*</span>
               </label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent"
                 required
               />
             </div>
@@ -201,7 +201,7 @@ export default function EditPropertyPage() {
                   name="propertyType"
                   value={formData.propertyType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                 >
                   <option value="house">Maison</option>
                   <option value="apartment">Appartement</option>
@@ -215,7 +215,7 @@ export default function EditPropertyPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Devise</label>
                 <select
                   name="currency"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                 >
                   <option value="XAF">XAF (FCFA)</option>
                   <option value="EUR">EUR (Euro)</option>
@@ -226,31 +226,31 @@ export default function EditPropertyPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Localisation</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Localisation</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pays <span className="text-red-500">*</span>
+                  Pays <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ville <span className="text-red-500">*</span>
+                  Ville <span className="text-primary-500">*</span>
                 </label>
                 <select
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 >
                   <option value="">Sélectionner une ville</option>
@@ -261,27 +261,27 @@ export default function EditPropertyPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Quartier <span className="text-red-500">*</span>
+                  Quartier <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="neighborhood"
                   value={formData.neighborhood}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Adresse <span className="text-red-500">*</span>
+                  Adresse <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
@@ -289,32 +289,32 @@ export default function EditPropertyPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Détails du bien</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Détails du bien</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Prix (FCFA) <span className="text-red-500">*</span>
+                  Prix (FCFA) <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="number"
                   name="price"
                   value={formData.price}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Surface (m²) <span className="text-red-500">*</span>
+                  Surface (m²) <span className="text-primary-500">*</span>
                 </label>
                 <input
                   type="number"
                   name="surface"
                   value={formData.surface}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
@@ -322,19 +322,19 @@ export default function EditPropertyPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Description</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Description</h2>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
               rows={5}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 resize-none"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-600 resize-none"
               required
             />
           </div>
 
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Photos</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-border">Photos</h2>
 
             {existingPhotos.length > 0 && (
               <div className="mb-4">
@@ -349,7 +349,7 @@ export default function EditPropertyPage() {
               </div>
             )}
 
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-600 transition">
+            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary-600 transition">
               <input
                 type="file"
                 id="photo-upload"
@@ -373,7 +373,7 @@ export default function EditPropertyPage() {
                     <button
                       type="button"
                       onClick={() => removePhoto(index)}
-                      className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                      className="absolute top-1 right-1 bg-primary-500 text-white p-1 rounded-full hover:bg-primary-600"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -383,17 +383,17 @@ export default function EditPropertyPage() {
             )}
           </div>
 
-          <div className="flex gap-4 pt-4 border-t border-gray-200">
+          <div className="flex gap-4 pt-4 border-t border-border">
             <Link
               href="/agent"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              className="px-6 py-2 border border-border text-gray-700 rounded-lg hover:bg-gray-50 transition"
             >
               Annuler
             </Link>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+              className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50"
             >
               {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
             </button>

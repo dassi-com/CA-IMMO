@@ -49,11 +49,16 @@ export default function HeroSection() {
           : "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80')"
       }}
     >
-      <div className="absolute inset-0 bg-black/50"></div>
+      <div className="absolute inset-0 bg-secondary/60"></div>
+      <div className="absolute inset-0 brand-pattern-light opacity-40"></div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+        <div className="text-center mb-8 animate-fade-in-up">
+          <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-medium px-3 py-1.5 rounded-full mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-400"></span>
+            Where Vision Finds Home
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-tight">
             {activeTab === 'buy' && 'Find Your Dream Property'}
             {activeTab === 'rent' && 'Find Your Perfect Rental'}
             {activeTab === 'relocate' && 'Find Your Relocation Home'}
@@ -65,13 +70,13 @@ export default function HeroSection() {
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto">
-          <div className="flex space-x-2 p-4 border-b border-gray-100">
+        <div className="bg-white rounded-card shadow-elevated overflow-hidden max-w-4xl mx-auto animate-fade-in-up">
+          <div className="flex space-x-2 p-4 border-b border-border">
             <button
               onClick={() => setActiveTab('buy')}
               className={`flex items-center space-x-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 activeTab === 'buy'
-                  ? 'bg-primary-600 text-white shadow-md'
+                  ? 'bg-primary-600 text-white shadow-card'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -82,7 +87,7 @@ export default function HeroSection() {
               onClick={() => setActiveTab('rent')}
               className={`flex items-center space-x-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 activeTab === 'rent'
-                  ? 'bg-primary-600 text-white shadow-md'
+                  ? 'bg-primary-600 text-white shadow-card'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -93,7 +98,7 @@ export default function HeroSection() {
               onClick={() => setActiveTab('relocate')}
               className={`flex items-center space-x-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 activeTab === 'relocate'
-                  ? 'bg-primary-600 text-white shadow-md'
+                  ? 'bg-primary-600 text-white shadow-card'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -112,13 +117,13 @@ export default function HeroSection() {
                   onChange={(e) => setSearchText(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="City, neighborhood..."
-                  className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  className="w-full p-3 pl-10 border border-border rounded-lg bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm transition-all"
                 />
               </div>
               <select
                 value={selectedPrice}
                 onChange={(e) => setSelectedPrice(e.target.value)}
-                className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white min-w-[160px]"
+                className="px-4 py-3 text-gray-600 text-sm border border-border rounded-lg bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 min-w-[160px] transition-all"
               >
                 {priceOptions[activeTab].map((option) => (
                   <option key={option}>{option}</option>
@@ -127,7 +132,7 @@ export default function HeroSection() {
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="px-4 py-3 text-gray-600 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white min-w-[160px]"
+                className="px-4 py-3 text-gray-600 text-sm border border-border rounded-lg bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 min-w-[160px] transition-all"
               >
                 {typeOptions[activeTab].map((option) => (
                   <option key={option}>{option}</option>
@@ -137,7 +142,7 @@ export default function HeroSection() {
 
             <button
               onClick={handleSearch}
-              className="w-full bg-primary-600 text-white py-3 rounded-lg text-sm font-medium hover:bg-primary-700 transition flex items-center justify-center space-x-2"
+              className="w-full bg-primary-600 text-white py-3 rounded-card text-sm font-medium hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200 flex items-center justify-center space-x-2 active:scale-[0.99]"
             >
               <Search size={16} />
               <span>Search Properties</span>
