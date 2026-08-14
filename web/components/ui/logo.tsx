@@ -13,10 +13,10 @@ interface LogoProps {
 }
 
 const LOGO_ASSETS = {
-  primary: '/logo-primary.svg',
-  'white-on-red': '/logo-white-on-red.svg',
-  'dark-background': '/logo-dark-background.svg',
-  'app-icon': '/logo-app-icon.svg',
+  primary: '/monabris-app-icons1.gif',
+  'white-on-red': '/monabris-app-icons1.gif',
+  'dark-background': '/monabris-app-icons1.gif',
+  'app-icon': '/monabris-app-icons1.gif',
 } as const;
 
 export default function Logo({
