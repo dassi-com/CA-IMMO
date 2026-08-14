@@ -13,17 +13,17 @@ interface LogoProps {
 }
 
 const LOGO_ASSETS = {
-  primary: '/monabris-app-icons1.gif',
-  'white-on-red': '/monabris-app-icons1.gif',
-  'dark-background': '/monabris-app-icons1.gif',
-  'app-icon': '/monabris-app-icons1.gif',
+  primary: '/monabris-app-icons11.gif',
+  'white-on-red': '/monabris-app-icons11.gif',
+  'dark-background': '/monabris-app-icons11.gif',
+  'app-icon': '/monabris-app-icons11.gif',
 } as const;
 
 export default function Logo({
   variant = 'primary',
   showName = true,
   className = '',
-  size = 40,
+  size = 56,
 }: LogoProps) {
   return (
     <Link href="/" className={`flex items-center gap-2.5 group ${className}`}>
