@@ -45,7 +45,7 @@ export default function ProfilePage() {
       <div className="max-w-2xl mx-auto px-4">
         <div className="bg-surface rounded-2xl shadow-xl overflow-hidden">
           <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-8 text-white text-center">
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-surface/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-10 h-10" />
             </div>
             <h1 className="text-2xl font-bold">{user.full_name}</h1>

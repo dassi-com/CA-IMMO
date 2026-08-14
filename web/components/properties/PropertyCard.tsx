@@ -31,7 +31,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
   return (
     <Link href={`/properties/${property.id}`} className="block group">
-      <div className="bg-white rounded-card shadow-card overflow-hidden hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
+      <div className="bg-surface rounded-card shadow-card overflow-hidden hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
         <div className="relative h-48 overflow-hidden">
           <Image
             src={imageUrl}
@@ -42,7 +42,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
           <button
             onClick={toggleFavorite}
-            className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full hover:bg-white transition"
+            className="absolute top-2 right-2 bg-surface/80 backdrop-blur-sm p-1.5 rounded-full hover:bg-surface transition"
           >
             <Heart
               size={18}

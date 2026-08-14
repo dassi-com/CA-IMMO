@@ -20,7 +20,7 @@ export default function BottomNav() {
   const idle = 'text-gray-500 hover:text-primary-600';
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-border md:hidden z-50 pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-sm border-t border-border md:hidden z-50 pb-safe">
       <div className="flex justify-around items-center py-1">
         <Link href="/" className={`${base} ${isActive('/') ? active : idle}`}>
           <Home size={20} />

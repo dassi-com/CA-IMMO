@@ -58,7 +58,7 @@ export default function PropertyBuyRentRelocate() {
               <Link
                 key={card.id}
                 href="/search"
-                className="group block bg-white rounded-card overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
+                className="group block bg-surface rounded-card overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="h-48 overflow-hidden relative">
                   <Image

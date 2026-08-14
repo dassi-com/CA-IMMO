@@ -19,7 +19,7 @@ export default function StatsCard({ title, value, icon: Icon, trend, trendLabel,
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className="relative overflow-hidden bg-white rounded-card shadow-card hover:shadow-card-hover transition-all duration-300 group"
+      className="relative overflow-hidden bg-surface rounded-card shadow-card hover:shadow-card-hover transition-all duration-300 group"
     >
       <div className="relative z-10 p-6">
         <div className="flex items-center justify-between mb-4">

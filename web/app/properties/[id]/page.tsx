@@ -123,7 +123,7 @@ export default function PropertyDetailPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-card p-6 shadow-card">
+              <div className="bg-surface rounded-card p-6 shadow-card">
                 <div className="flex justify-between items-start mb-4">
                   <h1 className="text-2xl font-bold text-gray-900">{property.title}</h1>
                   <div className="text-right">
@@ -190,7 +190,7 @@ export default function PropertyDetailPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white rounded-card p-6 shadow-card sticky top-24">
+              <div className="bg-surface rounded-card p-6 shadow-card sticky top-24">
                 <h3 className="font-semibold text-gray-900 mb-4">Contact Agent</h3>
 
                 {property.owner && (

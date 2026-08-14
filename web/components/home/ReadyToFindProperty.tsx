@@ -52,7 +52,7 @@ export default function ReadyToFindProperty() {
           {cards.map((card) => (
             <div
               key={card.title}
-              className="bg-white rounded-card overflow-hidden shadow-card border border-border hover:shadow-card-hover transition-shadow"
+              className="bg-surface rounded-card overflow-hidden shadow-card border border-border hover:shadow-card-hover transition-shadow"
             >
               <div className="relative h-48">
                 <Image

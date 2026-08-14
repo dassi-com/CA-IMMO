@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const cardVariants = cva(
-  'rounded-card bg-white text-gray-900 transition-all duration-300 ease-premium',
+  'rounded-card bg-surface text-gray-900 transition-all duration-300 ease-premium',
   {
     variants: {
       variant: {

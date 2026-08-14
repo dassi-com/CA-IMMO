@@ -98,7 +98,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
+        <form onSubmit={handleSubmit} className="bg-surface rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
           {/* Email Field */}
           <div className="mb-5">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -193,7 +193,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-500">Or continue with</span>
+              <span className="px-3 bg-surface text-gray-500">Or continue with</span>
             </div>
           </div>
 

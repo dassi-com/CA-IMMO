@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 
 const activeLink = 'text-primary-600 font-medium';
@@ -18,7 +19,7 @@ export default function Navbar() {
   const isDashActive = pathname.startsWith('/dashboard') || pathname.startsWith('/tenant') || pathname.startsWith('/agent') || pathname.startsWith('/admin');
 
   return (
-    <nav className="bg-white/95 backdrop-blur-sm border-b border-border shadow-sm fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Logo />
@@ -79,10 +80,14 @@ export default function Navbar() {
                 <span>Connexion</span>
               </Link>
             )}
+
+            <ThemeToggle />
           </div>
 
           {/* Mobile Icons */}
           <div className="flex items-center space-x-4 md:hidden">
+            <ThemeToggle />
+
             {isAuthenticated && (
               <Link
                 href="/favorites"

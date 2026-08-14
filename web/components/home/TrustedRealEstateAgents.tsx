@@ -60,7 +60,7 @@ export default function TrustedRealEstateAgents() {
           {agents.map((agent) => (
             <div
               key={agent.id}
-              className="bg-white rounded-card p-6 text-center border border-border shadow-card hover:shadow-card-hover transition-shadow"
+              className="bg-surface rounded-card p-6 text-center border border-border shadow-card hover:shadow-card-hover transition-shadow"
             >
               <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-primary-600">

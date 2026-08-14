@@ -83,7 +83,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
+        <form onSubmit={handleSubmit} className="bg-surface rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
           {/* Role Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
