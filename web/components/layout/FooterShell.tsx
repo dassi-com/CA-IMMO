@@ -12,12 +12,10 @@ export default function FooterShell() {
     (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
   );
 
-  if (isDashboard) return null;
-
   return (
-    <>
+    <div className={isDashboard ? 'lg:pl-72' : ''}>
       <Footer />
       <BottomNav />
-    </>
+    </div>
   );
 }
