@@ -28,6 +28,7 @@ import { User } from '@/services/authService';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PendingListing {
   id: string;
@@ -50,6 +51,7 @@ interface PaymentRequest {
 }
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -162,7 +164,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-gray-800">Bonjour, Admin</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {user?.full_name || 'Admin'}</h1>
             <p className="text-gray-600 mt-2">Supervision de la plateforme Monabris</p>
           </motion.div>
 
@@ -394,7 +396,7 @@ export default function AdminDashboard() {
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Demandes de mise en avant récentes</h3>
               <div className="space-y-3">
                 {paymentRequests.map((payment) => (
-                  <div key={payment.id} className="p-3 bg-accent-50 rounded-card">
+                  <div key={payment.id} className="p-3 bg-primary-50 rounded-card">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <h4 className="font-medium text-gray-800">{payment.agentName}</h4>

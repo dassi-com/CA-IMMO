@@ -44,7 +44,7 @@ export default function AgentCard({ name, agency, rating, listingsCount, avatarU
 
           <div className="flex items-center gap-3 mt-2">
             <div className="flex items-center gap-1">
-              <Star size={14} className="fill-accent-400 text-accent-400" />
+              <Star size={14} className="fill-primary-400 text-primary-400" />
               <span className="text-sm font-semibold text-gray-700">
                 {rating?.toFixed(1) ?? 'N/A'}
               </span>

@@ -132,15 +132,15 @@ export default function AgentDashboard() {
               {!user?.is_featured && (
                 <button
                   onClick={handleRequestFeatured}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-accent-400 text-black rounded-card text-sm font-medium hover:bg-accent-500 transition-all shadow-card"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-card text-sm font-medium hover:bg-primary-700 transition-all shadow-card"
                 >
                   <Star size={16} />
                   Demander la mise en avant
                 </button>
               )}
               {user?.is_featured && (
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-accent-50 text-accent-800 rounded-card text-sm font-medium">
-                  <Star size={16} className="fill-accent-400 text-accent-400" />
+                <div className="flex items-center gap-2 px-4 py-2.5 bg-primary-50 text-primary-600 rounded-card text-sm font-medium">
+                  <Star size={16} className="fill-primary-400 text-primary-400" />
                   Agent en avant
                 </div>
               )}
@@ -333,7 +333,7 @@ export default function AgentDashboard() {
               <div className="brand-pattern-light absolute inset-0 opacity-30 pointer-events-none" />
               <div className="relative">
               <div className="flex items-center gap-3 mb-4">
-                <Star className="w-8 h-8 text-accent-400 fill-accent-400" />
+                <Star className="w-8 h-8 text-white fill-white" />
                 <h3 className="text-xl font-bold">Mettez vos annonces en avant</h3>
               </div>
               <p className="mb-4 opacity-90">

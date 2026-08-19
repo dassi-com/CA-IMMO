@@ -15,6 +15,7 @@ import StatsCard from '@/components/dashboard/StatsCard';
 import { SkeletonCard } from '@/components/ui/Skeleton';
 import { favoriteService } from '@/services/favoriteService';
 import { Property } from '@/types/property';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface FavoriteItem {
   id: string;
@@ -26,6 +27,7 @@ interface FavoriteItem {
 }
 
 export default function TenantDashboard() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [favoriteProperties, setFavoriteProperties] = useState<FavoriteItem[]>([]);
@@ -67,7 +69,7 @@ export default function TenantDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-gray-800">Tableau de bord</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Bonjour, {user?.full_name || 'Tenant'}</h1>
             <p className="text-gray-600 mt-2">Voici votre activité récente</p>
           </motion.div>
 

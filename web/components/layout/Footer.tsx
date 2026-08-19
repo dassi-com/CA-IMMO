@@ -13,7 +13,7 @@ export default function Footer() {
               <MonabrisMark variant="dark-background" size={36} />
               <div className="leading-tight">
                 <span className="font-extrabold text-xl text-white tracking-tight">
-                  Mona<span className="text-accent-400">bris</span>
+                  Mona<span className="text-white">bris</span>
                 </span>
               </div>
             </div>
@@ -31,27 +31,27 @@ export default function Footer() {
           <div>
             <h3 className="text-white text-sm mb-3 font-semibold">Entreprise</h3>
             <ul className="space-y-2">
-              <li><Link href="/search" className="text-xs hover:text-accent-400 transition-colors">Explorer les biens</Link></li>
-              <li><Link href="/login" className="text-xs hover:text-accent-400 transition-colors">Se connecter</Link></li>
-              <li><Link href="/register" className="text-xs hover:text-accent-400 transition-colors">Créer un compte</Link></li>
+              <li><Link href="/search" className="text-xs hover:text-primary-400 transition-colors">Explorer les biens</Link></li>
+              <li><Link href="/login" className="text-xs hover:text-primary-400 transition-colors">Se connecter</Link></li>
+              <li><Link href="/register" className="text-xs hover:text-primary-400 transition-colors">Créer un compte</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-white text-sm mb-3 font-semibold">Acheteurs</h3>
             <ul className="space-y-2">
-              <li><Link href="/search" className="text-xs hover:text-accent-400 transition-colors">Recherche de biens</Link></li>
-              <li><Link href="/favorites" className="text-xs hover:text-accent-400 transition-colors">Propriétés favorites</Link></li>
-              <li><Link href="/search" className="text-xs hover:text-accent-400 transition-colors">Acheter / Louer</Link></li>
+              <li><Link href="/search" className="text-xs hover:text-primary-400 transition-colors">Recherche de biens</Link></li>
+              <li><Link href="/favorites" className="text-xs hover:text-primary-400 transition-colors">Propriétés favorites</Link></li>
+              <li><Link href="/search" className="text-xs hover:text-primary-400 transition-colors">Acheter / Louer</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-white text-sm mb-3 font-semibold">Contact</h3>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-xs"><Mail size={14} className="text-accent-400" /> contact@monabris.com</li>
-              <li className="flex items-center gap-2 text-xs"><Phone size={14} className="text-accent-400" /> +241 01 234 5678</li>
-              <li className="flex items-center gap-2 text-xs"><MapPin size={14} className="text-accent-400" /> Libreville, Gabon</li>
+              <li className="flex items-center gap-2 text-xs"><Mail size={14} className="text-primary-400" /> contact@monabris.com</li>
+              <li className="flex items-center gap-2 text-xs"><Phone size={14} className="text-primary-400" /> +241 01 234 5678</li>
+              <li className="flex items-center gap-2 text-xs"><MapPin size={14} className="text-primary-400" /> Libreville, Gabon</li>
             </ul>
           </div>
         </div>

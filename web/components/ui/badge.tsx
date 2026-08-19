@@ -8,10 +8,9 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        // Badges : fond rouge ou noir, texte blanc
+        // Badges : fond rouge #E80505 ou noir #020101, texte blanc
         primary: 'bg-primary-600 text-white',
         dark: 'bg-secondary text-white',
-        accent: 'bg-accent-400 text-black',
         success: 'bg-success/10 text-success',
         warning: 'bg-warning/10 text-warning',
         error: 'bg-error/10 text-error',

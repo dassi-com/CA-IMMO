@@ -4,18 +4,17 @@
 
 @layer base {
   :root {
-    --color-primary: #C41E3A;
-    --color-secondary: #171717;
-    --color-background: #FAFBF6;
-    --color-warm: #E7E5E4;
-    --color-text: #171717;
-    --color-text-secondary: #5B5B5B;
-    --color-accent: #C8B15D;
-    --color-border: #E7E5E4;
+    --color-primary: #E80505;
+    --color-secondary: #020101;
+    --color-background: #FAFAFA;
     --color-surface: #FFFFFF;
+    --color-text: #020101;
+    --color-text-secondary: #4D4D4D;
+    --color-text-light: #808080;
+    --color-border: #BFBFBF;
     --color-success: #16A34A;
     --color-warning: #F59E0B;
-    --color-error: #C41E3A;
+    --color-error: #E80505;
   }
 
   * {
@@ -36,7 +35,7 @@
   }
 
   ::selection {
-    background-color: rgba(196, 30, 58, 0.15);
+    background-color: rgba(232, 5, 5, 0.15);
     color: var(--color-primary);
   }
 
@@ -46,14 +45,14 @@
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-warm);
+    background: var(--color-surface);
   }
   ::-webkit-scrollbar-thumb {
-    background: #A8A29E;
+    background: #BFBFBF;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-text-secondary);
+    background: #808080;
   }
 }
 
@@ -75,7 +74,7 @@
   .skeleton {
     position: relative;
     overflow: hidden;
-    background-color: var(--color-warm);
+    background-color: #F5F5F5;
   }
   .skeleton::after {
     position: absolute;

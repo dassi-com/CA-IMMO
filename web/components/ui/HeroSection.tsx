@@ -55,7 +55,7 @@ export default function HeroSection() {
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4">
         <div className="text-center mb-8 animate-fade-in-up">
           <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-medium px-3 py-1.5 rounded-full mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-400"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-primary-400"></span>
             Where Vision Finds Home
           </span>
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-tight">

@@ -3,16 +3,17 @@
 import { forwardRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-// Tags : fond gris chaud, texte graphite
+// Tags : fond #FFCACA, texte #E80505 (charte MONABRIS)
 const tagVariants = cva(
   'inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-colors',
   {
     variants: {
       variant: {
-        default: 'bg-warm text-gray-600',
-        primary: 'bg-primary-50 text-primary-700',
-        accent: 'bg-accent-50 text-accent-800',
-        dark: 'bg-gray-900 text-white',
+        default: 'bg-primary-200 text-primary-600',
+        primary: 'bg-primary-600 text-white',
+        light: 'bg-primary-50 text-primary-600',
+        dark: 'bg-secondary text-white',
+        neutral: 'bg-gray-100 text-gray-600',
       },
     },
     defaultVariants: {

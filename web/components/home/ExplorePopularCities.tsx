@@ -104,7 +104,7 @@ export default function ExplorePopularCities() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <div className="flex items-center gap-2 text-white mb-1">
-                  <MapPin size={16} className="text-accent-400" />
+                  <MapPin size={16} className="text-primary-400" />
                   <h3 className="font-semibold text-lg">{city.city}</h3>
                 </div>
                 <p className="text-gray-300 text-sm">{city.count} {city.count > 1 ? 'properties' : 'property'}</p>

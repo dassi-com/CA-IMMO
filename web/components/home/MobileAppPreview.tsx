@@ -16,16 +16,16 @@ export default function MobileAppPreview() {
             <p className="text-white/90 text-lg mb-4">Be ahead of the game!</p>
             <p className="text-white/80 mb-6">Personalized alerts, property valuation, messaging and much more!</p>
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-6">
-              <QrCode size={40} className="text-accent-400" />
+              <QrCode size={40} className="text-white" />
               <span className="text-white/90">Scan with your device to download our app</span>
             </div>
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
               <div className="flex items-center gap-1">
-                <Star size={18} className="fill-accent-400 text-accent-400" />
-                <Star size={18} className="fill-accent-400 text-accent-400" />
-                <Star size={18} className="fill-accent-400 text-accent-400" />
-                <Star size={18} className="fill-accent-400 text-accent-400" />
-                <Star size={18} className="fill-accent-400 text-accent-400" />
+                <Star size={18} className="fill-white text-white" />
+                <Star size={18} className="fill-white text-white" />
+                <Star size={18} className="fill-white text-white" />
+                <Star size={18} className="fill-white text-white" />
+                <Star size={18} className="fill-white text-white" />
               </div>
               <span className="text-white font-semibold">4.8 out of 5</span>
               <span className="text-white/80">on App Store and Google Play</span>

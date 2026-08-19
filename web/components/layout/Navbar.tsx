@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
+import { Menu, X, Home, Building2, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -37,8 +37,8 @@ export default function Navbar() {
               href="/search"
               className={`flex items-center space-x-1 text-sm transition-all duration-200 ${pathname === '/search' ? activeLink : idleLink}`}
             >
-              <Search size={16} />
-              <span>Recherche</span>
+              <Building2 size={16} />
+              <span>Annonces</span>
             </Link>
 
             {isAuthenticated && (
@@ -128,8 +128,8 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2.5 rounded-card transition-all duration-200 ${pathname === '/search' ? 'text-primary-600 bg-primary-50' : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'}`}
               >
-                <Search size={18} />
-                <span>Recherche</span>
+                <Building2 size={18} />
+                <span>Annonces</span>
               </Link>
 
               {isAuthenticated && (

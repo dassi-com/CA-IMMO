@@ -11,14 +11,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primaire : fond rouge, texte blanc
+        // Primaire : fond rouge #E80505, texte blanc
         primary: 'bg-primary-600 text-white shadow-card hover:bg-primary-700 hover:shadow-card-hover',
         // Secondaire : transparent, bordure rouge, texte rouge
         secondary: 'bg-transparent text-primary-600 border border-primary-600 hover:bg-primary-50',
-        // Tertiaire : fond noir, texte blanc
+        // Tertiaire : fond noir #020101, texte blanc
         tertiary: 'bg-secondary text-white shadow-card hover:bg-gray-800 hover:shadow-card-hover',
-        // Accent : fond or, texte noir
-        accent: 'bg-accent-400 text-black hover:bg-accent-500',
         // Ghost : transparent
         ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900',
         // White : fond blanc (pour surfaces rouges/sombres)

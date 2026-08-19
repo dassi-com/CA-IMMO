@@ -102,7 +102,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                     exit={{ opacity: 0, width: 0 }}
                     className="font-extrabold text-xl"
                   >
-                    Mona<span className="text-accent-400">bris</span>
+Mona<span className="text-primary-400">bris</span>
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -193,7 +193,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <MonabrisMark variant="dark-background" size={48} />
-                      <span className="font-extrabold text-xl">Mona<span className="text-accent-400">bris</span></span>
+                      <span className="font-extrabold text-xl">Mona<span className="text-primary-400">bris</span></span>
                     </div>
                     <button onClick={() => setIsMobileMenuOpen(false)}>
                       <X size={24} />

@@ -19,6 +19,13 @@ export const metadata: Metadata = {
   title: 'Monabris - Where Vision Finds Home',
   description: 'Monabris — le réseau immobilier premium en Afrique centrale. Maisons, appartements, terrains et biens commerciaux de confiance.',
   applicationName: 'Monabris',
+  icons: {
+    icon: [
+      { url: '/monabris-app-icons11.gif', type: 'image/gif', sizes: 'any' },
+    ],
+    shortcut: '/monabris-app-icons11.gif',
+    apple: '/monabris-app-icons11.gif',
+  },
 };
 
 export default function RootLayout({
@@ -41,9 +48,9 @@ export default function RootLayout({
             position="top-right"
             toastOptions={{
               duration: 4000,
-              style: { borderRadius: '12px', padding: '12px 16px', background: '#171717', color: '#FFFFFF' },
+              style: { borderRadius: '12px', padding: '12px 16px', background: '#020101', color: '#FFFFFF' },
               success: { iconTheme: { primary: '#16A34A', secondary: '#fff' } },
-              error: { iconTheme: { primary: '#C41E3A', secondary: '#fff' } },
+              error: { iconTheme: { primary: '#E80505', secondary: '#fff' } },
             }}
           />
           </NotificationProvider>

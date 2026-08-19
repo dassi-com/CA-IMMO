@@ -13,9 +13,9 @@ interface LogoProps {
 }
 
 const LOGO_ASSETS = {
-  primary: '/monabris-app-icons11.gif',
-  'white-on-red': '/monabris-app-icons11.gif',
-  'dark-background': '/monabris-app-icons11.gif',
+  primary: '/monabris-app-icons.gif',
+  'white-on-red': '/monabris-app-icons.gif',
+  'dark-background': '/monabris-app-icons.gif',
   'app-icon': '/monabris-app-icons11.gif',
 } as const;
 

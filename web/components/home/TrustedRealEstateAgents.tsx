@@ -70,7 +70,7 @@ export default function TrustedRealEstateAgents() {
               <h3 className="font-semibold text-gray-900 text-lg">{agent.full_name}</h3>
               <div className="flex items-center justify-center gap-1 mt-2">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} size={14} className="fill-accent-400 text-accent-400" />
+                  <Star key={star} size={14} className="fill-primary-400 text-primary-400" />
                 ))}
               </div>
               <Link
