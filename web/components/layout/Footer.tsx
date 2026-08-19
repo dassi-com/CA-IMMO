@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2.5 mb-3">
-              <MonabrisMark variant="dark-background" size={36} />
+              <MonabrisMark variant="dark-background" size={36} className="mix-blend-multiply" />
               <div className="leading-tight">
                 <span className="font-extrabold text-xl text-white tracking-tight">
                   Mona<span className="text-white">bris</span>

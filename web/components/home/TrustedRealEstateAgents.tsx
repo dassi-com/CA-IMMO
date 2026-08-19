@@ -1,53 +1,35 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Star, Search } from 'lucide-react';
-import { AgentsSkeleton } from '@/components/ui/Skeleton';
+import AgentCard from './AgentCard';
 
-interface Agent {
-  id: string;
-  full_name: string;
-  email: string;
-  phone: string | null;
-  role: string;
-  is_featured: boolean;
-}
+const agents = [
+  {
+    name: 'Marie Nkomo',
+    agency: 'Central Africa Realty',
+    rating: 4.8,
+    listingsCount: 45,
+    phone: '+237 6 12 34 56 78',
+    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
+  },
+  {
+    name: 'Jean-Paul Essono',
+    agency: 'Prime Properties Gabon',
+    rating: 4.9,
+    listingsCount: 38,
+    phone: '+241 7 12 34 56 78',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
+  },
+  {
+    name: 'Aminata Diallo',
+    agency: 'Afro Homes',
+    rating: 4.7,
+    listingsCount: 52,
+    phone: '+221 7 12 34 56 78',
+    avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
+  },
+];
 
 export default function TrustedRealEstateAgents() {
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadAgents = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/users/featured-agents`);
-        const data = await response.json();
-        if (data.success) {
-          setAgents(data.data || []);
-        }
-      } catch (error) {
-        console.error('Error loading agents:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadAgents();
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="py-16">
-        <div className="container mx-auto px-6 md:px-8 lg:px-12">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">Trusted Real Estate Agents</h2>
-          <AgentsSkeleton />
-        </div>
-      </section>
-    );
-  }
-
-  if (agents.length === 0) return null;
-
   return (
     <section className="py-16">
       <div className="container mx-auto px-6 md:px-8 lg:px-12">
@@ -55,32 +37,9 @@ export default function TrustedRealEstateAgents() {
           <h2 className="text-3xl font-bold text-gray-900">Trusted Real Estate Agents</h2>
           <p className="text-gray-600 mt-2">Our verified agents are here to help you</p>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {agents.map((agent) => (
-            <div
-              key={agent.id}
-              className="bg-white rounded-card p-6 text-center border border-border shadow-card hover:shadow-card-hover transition-shadow"
-            >
-              <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary-600">
-                  {agent.full_name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <h3 className="font-semibold text-gray-900 text-lg">{agent.full_name}</h3>
-              <div className="flex items-center justify-center gap-1 mt-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} size={14} className="fill-primary-400 text-primary-400" />
-                ))}
-              </div>
-              <Link
-                href={`/search?owner=${encodeURIComponent(agent.id)}`}
-                className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-card bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 shadow-card transition-all duration-200"
-              >
-                <Search size={14} />
-                View Properties
-              </Link>
-            </div>
+            <AgentCard key={agent.name} {...agent} />
           ))}
         </div>
       </div>

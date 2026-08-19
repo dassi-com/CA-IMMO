@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, Home, Building2, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
+import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -21,7 +21,7 @@ export default function Navbar() {
     <nav className="bg-white/95 backdrop-blur-sm border-b border-border shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          <Logo />
+          <Logo showName={false} size={40} />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-5">
@@ -37,8 +37,8 @@ export default function Navbar() {
               href="/search"
               className={`flex items-center space-x-1 text-sm transition-all duration-200 ${pathname === '/search' ? activeLink : idleLink}`}
             >
-              <Building2 size={16} />
-              <span>Annonces</span>
+              <Search size={16} />
+              <span>Recherche</span>
             </Link>
 
             {isAuthenticated && (
@@ -128,8 +128,8 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2.5 rounded-card transition-all duration-200 ${pathname === '/search' ? 'text-primary-600 bg-primary-50' : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'}`}
               >
-                <Building2 size={18} />
-                <span>Annonces</span>
+                <Search size={18} />
+                <span>Recherche</span>
               </Link>
 
               {isAuthenticated && (

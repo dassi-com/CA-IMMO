@@ -3,8 +3,7 @@ import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import Navbar from '@/components/layout/Navbar';
-import BottomNav from '@/components/layout/BottomNav';
-import Footer from '@/components/layout/Footer';
+import FooterShell from '@/components/layout/FooterShell';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
@@ -16,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Monabris - Where Vision Finds Home',
+  title: 'Monabris',
   description: 'Monabris — le réseau immobilier premium en Afrique centrale. Maisons, appartements, terrains et biens commerciaux de confiance.',
   applicationName: 'Monabris',
   icons: {
@@ -42,8 +41,7 @@ export default function RootLayout({
           <main className="pt-16 md:pt-16 pb-16 md:pb-0">
             {children}
           </main>
-          <Footer />
-          <BottomNav />
+          <FooterShell />
           <Toaster
             position="top-right"
             toastOptions={{
