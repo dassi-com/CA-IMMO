@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { MonabrisMark } from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSidebar } from '@/contexts/SidebarContext';
 
 interface SidebarProps {
   role: 'tenant' | 'agent' | 'admin';
@@ -61,9 +62,14 @@ const navigationItems = {
 export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { setSidebarOpen } = useSidebar();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const items = navigationItems[role];
+
+  useEffect(() => {
+    setSidebarOpen(isOpen);
+  }, [isOpen, setSidebarOpen]);
 
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

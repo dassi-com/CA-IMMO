@@ -11,15 +11,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-white rounded-2xl p-1.5 shadow-card flex-shrink-0">
-                <MonabrisMark variant="dark-background" size={48} />
-              </div>
-              <div className="leading-tight">
-                <span className="font-extrabold text-2xl text-white tracking-tight">
-                  Mona<span className="text-primary-400">bris</span>
-                </span>
-                <p className="text-[11px] text-gray-400 font-medium tracking-wide hidden sm:block">
-                  Where Vision Finds Home
-                </p>
+                <MonabrisMark variant="footer" size={64} />
               </div>
             </div>
             <p className="text-xs leading-relaxed mb-4">

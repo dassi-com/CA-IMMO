@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
+import { SidebarProvider } from '@/contexts/SidebarContext';
 import Navbar from '@/components/layout/Navbar';
 import FooterShell from '@/components/layout/FooterShell';
 import { Toaster } from 'react-hot-toast';
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-monabris-background text-monabris-text antialiased">
         <AuthProvider>
           <NotificationProvider>
+          <SidebarProvider>
           <Navbar />
           <main className="pt-16 md:pt-16 pb-16 md:pb-0">
             {children}
@@ -51,6 +53,7 @@ export default function RootLayout({
               error: { iconTheme: { primary: '#E80505', secondary: '#fff' } },
             }}
           />
+          </SidebarProvider>
           </NotificationProvider>
         </AuthProvider>
       </body>
