@@ -26,15 +26,18 @@ export default function Logo({
   className = '',
   size = 56,
 }: LogoProps) {
+  const isLightVariant = variant === 'primary';
+  const displayWidth = isLightVariant ? Math.round(size * 3.2) : size;
+
   return (
     <Link href="/" className={`flex items-center gap-2.5 group ${className}`}>
       <div className="relative flex-shrink-0">
         <Image
           src={LOGO_ASSETS[variant]}
           alt="Monabris"
-          width={size}
+          width={displayWidth}
           height={size}
-          className="drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+          className={`${isLightVariant ? 'mix-blend-multiply' : ''} drop-shadow-sm transition-transform duration-300 group-hover:scale-105`}
           priority
         />
       </div>

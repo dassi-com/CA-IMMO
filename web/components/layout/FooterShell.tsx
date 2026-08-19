@@ -15,7 +15,7 @@ export default function FooterShell() {
   );
 
   return (
-    <div className={isDashboard ? (isSidebarOpen ? 'lg:ml-72' : 'lg:ml-24') : ''}>
+    <div className={isDashboard ? (isSidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-20') : ''}>
       <Footer />
       <BottomNav />
     </div>

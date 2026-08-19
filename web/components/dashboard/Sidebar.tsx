@@ -197,10 +197,7 @@ Mona<span className="text-primary-400">bris</span>
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b border-white/10">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <MonabrisMark variant="dark-background" size={56} />
-                      <span className="font-extrabold text-xl">Mona<span className="text-primary-400">bris</span></span>
-                    </div>
+                    <MonabrisMark variant="footer" size={56} />
                     <button onClick={() => setIsMobileMenuOpen(false)}>
                       <X size={24} />
                     </button>
