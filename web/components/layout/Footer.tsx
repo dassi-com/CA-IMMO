@@ -10,9 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-white rounded-2xl p-1.5 shadow-card flex-shrink-0">
-                <MonabrisMark variant="footer" size={64} />
-              </div>
+              <MonabrisMark variant="footer" size={80} />
             </div>
             <p className="text-xs leading-relaxed mb-4">
               Où la vision trouve son foyer. Le réseau immobilier premium d'Afrique centrale.

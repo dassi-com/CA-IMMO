@@ -6,7 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="absolute inset-0 brand-pattern opacity-40 pointer-events-none" />
       <div className="relative w-full max-w-md">
         <div className="flex justify-center mb-6">
-          <MonabrisMark variant="primary" size={56} />
+          <MonabrisMark variant="primary" size={72} />
         </div>
         {children}
       </div>

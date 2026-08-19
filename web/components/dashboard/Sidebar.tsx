@@ -99,7 +99,7 @@ export default function Sidebar({ role, isOpen, onToggle, onClose }: SidebarProp
               animate={{ justifyContent: isOpen ? 'flex-start' : 'center' }}
               className="flex items-center gap-3"
             >
-              <MonabrisMark variant="dark-background" size={48} />
+              <MonabrisMark variant="dark-background" size={56} />
               <AnimatePresence>
                 {isOpen && (
                   <motion.span
@@ -198,7 +198,7 @@ Mona<span className="text-primary-400">bris</span>
                 <div className="p-6 border-b border-white/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <MonabrisMark variant="dark-background" size={48} />
+                      <MonabrisMark variant="dark-background" size={56} />
                       <span className="font-extrabold text-xl">Mona<span className="text-primary-400">bris</span></span>
                     </div>
                     <button onClick={() => setIsMobileMenuOpen(false)}>
