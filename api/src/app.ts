@@ -49,9 +49,14 @@ app.use(helmet({
 
 app.disable('x-powered-by');
 
-const corsOrigins = env.clientUrl
+const envOrigins = env.clientUrl
   ? env.clientUrl.split(',').map((s: string) => s.trim())
-  : ['http://localhost:3000'];
+  : [];
+const corsOrigins = [
+  'http://localhost:3000',
+  'https://vweb-five.vercel.app',
+  ...envOrigins,
+];
 app.use(
   cors({
     origin: (origin, callback) => {

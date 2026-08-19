@@ -5,9 +5,14 @@ import { env } from './env';
 let io: SocketServer | null = null;
 
 export const initSocket = (server: HttpServer): SocketServer => {
-  const corsOrigins = env.clientUrl
+  const envOrigins = env.clientUrl
     ? env.clientUrl.split(',').map((s: string) => s.trim())
-    : ['http://localhost:3000'];
+    : [];
+  const corsOrigins = [
+    'http://localhost:3000',
+    'https://vweb-five.vercel.app',
+    ...envOrigins,
+  ];
 
   io = new SocketServer(server, {
     cors: {
