@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 interface LogoProps {
   /** Version du logo Monabris */
-  variant?: 'primary' | 'white-on-red' | 'dark-background' | 'app-icon' | 'footer';
+  variant?: 'primary' | 'white-on-red' | 'dark-background' | 'app-icon' | 'footer' | 'navbar';
   /** Afficher le nom de la marque à côté de l'icône */
   showName?: boolean;
   /** Utiliser un fond de carte pour les versions sur fond rouge/sombre */
@@ -18,6 +18,7 @@ const LOGO_ASSETS = {
   'dark-background': '/monabris-app-icons.gif',
   'app-icon': '/monabris-app-icons11.gif',
   footer: '/monabris-app-icons0.gif',
+  navbar: '/monabris-logo-navbar.png',
 } as const;
 
 export default function Logo({
@@ -26,7 +27,7 @@ export default function Logo({
   className = '',
   size = 56,
 }: LogoProps) {
-  const isLightVariant = variant === 'primary';
+  const isLightVariant = variant === 'primary' || variant === 'navbar';
   const displayWidth = isLightVariant ? Math.round(size * 3.2) : size;
 
   return (
