@@ -5,6 +5,7 @@ import { sendSuccess, sendPaginated } from "../../utils/response";
 import {
   createInquiryService,
   getMyInquiriesService,
+  getMySentInquiriesService,
   getInquiryService,
   listInquiriesService,
   deleteInquiryService,
@@ -28,6 +29,19 @@ export const getMyInquiries = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const query = req.query as InquiriesListQuery;
     const result = await getMyInquiriesService(req.user!.id, query);
+    sendPaginated(
+      res,
+      result.inquiries,
+      result.meta,
+      "Inquiries fetched successfully"
+    );
+  }
+);
+
+export const getMySentInquiries = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const query = req.query as InquiriesListQuery;
+    const result = await getMySentInquiriesService(req.user!.id, query);
     sendPaginated(
       res,
       result.inquiries,

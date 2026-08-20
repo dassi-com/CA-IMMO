@@ -109,6 +109,42 @@ export const getMyInquiriesService = async (
   };
 };
 
+export const getMySentInquiriesService = async (
+  senderId: string,
+  query: InquiriesListQuery
+) => {
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
+
+  const where: Prisma.InquiryWhereInput = {
+    sender_id: senderId,
+  };
+
+  if (query.property_id) {
+    where.property_id = query.property_id;
+  }
+
+  const [total, inquiries] = await Promise.all([
+    prisma.inquiry.count({ where }),
+    prisma.inquiry.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { created_at: "desc" },
+      include: inquiryInclude,
+    }),
+  ]);
+
+  return {
+    inquiries,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
 export const getInquiryService = async (
   inquiryId: string,
   requesterId: string,

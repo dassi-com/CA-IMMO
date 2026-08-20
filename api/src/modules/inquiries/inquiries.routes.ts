@@ -6,6 +6,7 @@ import { createInquiryLimiter } from "../../middlewares/rateLimit.middleware";
 import {
   createInquiry,
   getMyInquiries,
+  getMySentInquiries,
   getInquiry,
   listInquiries,
   deleteInquiry,
@@ -83,6 +84,31 @@ router.get(
   authorize("OWNER"),
   validate(inquiriesListValidator),
   getMyInquiries
+);
+
+/**
+ * @swagger
+ * /inquiries/my/sent:
+ *   get:
+ *     summary: Demandes de contact envoyées par l'utilisateur connecté (Tenant/Owner)
+ *     tags: [Inquiries]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *     responses:
+ *       200:
+ *         description: Liste des demandes envoyées
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+router.get(
+  "/my/sent",
+  authenticate,
+  authorize("OWNER", "TENANT"),
+  validate(inquiriesListValidator),
+  getMySentInquiries
 );
 
 /**
