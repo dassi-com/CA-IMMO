@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { SkeletonCard } from '@/components/ui/Skeleton';
@@ -21,6 +22,13 @@ import { adminService } from '@/services/adminService';
 import { propertyService } from '@/services/propertyService';
 import { Property } from '@/types/property';
 import toast from 'react-hot-toast';
+
+const getApiErrorMessage = (error: unknown, fallback: string): string => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.message || fallback;
+  }
+  return fallback;
+};
 
 export default function AdminListingsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -30,8 +38,6 @@ export default function AdminListingsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 12;
-
-  useEffect(() => { loadListings(); }, []);
 
   const loadListings = async () => {
     setLoading(true);
@@ -45,28 +51,37 @@ export default function AdminListingsPage() {
     }
   };
 
+  useEffect(() => { loadListings(); }, []);
+
   const handleApprove = async (id: string) => {
     try {
-      await propertyService.updateStatus(id, 'APPROVED');
+      const updatedProperty = await propertyService.updateStatus(id, 'APPROVED');
+      setListings(prev => prev.map(property => property.id === id ? updatedProperty : property));
       toast.success('Annonce approuvée');
-      loadListings();
-    } catch { toast.error("Erreur lors de l'approbation"); }
+    } catch (error: unknown) {
+      const message = getApiErrorMessage(error, "Erreur lors de l'approbation");
+      toast.error(message);
+    }
   };
 
   const handleReject = async (id: string) => {
     try {
-      await propertyService.updateStatus(id, 'REJECTED');
+      const updatedProperty = await propertyService.updateStatus(id, 'REJECTED');
+      setListings(prev => prev.map(property => property.id === id ? updatedProperty : property));
       toast.success('Annonce rejetée');
-      loadListings();
-    } catch { toast.error('Erreur lors du rejet'); }
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'Erreur lors du rejet'));
+    }
   };
 
   const handleFeature = async (id: string) => {
     try {
-      await propertyService.setFeatured(id);
+      const updatedProperty = await propertyService.setFeatured(id);
+      setListings(prev => prev.map(property => property.id === id ? updatedProperty : property));
       toast.success('Annonce mise en avant');
-      loadListings();
-    } catch { toast.error('Erreur lors de la mise en avant'); }
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'Erreur lors de la mise en avant'));
+    }
   };
 
   const filtered = listings.filter(p => {
@@ -196,12 +211,15 @@ export default function AdminListingsPage() {
                       </button>
                       <button
                         onClick={() => handleFeature(p.id)}
+                        disabled={p.status !== 'APPROVED' || p.is_featured}
                         className={`p-2 rounded-xl transition-colors ${
                           p.is_featured
                             ? 'bg-purple-100 text-purple-600'
-                            : 'bg-gray-100 text-gray-500 hover:bg-purple-100 hover:text-purple-600'
+                            : p.status === 'APPROVED'
+                              ? 'bg-gray-100 text-gray-500 hover:bg-purple-100 hover:text-purple-600'
+                              : 'bg-gray-100 text-gray-300 cursor-not-allowed'
                         }`}
-                        title="Mettre en avant"
+                        title={p.status === 'APPROVED' ? 'Mettre en avant' : 'Approuver avant de mettre en avant'}
                       >
                         <Star size={16} />
                       </button>
