@@ -66,3 +66,15 @@ export const corsOrigins = Array.from(new Set([
   'https://vweb-five.vercel.app',
   ...configuredOrigins,
 ]));
+
+export const isAllowedCorsOrigin = (origin: string): boolean => {
+  const normalizedOrigin = normalizeOrigin(origin);
+  if (!normalizedOrigin) return false;
+  if (corsOrigins.includes(normalizedOrigin)) return true;
+
+  try {
+    return new URL(normalizedOrigin).hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+};

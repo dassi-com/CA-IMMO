@@ -6,7 +6,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import timeout from 'connect-timeout';
 import swaggerUi from 'swagger-ui-express';
-import { validateEnv, env, corsOrigins } from './config/env';
+import { validateEnv, env, isAllowedCorsOrigin } from './config/env';
 import { errorMiddleware } from './middlewares/error.middleware';
 import { createApiLimiter, createAuthLimiter, createPasswordResetLimiter, createTokenOpLimiter } from './middlewares/rateLimit.middleware';
 import { swaggerSpec } from './config/swagger';
@@ -52,9 +52,10 @@ app.disable('x-powered-by');
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || corsOrigins.includes(origin)) {
+      if (!origin || isAllowedCorsOrigin(origin)) {
         callback(null, true);
       } else {
+        console.warn(`[CORS] Origin rejected: ${origin}`);
         callback(new Error("Origin not allowed by CORS"));
       }
     },
