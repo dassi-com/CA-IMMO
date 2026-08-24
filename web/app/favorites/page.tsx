@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -206,12 +205,13 @@ export default function FavoritesPage() {
                 <div key={property.id} className="bg-white rounded-card shadow-card hover:shadow-card-hover transition overflow-hidden">
                   <Link href={`/properties/${property.id}`}>
                     <div className="relative h-48 overflow-hidden">
-                      <Image
+                      <img
                         src={property.image}
                         alt={property.title}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                        className="object-cover hover:scale-105 transition duration-300"
+                        className="w-full h-full object-cover hover:scale-105 transition duration-300"
+                        onError={(event) => {
+                          event.currentTarget.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80';
+                        }}
                       />
                     </div>
                   </Link>

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { MapPin, Square, Heart } from 'lucide-react';
 import { Property } from '@/types/property';
 import { useState } from 'react';
@@ -12,6 +11,9 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [imageUrl, setImageUrl] = useState(
+    property.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80'
+  );
 
   const formatPrice = (price: number, currency: string) => {
     if (price >= 1000000) {
@@ -26,18 +28,17 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     setIsFavorite(!isFavorite);
   };
 
-  const imageUrl = property.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80';
   const location = [property.city, property.neighborhood].filter(Boolean).join(', ');
 
   return (
     <Link href={`/properties/${property.id}`} className="block group">
       <div className="bg-white rounded-card shadow-card overflow-hidden hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
         <div className="relative h-48 overflow-hidden">
-          <Image
+          <img
             src={imageUrl}
             alt={property.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={() => setImageUrl('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80')}
           />
 
           <button

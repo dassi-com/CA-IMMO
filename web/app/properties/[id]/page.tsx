@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { ArrowLeft, MapPin, Square, Star, Phone, MessageCircle, Calendar, Mail, Lock, Unlock } from 'lucide-react';
 import { getPropertyById } from '@/services/propertyService';
 import { Property } from '@/types/property';
@@ -91,12 +90,13 @@ export default function PropertyDetailPage() {
 
           <div className="mb-8">
             <div className="relative h-[500px] rounded-card overflow-hidden bg-gray-200 shadow-card mb-4">
-              <Image
+              <img
                 src={imageUrl(selectedImage)}
                 alt={property.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                className="w-full h-full object-cover"
+                onError={(event) => {
+                  event.currentTarget.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80';
+                }}
               />
               {property.images && property.images.length > 0 && (
                 <div className="absolute bottom-4 right-4 bg-secondary/70 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-full">
@@ -114,7 +114,14 @@ export default function PropertyDetailPage() {
                       selectedImage === idx ? 'border-primary-600' : 'border-transparent'
                     }`}
                   >
-                    <Image src={img.image_url} alt={`Photo ${idx + 1}`} fill className="object-cover" sizes="96px" />
+                    <img
+                      src={img.image_url}
+                      alt={`Photo ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(event) => {
+                        event.currentTarget.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80';
+                      }}
+                    />
                   </button>
                 ))}
               </div>
