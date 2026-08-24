@@ -1,19 +1,10 @@
 import { Server as HttpServer } from 'http';
 import { Server as SocketServer } from 'socket.io';
-import { env } from './env';
+import { corsOrigins } from './env';
 
 let io: SocketServer | null = null;
 
 export const initSocket = (server: HttpServer): SocketServer => {
-  const envOrigins = env.clientUrl
-    ? env.clientUrl.split(',').map((s: string) => s.trim())
-    : [];
-  const corsOrigins = [
-    'http://localhost:3000',
-    'https://vweb-five.vercel.app',
-    ...envOrigins,
-  ];
-
   io = new SocketServer(server, {
     cors: {
       origin: corsOrigins,

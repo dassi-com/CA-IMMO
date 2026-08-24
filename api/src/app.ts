@@ -6,7 +6,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import timeout from 'connect-timeout';
 import swaggerUi from 'swagger-ui-express';
-import { validateEnv, env } from './config/env';
+import { validateEnv, env, corsOrigins } from './config/env';
 import { errorMiddleware } from './middlewares/error.middleware';
 import { createApiLimiter, createAuthLimiter, createPasswordResetLimiter, createTokenOpLimiter } from './middlewares/rateLimit.middleware';
 import { swaggerSpec } from './config/swagger';
@@ -49,14 +49,6 @@ app.use(helmet({
 
 app.disable('x-powered-by');
 
-const envOrigins = env.clientUrl
-  ? env.clientUrl.split(',').map((s: string) => s.trim())
-  : [];
-const corsOrigins = [
-  'http://localhost:3000',
-  'https://vweb-five.vercel.app',
-  ...envOrigins,
-];
 app.use(
   cors({
     origin: (origin, callback) => {

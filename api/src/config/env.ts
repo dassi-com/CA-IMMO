@@ -42,3 +42,27 @@ export const env = {
     callbackUrl: process.env.GOOGLE_CALLBACK_URL ?? "",
   },
 };
+
+const normalizeOrigin = (value: string): string | null => {
+  try {
+    return new URL(value.trim()).origin;
+  } catch {
+    return null;
+  }
+};
+
+const configuredOrigins = [
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+  process.env.CORS_ORIGINS,
+]
+  .filter(Boolean)
+  .flatMap((value) => value!.split(','))
+  .map(normalizeOrigin)
+  .filter((origin): origin is string => Boolean(origin));
+
+export const corsOrigins = Array.from(new Set([
+  'http://localhost:3000',
+  'https://vweb-five.vercel.app',
+  ...configuredOrigins,
+]));
