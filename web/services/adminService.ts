@@ -27,8 +27,21 @@ export const adminService = {
   },
 
   getAllProperties: async (): Promise<Property[]> => {
-    const response = await api.get('/properties');
-    return response.data.data;
+    const firstResponse = await api.get('/properties/admin/all', {
+      params: { page: 1, limit: 100 },
+    });
+    const firstPage = firstResponse.data;
+    const properties: Property[] = firstPage.data || [];
+    const totalPages = firstPage.meta?.totalPages || 1;
+
+    for (let page = 2; page <= totalPages; page += 1) {
+      const response = await api.get('/properties/admin/all', {
+        params: { page, limit: 100 },
+      });
+      properties.push(...(response.data.data || []));
+    }
+
+    return properties;
   },
 
   getAgents: async (): Promise<User[]> => {

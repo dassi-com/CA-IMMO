@@ -392,3 +392,40 @@ export const listPendingPropertiesService = async (query: PropertiesListQuery) =
     },
   };
 };
+
+export const listAdminPropertiesService = async (query: PropertiesListQuery) => {
+  const { page, limit, skip } = parsePagination(query.page, query.limit);
+
+  const where: Prisma.PropertyWhereInput = {
+    is_deleted: false,
+  };
+
+  if (query.city) {
+    where.city = { contains: query.city, mode: "insensitive" } as any;
+  }
+
+  if (query.property_type) {
+    where.property_type = query.property_type as PropertyType;
+  }
+
+  const [total, properties] = await Promise.all([
+    prisma.property.count({ where }),
+    prisma.property.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [{ is_featured: "desc" }, { created_at: "desc" }],
+      include: propertyInclude,
+    }),
+  ]);
+
+  return {
+    properties,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};

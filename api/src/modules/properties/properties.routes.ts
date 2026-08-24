@@ -13,6 +13,7 @@ import {
   featureProperty,
   getPropertiesStats,
   listPendingProperties,
+  listAdminProperties,
 } from "./properties.controller";
 import {
   createPropertyValidator,
@@ -114,6 +115,14 @@ router.get(
   authorize("ADMIN"),
   validate(propertiesListValidator),
   listPendingProperties
+);
+
+router.get(
+  "/admin/all",
+  authenticate,
+  authorize("ADMIN"),
+  validate(propertiesListValidator),
+  listAdminProperties
 );
 
 /**

@@ -13,6 +13,7 @@ import {
   featurePropertyService,
   getPropertiesStatsService,
   listPendingPropertiesService,
+  listAdminPropertiesService,
 } from "./properties.service";
 import {
   CreatePropertyDto,
@@ -112,6 +113,19 @@ export const listPendingProperties = asyncHandler(
       result.properties,
       result.meta,
       "Pending properties fetched successfully"
+    );
+  }
+);
+
+export const listAdminProperties = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const query = req.query as PropertiesListQuery;
+    const result = await listAdminPropertiesService(query);
+    sendPaginated(
+      res,
+      result.properties,
+      result.meta,
+      "All properties fetched successfully"
     );
   }
 );
