@@ -76,7 +76,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-monabris-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+        <div className="text-center -mt-4 mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
           <p className="text-gray-600 mt-2">
             Rejoignez Monabris
