@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MonabrisMark } from '@/components/ui/logo';
+import Image from 'next/image';
 import { Globe, Share2, AtSign, MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
@@ -10,8 +10,14 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-3">
-              <MonabrisMark variant="app-icon" size={48} />
-              <span className="text-2xl font-extrabold tracking-tight text-white">Monabris</span>
+              <Image
+                src="/logofooter.png"
+                alt="Monabris"
+                width={190}
+                height={56}
+                className="h-12 w-auto object-contain"
+                priority
+              />
             </div>
             <p className="text-xs leading-relaxed mb-4">
               Où la vision trouve son foyer. Le réseau immobilier premium d&apos;Afrique centrale.
