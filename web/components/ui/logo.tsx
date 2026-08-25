@@ -18,7 +18,7 @@ const LOGO_ASSETS = {
   'dark-background': '/monabris-app-icons.gif',
   'app-icon': '/monabris-app-icons11.gif',
   footer: '/monabris-app-icons0.gif',
-  navbar: '/monabris-logo-navbar.png',
+  navbar: '/logoimmo.jpg',
 } as const;
 
 export default function Logo({
