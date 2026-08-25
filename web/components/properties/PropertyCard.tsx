@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BadgeCheck, Building2, Heart, MapPin, Ruler } from 'lucide-react';
+import { AlertTriangle, BadgeCheck, BedDouble, Building2, Heart, MapPin, Sparkles, SquareDashed } from 'lucide-react';
 import { Property } from '@/types/property';
 import { useState } from 'react';
 
@@ -32,6 +32,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   const isNew = property.is_new === true;
   const isVerified = property.verified ?? property.status === 'APPROVED';
   const isUrgentSale = property.is_urgent === true && property.listing_type === 'sale';
+  const listingLabel = isUrgentSale ? 'Urgent sale' : isNew ? 'New listing' : isVerified ? 'Verified listing' : 'Featured listing';
 
   return (
     <Link href={`/properties/${property.id}`} className="block group">
@@ -44,23 +45,11 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             onError={() => setImageUrl('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80')}
           />
 
-          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[75%]">
-            {isVerified && (
-              <span className="inline-flex items-center gap-1 bg-white/95 text-success px-2 py-1 rounded-md text-[11px] font-semibold shadow-sm">
-                <BadgeCheck size={13} />
-                Verified listing
-              </span>
-            )}
-            {isNew && (
-              <span className="bg-primary-600 text-white px-2 py-1 rounded-md text-[11px] font-semibold shadow-sm">
-                New
-              </span>
-            )}
-            {isUrgentSale && (
-              <span className="bg-warning text-white px-2 py-1 rounded-md text-[11px] font-semibold shadow-sm">
-                Urgent sale
-              </span>
-            )}
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[75%] text-white">
+            <span className="inline-flex items-center gap-1 bg-transparent text-[11px] font-semibold drop-shadow-md">
+              {isUrgentSale ? <AlertTriangle size={14} /> : isNew ? <Sparkles size={14} /> : <BadgeCheck size={14} />}
+              {listingLabel}
+            </span>
           </div>
 
           <button
@@ -90,14 +79,20 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             <span className="line-clamp-1">{location}</span>
           </div>
 
-          <div className="flex items-center gap-4 text-gray-500 text-sm">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-500 text-sm">
             <div className="flex items-center gap-1">
               <Building2 size={14} />
               <span className="capitalize">{property.property_type.toLowerCase().replace('_', ' ')}</span>
             </div>
+            {(property.bedrooms ?? property.rooms) && (
+              <div className="flex items-center gap-1">
+                <BedDouble size={14} />
+                <span>{property.bedrooms ?? property.rooms} rooms</span>
+              </div>
+            )}
             {property.size_m2 > 0 && (
               <div className="flex items-center gap-1">
-                <Ruler size={14} />
+                <SquareDashed size={14} />
                 <span>{property.size_m2} m²</span>
               </div>
             )}

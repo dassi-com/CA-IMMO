@@ -76,7 +76,7 @@ export default function TrustedAgents() {
           <p className="text-gray-500 mt-2">Connect with verified professionals</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {agents.map((agent) => (
+          {agents.slice(0, 3).map((agent) => (
             <AgentCard
               key={agent.id}
               name={agent.full_name}

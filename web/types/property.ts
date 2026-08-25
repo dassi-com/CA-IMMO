@@ -29,6 +29,8 @@ export interface Property {
   price: number;
   currency: string;
   size_m2: number;
+  bedrooms?: number;
+  rooms?: number;
   is_featured: boolean;
   is_deleted: boolean;
   status: PropertyStatus;
