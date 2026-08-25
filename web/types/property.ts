@@ -32,6 +32,10 @@ export interface Property {
   is_featured: boolean;
   is_deleted: boolean;
   status: PropertyStatus;
+  verified?: boolean;
+  is_new?: boolean;
+  is_urgent?: boolean;
+  listing_type?: 'rent' | 'sale';
   created_at: string;
   updated_at: string;
   images: PropertyImage[];

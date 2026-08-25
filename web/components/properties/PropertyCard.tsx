@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { MapPin, Square, Heart } from 'lucide-react';
+import { BadgeCheck, Building2, Heart, MapPin, Ruler } from 'lucide-react';
 import { Property } from '@/types/property';
 import { useState } from 'react';
 
@@ -29,6 +29,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   };
 
   const location = [property.city, property.neighborhood].filter(Boolean).join(', ');
+  const isNew = property.is_new === true;
+  const isVerified = property.verified ?? property.status === 'APPROVED';
+  const isUrgentSale = property.is_urgent === true && property.listing_type === 'sale';
 
   return (
     <Link href={`/properties/${property.id}`} className="block group">
@@ -40,6 +43,25 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             onError={() => setImageUrl('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80')}
           />
+
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[75%]">
+            {isVerified && (
+              <span className="inline-flex items-center gap-1 bg-white/95 text-success px-2 py-1 rounded-md text-[11px] font-semibold shadow-sm">
+                <BadgeCheck size={13} />
+                Verified listing
+              </span>
+            )}
+            {isNew && (
+              <span className="bg-primary-600 text-white px-2 py-1 rounded-md text-[11px] font-semibold shadow-sm">
+                New
+              </span>
+            )}
+            {isUrgentSale && (
+              <span className="bg-warning text-white px-2 py-1 rounded-md text-[11px] font-semibold shadow-sm">
+                Urgent sale
+              </span>
+            )}
+          </div>
 
           <button
             onClick={toggleFavorite}
@@ -63,15 +85,19 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             {property.title}
           </h3>
 
-          <div className="flex items-center gap-1 text-gray-500 text-sm mb-3">
+          <div className="flex items-center gap-1.5 text-gray-500 text-sm mb-3">
             <MapPin size={14} />
             <span className="line-clamp-1">{location}</span>
           </div>
 
           <div className="flex items-center gap-4 text-gray-500 text-sm">
+            <div className="flex items-center gap-1">
+              <Building2 size={14} />
+              <span className="capitalize">{property.property_type.toLowerCase().replace('_', ' ')}</span>
+            </div>
             {property.size_m2 > 0 && (
               <div className="flex items-center gap-1">
-                <Square size={14} />
+                <Ruler size={14} />
                 <span>{property.size_m2} m²</span>
               </div>
             )}

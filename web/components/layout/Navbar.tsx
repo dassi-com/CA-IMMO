@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, LogIn } from 'lucide-react';
+import { Menu, X, Home, Search, LayoutDashboard, Heart, PlusCircle, UserRound } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -63,7 +63,7 @@ export default function Navbar() {
             {(isAgent || isAdmin) && (
               <Link
                 href="/post-property"
-                className="flex items-center space-x-1 bg-primary-600 text-white px-3 py-1.5 rounded-xl text-sm hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200"
+                className="flex items-center space-x-1 bg-primary-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200"
               >
                 <PlusCircle size={14} />
                 <span>Publier un bien</span>
@@ -73,9 +73,9 @@ export default function Navbar() {
             {!isAuthenticated && (
               <Link
                 href="/login"
-                className="flex items-center space-x-1 bg-primary-600 text-white px-3 py-1.5 rounded-xl text-sm hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200"
+                className="flex items-center space-x-1 bg-primary-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-primary-700 shadow-card hover:shadow-card-hover transition-all duration-200"
               >
-                <LogIn size={14} />
+                <UserRound size={14} />
                 <span>Connexion</span>
               </Link>
             )}
@@ -95,9 +95,9 @@ export default function Navbar() {
             {!isAuthenticated && (
               <Link
                 href="/login"
-                className="p-1.5 rounded-full text-gray-600 hover:text-primary-600 transition-all duration-200"
+                className="p-1.5 rounded-md text-gray-600 hover:text-primary-600 transition-all duration-200"
               >
-                <LogIn size={20} />
+                <UserRound size={20} />
               </Link>
             )}
 
@@ -149,7 +149,7 @@ export default function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center space-x-3 px-3 py-2.5 rounded-card transition-all duration-200 text-gray-600 hover:text-primary-600 hover:bg-primary-50"
                 >
-                  <LogIn size={18} />
+                  <UserRound size={18} />
                   <span>Connexion</span>
                 </Link>
               )}

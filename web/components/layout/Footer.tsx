@@ -10,16 +10,17 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-3">
-              <MonabrisMark variant="footer" size={80} />
+              <MonabrisMark variant="app-icon" size={48} />
+              <span className="text-2xl font-extrabold tracking-tight text-white">Monabris</span>
             </div>
             <p className="text-xs leading-relaxed mb-4">
-              Où la vision trouve son foyer. Le réseau immobilier premium d'Afrique centrale.
+              Où la vision trouve son foyer. Le réseau immobilier premium d&apos;Afrique centrale.
             </p>
             <div className="flex items-center gap-2">
-              <a href="#" aria-label="Site web" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Globe size={16} /></a>
-              <a href="#" aria-label="Partager" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><Share2 size={16} /></a>
-              <a href="#" aria-label="Email" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><AtSign size={16} /></a>
-              <a href="#" aria-label="Messagerie" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-gray-300 hover:text-white transition-colors"><MessageCircle size={16} /></a>
+              <a href="#" aria-label="Site web" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-white transition-colors"><Globe size={16} /></a>
+              <a href="#" aria-label="Partager" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-white transition-colors"><Share2 size={16} /></a>
+              <a href="#" aria-label="Email" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-white transition-colors"><AtSign size={16} /></a>
+              <a href="#" aria-label="Messagerie" className="p-2 rounded-lg bg-white/5 hover:bg-primary-600 text-white transition-colors"><MessageCircle size={16} /></a>
             </div>
           </div>
 
@@ -44,9 +45,9 @@ export default function Footer() {
           <div>
             <h3 className="text-white text-sm mb-3 font-semibold">Contact</h3>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-xs"><Mail size={14} className="text-primary-400" /> contact@monabris.com</li>
-              <li className="flex items-center gap-2 text-xs"><Phone size={14} className="text-primary-400" /> +241 01 234 5678</li>
-              <li className="flex items-center gap-2 text-xs"><MapPin size={14} className="text-primary-400" /> Libreville, Gabon</li>
+              <li className="flex items-center gap-2 text-xs"><Mail size={14} className="text-white" /> contact@monabris.com</li>
+              <li className="flex items-center gap-2 text-xs"><Phone size={14} className="text-white" /> +241 01 234 5678</li>
+              <li className="flex items-center gap-2 text-xs"><MapPin size={14} className="text-white" /> Libreville, Gabon</li>
             </ul>
           </div>
         </div>
