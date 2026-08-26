@@ -76,14 +76,14 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-monabris-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="text-center -mt-4 mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
-          <p className="text-gray-600 mt-2">
-            Rejoignez Monabris
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
+            <p className="text-gray-600 mt-2">
+              Rejoignez Monabris
+            </p>
+          </div>
+
           {/* Role Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
