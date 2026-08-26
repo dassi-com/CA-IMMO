@@ -32,7 +32,15 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   const isNew = property.is_new === true;
   const isVerified = property.verified ?? property.status === 'APPROVED';
   const isUrgentSale = property.is_urgent === true && property.listing_type === 'sale';
-  const listingLabel = isUrgentSale ? 'Urgent sale' : isNew ? 'New listing' : isVerified ? 'Verified listing' : 'Featured listing';
+  const listingLabel = isUrgentSale
+    ? 'Urgent sale'
+    : isNew
+      ? 'New listing'
+      : isVerified
+        ? 'Verified listing'
+        : property.is_featured
+          ? 'Featured listing'
+          : 'Property listing';
 
   return (
     <Link href={`/properties/${property.id}`} className="block group">
@@ -45,9 +53,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             onError={() => setImageUrl('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=80')}
           />
 
-          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[75%] text-white">
+          <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-4.5rem)] flex-wrap gap-1.5 text-white">
             <span
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold shadow-sm ${
+              className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold shadow-sm ring-1 ring-black/10 ${
                 isUrgentSale
                   ? 'bg-red-600'
                   : isNew
