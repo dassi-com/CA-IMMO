@@ -1,4 +1,4 @@
-import { UserRound } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -6,8 +6,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="absolute inset-0 brand-pattern opacity-40 pointer-events-none" />
       <div className="relative w-full max-w-md">
         <div className="flex justify-center mb-9">
-          <div className="relative top-5 flex h-16 w-16 items-center justify-center rounded-xl bg-primary-600 text-white shadow-card">
-            <UserRound size={30} strokeWidth={1.8} />
+          <div className="relative top-5 h-16 w-16 overflow-hidden rounded-xl shadow-card">
+            <Image
+              src="/immobn.png"
+              alt="Monabris"
+              fill
+              sizes="64px"
+              className="object-cover"
+            />
           </div>
         </div>
         {children}

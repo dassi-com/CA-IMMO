@@ -21,10 +21,10 @@ export const metadata: Metadata = {
   applicationName: 'Monabris',
   icons: {
     icon: [
-      { url: '/monabris-app-icons11.gif', type: 'image/gif', sizes: 'any' },
+      { url: '/immobn.png', type: 'image/png', sizes: 'any' },
     ],
-    shortcut: '/monabris-app-icons11.gif',
-    apple: '/monabris-app-icons11.gif',
+    shortcut: '/immobn.png',
+    apple: '/immobn.png',
   },
 };
 
