@@ -46,7 +46,17 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           />
 
           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[75%] text-white">
-            <span className="inline-flex items-center gap-1 bg-transparent text-[11px] font-semibold drop-shadow-md">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold shadow-sm ${
+                isUrgentSale
+                  ? 'bg-red-600'
+                  : isNew
+                    ? 'bg-emerald-600'
+                    : isVerified
+                      ? 'bg-primary-600'
+                      : 'bg-secondary'
+              }`}
+            >
               {isUrgentSale ? <AlertTriangle size={14} /> : isNew ? <Sparkles size={14} /> : <BadgeCheck size={14} />}
               {listingLabel}
             </span>

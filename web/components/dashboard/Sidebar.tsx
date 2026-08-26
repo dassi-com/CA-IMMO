@@ -203,7 +203,7 @@ Mona<span className="text-primary-400">bris</span>
                     </button>
                   </div>
                 </div>
-                <nav className="flex-1 py-6">
+                <nav className="min-h-0 flex-1 overflow-y-auto py-6">
                   {items.map((item) => (
                     <Link key={item.name} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
                       <div
@@ -219,7 +219,7 @@ Mona<span className="text-primary-400">bris</span>
                     </Link>
                   ))}
                 </nav>
-                <div className="p-6 border-t border-white/10">
+                <div className="flex-shrink-0 p-6 border-t border-white/10">
                   <button onClick={logout} className="flex items-center gap-3 text-white/70 w-full">
                     <LogOut size={20} />
                     <span className="text-sm">Déconnexion</span>
