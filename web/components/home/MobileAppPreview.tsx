@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { QrCode, Star, Smartphone } from 'lucide-react';
+import { QrCode, Star } from 'lucide-react';
 
 export default function MobileAppPreview() {
   return (
@@ -49,15 +49,14 @@ export default function MobileAppPreview() {
           </div>
 
           {/* Right Image - Mobile App Preview */}
-          <div className="flex-1 flex justify-center">
-            <div className="relative w-64 h-96 bg-black rounded-3xl shadow-elevated overflow-hidden animate-float">
-              <div className="absolute inset-0 bg-gradient-to-b from-primary-400 to-primary-800 flex items-center justify-center">
-                <div className="text-center">
-                  <Smartphone size={80} className="text-white/50 mx-auto mb-4" />
-                  <span className="font-extrabold text-white text-xl">Monabris</span>
-                </div>
-              </div>
-            </div>
+          <div className="relative h-[28rem] flex-1 max-w-md overflow-hidden animate-float">
+            <Image
+              src="/mobile.jpg"
+              alt="Monabris mobile application"
+              width={2560}
+              height={1122}
+              className="absolute left-1/2 top-1/2 w-[844px] max-w-none -translate-x-1/2 -translate-y-1/2 mix-blend-multiply"
+            />
           </div>
         </div>
       </div>
