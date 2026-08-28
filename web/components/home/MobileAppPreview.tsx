@@ -53,9 +53,9 @@ export default function MobileAppPreview() {
             <Image
               src="/mobile1.png"
               alt="Monabris mobile application"
-              width={1536}
-              height={1024}
-              className="absolute left-1/2 top-1/2 w-[844px] max-w-none -translate-x-1/2 -translate-y-1/2"
+              fill
+              sizes="(max-width: 1024px) 100vw, 28rem"
+              className="object-contain object-center"
             />
           </div>
         </div>
