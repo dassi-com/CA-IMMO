@@ -51,11 +51,11 @@ export default function MobileAppPreview() {
           {/* Right Image - Mobile App Preview */}
           <div className="relative h-[28rem] flex-1 max-w-md overflow-hidden animate-float">
             <Image
-              src="/mobile.jpg"
+              src="/mobile-transparent.png"
               alt="Monabris mobile application"
               width={2560}
               height={1122}
-              className="absolute left-1/2 top-1/2 w-[844px] max-w-none -translate-x-1/2 -translate-y-1/2 mix-blend-multiply"
+              className="absolute left-1/2 top-1/2 w-[844px] max-w-none -translate-x-1/2 -translate-y-1/2"
             />
           </div>
         </div>
