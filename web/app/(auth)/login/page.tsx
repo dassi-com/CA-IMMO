@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
@@ -91,6 +92,19 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
+          <div className="flex justify-center mb-6">
+            <div className="relative h-16 w-16 overflow-hidden rounded-xl shadow-card bg-white/80 ring-1 ring-border">
+              <Image
+                src="/immobn.png"
+                alt="Monabris"
+                fill
+                sizes="64px"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
             <p className="text-gray-600 mt-2">

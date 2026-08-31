@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -77,6 +78,19 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-monabris-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <form onSubmit={handleSubmit} className="bg-white rounded-card shadow-elevated p-6 md:p-8 animate-fade-in-up">
+          <div className="flex justify-center mb-6">
+            <div className="relative h-16 w-16 overflow-hidden rounded-xl shadow-card bg-white/80 ring-1 ring-border">
+              <Image
+                src="/immobn.png"
+                alt="Monabris"
+                fill
+                sizes="64px"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
             <p className="text-gray-600 mt-2">
