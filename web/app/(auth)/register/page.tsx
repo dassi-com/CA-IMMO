@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { Building2, User, Mail, Lock, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -109,11 +111,11 @@ export default function RegisterPage() {
                 onClick={() => setFormData(prev => ({ ...prev, role: 'TENANT' }))}
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-card border-2 transition ${
                   formData.role === 'TENANT'
-                    ? 'border-primary-600 bg-primary-50 text-primary-700'
-                    : 'border-border text-gray-600 hover:border-gray-300'
+                    ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm'
+                    : 'border-border text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                <User size={20} />
+                <User size={18} />
                 <span className="font-medium text-sm">Locataire</span>
               </button>
               <button
@@ -121,11 +123,11 @@ export default function RegisterPage() {
                 onClick={() => setFormData(prev => ({ ...prev, role: 'OWNER' }))}
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-card border-2 transition ${
                   formData.role === 'OWNER'
-                    ? 'border-primary-600 bg-primary-50 text-primary-700'
-                    : 'border-border text-gray-600 hover:border-gray-300'
+                    ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm'
+                    : 'border-border text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                <Building2 size={20} />
+                <Building2 size={18} />
                 <span className="font-medium text-sm">Agent</span>
               </button>
             </div>
@@ -174,17 +176,28 @@ export default function RegisterPage() {
               Téléphone
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                 <Phone className="h-5 w-5 text-gray-400" />
               </div>
-              <input
-                id="phone"
-                type="tel"
-                placeholder="Votre téléphone"
+              <PhoneInput
+                country={'fr'}
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
-                className="w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
+                onChange={(value) => setFormData({ ...formData, phone: value })}
+                preferredCountries={['fr', 'be', 'ca', 'us', 'gb', 'ci', 'cm']}
+                enableSearch
+                searchPlaceholder="Chercher un pays"
+                placeholder="Votre numéro"
+                inputProps={{
+                  id: 'phone',
+                  name: 'phone',
+                  required: true,
+                  autoComplete: 'tel',
+                }}
+                containerClass="w-full"
+                buttonClass="!border !border-border !rounded-l-card !bg-white hover:!bg-gray-50 !shadow-none"
+                inputClass="!w-full !pl-12 !pr-3 !py-2.5 !border !border-border !rounded-card !bg-monabris-background !text-gray-900 !shadow-none !text-base focus:!border-primary-600 focus:!ring-2 focus:!ring-primary-600/20"
+                dropdownClass="!rounded-card !shadow-elevated !border !border-border !max-h-64"
+                specialLabel=""
               />
             </div>
           </div>

@@ -106,16 +106,16 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Bienvenue</h1>
             <p className="text-gray-600 mt-2">
-              Sign in to access your dashboard and saved properties
+              Connectez-vous à votre espace Monabris
             </p>
           </div>
 
           {/* Email Field */}
           <div className="mb-5">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              Adresse e-mail
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -129,7 +129,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 required
                 className="block w-full pl-10 pr-3 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
-                placeholder="Enter your email"
+                placeholder="Entrez votre e-mail"
               />
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function LoginPage() {
           {/* Password Field */}
           <div className="mb-5">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+              Mot de passe
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -151,7 +151,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 required
                 className="block w-full pl-10 pr-10 py-2.5 border border-border rounded-card bg-monabris-background focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition"
-                placeholder="Enter your password"
+                placeholder="Entrez votre mot de passe"
               />
               <button
                 type="button"
@@ -177,10 +177,10 @@ export default function LoginPage() {
                 onChange={handleChange}
                 className="w-4 h-4 rounded border-border text-primary-600 focus:ring-primary-600"
               />
-              <span className="text-sm text-gray-600">Remember me</span>
+              <span className="text-sm text-gray-600">Se souvenir de moi</span>
             </label>
             <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
-              Forgot password?
+              Mot de passe oublié ?
             </Link>
           </div>
 
@@ -193,10 +193,10 @@ export default function LoginPage() {
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Signing in...</span>
+                <span>Connexion...</span>
               </div>
             ) : (
-              'Sign In'
+              'Se connecter'
             )}
           </button>
 
@@ -206,7 +206,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-500">Or continue with</span>
+              <span className="px-3 bg-white text-gray-500">ou continuer avec</span>
             </div>
           </div>
 
@@ -232,9 +232,9 @@ export default function LoginPage() {
 
           {/* Sign Up Link */}
           <p className="text-center mt-6 text-gray-600">
-            Don't have an account?{' '}
+            Vous n’avez pas de compte ?{' '}
             <Link href="/register" className="text-primary-600 hover:text-primary-700 font-semibold">
-              Sign Up
+              Créer un compte
             </Link>
           </p>
         </form>
